@@ -21,25 +21,24 @@ const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // xz
-
 class CentroidDecomposition
 {
 private:
-    vector<set<int>> E;
-    vector<int> par, subsz, level;
+    const vector<vector<int>>& E;
+    vector<int> par, subsz, level, vis;
     vector<vector<int>> dist;
     int dfs(int u, int p, int h)
     {
         if (h != -1) dist[u][h] = dist[p][h] + 1;
         subsz[u] = 1;
         for (auto v : E[u])
-            if (v != p) subsz[u] += dfs(v, u, h);
+            if (not vis[v] && v != p) subsz[u] += dfs(v, u, h);
         return subsz[u];
     }
     int find_centroid(int u, int p, int sz)
     {
         for (auto v : E[u])
-            if (v != p && subsz[v] > sz / 2)
+            if (not vis[v] && v != p && subsz[v] > sz / 2)
                 return find_centroid(v, u, sz);
         return u;
     }
@@ -47,16 +46,16 @@ private:
     {
         int sz = dfs(u, p, p == -1 ? -1 : level[p]);
         int centroid = find_centroid(u, p, sz);
-        par[centroid] = p;
+        par[centroid] = p, vis[centroid] = 1;
         if (p != -1) level[centroid] = level[p] + 1;
         for (auto v : E[centroid])
-            E[v].erase(centroid), build(v, centroid);
+            if (not vis[v]) build(v, centroid);
     }
 public:
-    CentroidDecomposition(const vector<set<int>>& E) : E(E)
+    CentroidDecomposition(const vector<vector<int>>& E) : E(E)
     {
         int n = sz(E);
-        par.assign(n, -1), subsz.assign(n, 0);
+        par.assign(n, -1), subsz.assign(n, 0), vis.assign(n, 0);
         level.assign(n, 0), dist.assign(n, vector(32 - __builtin_clz(n), 0));
         build(0, -1);
     }
@@ -77,12 +76,12 @@ public:
 
 int main()
 { _
-    int n; cin >> n;
-    vector<set<int>> E(n);
+    int n, q; cin >> n >> q;
+    vector<vector<int>> E(n);
     for (int j = 0; j < n - 1; ++j)
     {
         int u, v; cin >> u >> v; --u, --v;
-        E[u].insert(v), E[v].insert(u);
+        E[u].push_back(v), E[v].push_back(u);
     }
     CentroidDecomposition cd(E);
     exit(0);
