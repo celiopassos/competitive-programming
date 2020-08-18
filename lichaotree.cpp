@@ -26,35 +26,37 @@ template<typename T, typename F = T>
 struct Hull
 {
     vector<T> a;
-    int h, N;
+    int N;
+    const T infinity = T(LINF); // may wanna change if T is float
     typedef complex<T> point;
     vector<point> line;
     Hull(const vector<T>& domain) : a(domain)
     {
-        sort(all(a)); a.erase(unique(all(a)), a.end());
-        int n = sz(a);
-        h = 31 - __builtin_clz(n) + (__builtin_popcount(n) > 1), N = 1 << h;
+        sort(all(a)), a.erase(unique(all(a)), a.end());
+        int n = sz(a); N = 1 << (32 - __builtin_clz(n));
         a.resize(N), iota(a.begin() + n, a.end(), a[n - 1] + 1);
-        line.assign(2 * N, point(0, T(LINF)));
+        line.assign(2 * N, point(0, infinity));
     }
     F dot(point p, point q) { return (conj(p) * q).real(); }
     F f(point p, int i) { return dot(p, {a[i], 1}); }
     void update(point nw)
     {
-        for (int p = 1, d = h; p < 2 * N; --d)
+        for (int p = 1, l = 0, r = N - 1; p < 2 * N;)
         {
-            int l = (p << d) - N, m = p < N ? ((p << d) | ((1 << (d - 1)) - 1)) - N : p - N;
+            int m = (l + r) / 2;
             bool left = f(nw, l) < f(line[p], l);
             bool mid = f(nw, m) < f(line[p], m);
             if (mid) swap(line[p], nw);
-            if (left != mid) p = p << 1;
-            else p = p << 1 | 1;
+            if (left != mid)
+                r = m, p = p << 1;
+            else
+                l = m + 1, p = p << 1 | 1;
         }
     }
     F get(T x)
     {
         int i = distance(a.begin(), lower_bound(all(a), x)), p = N + i;
-        assert(a[i] == x);
+        assert(a[i] == x); // remove if T is float
         F res = f(line[p], i);
         while (p) res = min(res, f(line[p >>= 1], i));
         return res;
