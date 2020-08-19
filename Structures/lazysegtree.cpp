@@ -40,9 +40,8 @@ template<typename T, typename F>
 class SegmentTree
 {
 private:
-    const int n;
+    const int n; const T Tid; const F Fid;
     vector<T> st; vector<F> lazy;
-    const T Tid; const F Fid;
     inline int left(int p) const { return 2 * p + 1; }
     inline int right(int p) const { return 2 * p + 2; }
     T combine(const T& resl, const T& resr) const

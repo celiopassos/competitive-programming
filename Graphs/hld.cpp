@@ -25,29 +25,24 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct HLD
 {
-    vi parent, depth, heavy, head, pos;
-    const vector<vi>& E;
+    vector<int> parent, depth, heavy, head, pos;
+    const vector<vector<int>>& E;
     int cur_pos;
-
-    HLD(const vector<vi>& E) : E(E)
+    HLD(const vector<vector<int>>& E) : E(E)
     {
         int n = sz(E);
-
-        parent = vi(n);
-        depth = vi(n);
-        heavy = vi(n, -1);
-        head = vi(n);
-        pos = vi(n);
+        parent.assign(n, 0);
+        depth.assign(n, 0);
+        heavy.assign(n, -1);
+        head.assign(n, 0);
+        pos.assign(n, 0);
         cur_pos = 0;
-
         dfs(0, E);
         decompose(0, 0, E);
     }
-
     int dfs(int v)
     {
-        int size = 1;
-        int max_c_size = 0;
+        int size = 1, max_c_size = 0;
         for (int c : E[v])
             if (c != parent[v])
             {
@@ -57,35 +52,28 @@ struct HLD
                 if (c_size > max_c_size)
                     max_c_size = c_size, heavy[v] = c;
             }
-
         return size;
     }
-
     void decompose(int v, int h)
     {
         head[v] = h, pos[v] = cur_pos++;
 
-        if (heavy[v] != -1)
-            decompose(heavy[v], h, E);
+        if (heavy[v] != -1) decompose(heavy[v], h, E);
 
         for (int c : E[v])
             if (c != parent[v] && c != heavy[v])
                 decompose(c, c, E);
     }
-
-    T query(int a, int b, SegmentTree<T> st)
+    T query(int a, int b, SegmentTree<T>& st)
     {
-        T res = st.default_value;
+        T res = st.Tid;
         for (; head[a] != head[b]; b = parent[head[b]])
         {
-            if (depth[head[a]] > depth[head[b]])
-                swap(a, b);
-
+            if (depth[head[a]] > depth[head[b]]) swap(a, b);
             T cur = st.query(pos[head[b]], pos[b]);
             res = st.combine(res, cur);
         }
-        if (depth[a] > depth[b])
-            swap(a, b);
+        if (depth[a] > depth[b]) swap(a, b);
         T last = st.query(pos[a], pos[b]);
         res = st.combine(res, last);
         return res;
