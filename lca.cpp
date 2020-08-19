@@ -22,59 +22,50 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // xz
 
-struct LCA
+class LCA
 {
-    int n, l, timer;
-    const vvi& E;
-    vi tin, tout;
-    vvi up;
-
-    LCA(const vvi& E, int root) : E(E)
+private:
+    const vector<vector<int>>& E;
+    int n, l, ct;
+    vector<int> L, R, h;
+    vector<vector<int>> up;
+    void dfs(int u, int p)
     {
-        n = sz(E);
-        preprocess(root);
-    }
-
-    void dfs(int v, int p)
-    {
-        tin[v] = ++timer;
-        up[v][0] = p;
+        up[u][0] = p;
         for (int i = 1; i <= l; ++i)
-            up[v][i] = up[up[v][i-1]][i-1];
+            up[u][i] = up[up[u][i-1]][i-1];
 
-        for (int u : E[v])
-            if (u != p)
-                dfs(u, v);
-
-        tout[v] = ++timer;
+        L[u] = ct;
+        for (int v : E[u])
+            if (v != p)
+                h[v] = h[u] + 1, dfs(v, u);
+        R[u] = ct++;
     }
-
-    bool is_ancestor(int u, int v)
+public:
+    LCA(const vector<vector<int>>& E, int root) : E(E), n(sz(E))
     {
-        return tin[u] <= tin[v] && tout[u] >= tout[v];
-    }
-
-    int lca(int u, int v)
-    {
-        if (is_ancestor(u, v))
-            return u;
-        if (is_ancestor(v, u))
-            return v;
-        for (int i = l; i >= 0; --i) {
-            if (!is_ancestor(up[u][i], v))
-                u = up[u][i];
-        }
-        return up[u][0];
-    }
-
-    void preprocess(int root)
-    {
-        tin.resize(n);
-        tout.resize(n);
-        timer = 0;
-        l = (int)ceil(log2(n));
+        L.assign(n, 0), R.assign(n, 0), h.assign(n, 0);
+        ct = 0, l = 32 - __builtin_clz(n);
         up.assign(n, vector<int>(l + 1));
         dfs(root, root);
+    }
+    bool is_ancestor(int u, int v) const
+    {
+        return L[u] <= L[v] && R[v] <= R[u];
+    }
+    int lca(int u, int v) const
+    {
+        if (is_ancestor(u, v)) return u;
+        if (is_ancestor(v, u)) return v;
+        for (int i = l; i >= 0; --i)
+            if (!is_ancestor(up[u][i], v))
+                u = up[u][i];
+        return up[u][0];
+    }
+    int distance(int u, int v) const
+    {
+        int w = lca(u, v);
+        return h[u] + h[v] - 2 * h[w];
     }
 };
 
