@@ -30,18 +30,18 @@ pair<F, T> ternary_search(T L, T R, function<F(T)> f)
     {
         T m1 = l + (r - l) / 3, m2 = r - (r - l) / 3;
         T f1 = f(m1), f2 = f(m2);
-        if (f1 > f2) l = m1;
+        if (f1 < f2) l = m1;
         else r = m2;
     }
     T c = l;
     for (T x = c + 1; x <= r; ++x)
         if (f(x) > f(c)) c = x;
-    return {f(c), c};
+    return {f(c), c}; // maximum
 }
 
 int main()
 { _
-    int n = 231;
+    int n = 10;
     auto f = [&](int x) { return n * x * (10 - x); };
     int x = ternary_search<int, int>(0, 10, f).first;
     debug(x);
