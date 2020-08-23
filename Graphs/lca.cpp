@@ -26,27 +26,25 @@ class LCA
 {
 private:
     const vector<vector<int>>& E;
-    int n, l, ct;
+    const int n, lg;
     vector<int> L, R, h;
     vector<vector<int>> up;
     void dfs(int u, int p)
     {
-        up[u][0] = p;
-        for (int i = 1; i <= l; ++i)
+        h[u] = h[p] + 1, up[u][0] = p;
+        for (int i = 1; i < lg; ++i)
             up[u][i] = up[up[u][i-1]][i-1];
-
+        static int ct = 0;
         L[u] = ct;
         for (int v : E[u])
-            if (v != p)
-                h[v] = h[u] + 1, dfs(v, u);
+            if (v != p) dfs(v, u);
         R[u] = ct++;
     }
 public:
-    LCA(const vector<vector<int>>& E, int root) : E(E), n(sz(E))
+    LCA(const vector<vector<int>>& E, int root) : E(E), n(sz(E)), lg(32 - __builtin_clz(n))
     {
-        L.assign(n, 0), R.assign(n, 0), h.assign(n, 0);
-        ct = 0, l = 32 - __builtin_clz(n);
-        up.assign(n, vector<int>(l + 1));
+        L.assign(n, 0), R.assign(n, 0), h.assign(n, -1);
+        up.assign(n, vector<int>(lg));
         dfs(root, root);
     }
     bool is_ancestor(int u, int v) const
@@ -57,7 +55,7 @@ public:
     {
         if (is_ancestor(u, v)) return u;
         if (is_ancestor(v, u)) return v;
-        for (int i = l; i >= 0; --i)
+        for (int i = lg - 1; i >= 0; --i)
             if (!is_ancestor(up[u][i], v))
                 u = up[u][i];
         return up[u][0];
