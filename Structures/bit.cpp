@@ -50,7 +50,11 @@ public:
         for (int i = n - 1; i > 0; --i)
             if (down(i) >= 0) ft[i] = combine(inv(ft[down(i)]), ft[i]);
     }
-    T query(int l, int r) { return combine(inv(query(l - 1)), query(r)); }
+    T query(int l, int r)
+    {
+        if (l == 0) return query(r);
+        return combine(inv(query(l - 1)), query(r));
+    }
     void update(int p, T value)
     {
         for (int i = p; i < n; i = up(i)) ft[i] = combine(ft[i], value);
