@@ -23,20 +23,20 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 // xz
 
 template<typename F, typename T>
-pair<F, T> ternary_search(T L, T R, function<F(T)> f)
+pair<F, T> ternary_search(T l, T r, function<F(T)>&& f)
 {
-    T l = L, r = R, eps = 2;
+    const T eps = 2;
     while (r - l > eps)
     {
-        T m1 = l + (r - l) / 3, m2 = r - (r - l) / 3;
-        T f1 = f(m1), f2 = f(m2);
-        if (f1 < f2) l = m1;
+        T m1 = l + (r - l) / 3;
+        T m2 = r - (r - l) / 3;
+        if (f(m1) < f(m2)) l = m1;
         else r = m2;
     }
     T c = l;
     for (T x = c + 1; x <= r; ++x)
         if (f(x) > f(c)) c = x;
-    return {f(c), c}; // maximum
+    return { f(c), c }; // maximum
 }
 
 int main()
