@@ -22,35 +22,33 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // xz
 
+using ii = pair<int, int>;
+
 int main()
 { _
     int n, m; cin >> n >> m;
-    vvii E(n);
+    vector E(n, vector(0, pair(0, 0)));
     for (int j = 0; j < m; ++j)
     {
         int u, v, w; cin >> u >> v >> w; --u, --v;
-        E[u].pb(mp(v, w)), E[v].pb(mp(u, w));
+        E[u].push_back(pair(v, w)), E[v].push_back(pair(u, w));
     }
 
-    int s = 0;
-    vi dist(n, INF); dist[s] = 0;
-    priority_queue<ii, vii, greater<ii>> pq; pq.push(mp(0, s));
-
-    while (!pq.empty())
+    auto chmin = [&](int& x, int y) { return y < x ? x = y, true : false; };
+    auto dijkstra = [&](int s)
     {
-        ii front = pq.top(); pq.pop();
-        int d = front.f, u = front.s;
-
-        if (d > dist[u])
-            continue;
-
-        for (auto [v, w] : E[u])
-            if (dist[u] + w < dist[v])
-            {
-                dist[v] = dist[u] + w;
-                pq.push(mp(dist[v], v));
-            }
-    }
+        vector dist(n, INF); dist[s] = 0;
+        priority_queue<ii, vector<ii>, greater<ii>> pq; pq.push(pair(0, s));
+        while (!pq.empty())
+        {
+            auto [u, d] = pq.top(); pq.pop();
+            if (d > dist[u]) continue;
+            for (auto [v, w] : E[u])
+                if (chmin(dist[v], dist[u] + w))
+                    pq.push(pair(dist[v], v));
+        }
+        return dist;
+    };
 
     exit(0);
 }
