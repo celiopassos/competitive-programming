@@ -15,13 +15,9 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // xz
 
-using F = ll;
-
-const F MOD = 1e9 + 7;
-
-F power(F x, int p)
+ll power(ll x, int p, ll MOD)
 {
-    F res = 1;
+    ll res = 1;
     while (p)
     {
         if (p & 1) res = (res * x) % MOD;
@@ -31,11 +27,12 @@ F power(F x, int p)
     return res;
 }
 
+template<ll MOD>
 struct IntegerModp
 {
-    F x;
-    IntegerModp(F x = 0) : x(x) {};
-    IntegerModp inv() const { return F(power(x, MOD - 2)); }
+    ll x;
+    IntegerModp(ll x = 0) : x(x) {};
+    IntegerModp inv() const { return ll(power(x, MOD - 2, MOD)); }
     IntegerModp& operator+=(const IntegerModp& rhs) { x = (x + rhs.x) % MOD; return *this; }
     IntegerModp& operator-=(const IntegerModp& rhs) { x = (x + MOD - rhs.x) % MOD; return *this; }
     IntegerModp& operator*=(const IntegerModp& rhs) { x = (x * rhs.x) % MOD; return *this; }
