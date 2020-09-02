@@ -36,6 +36,7 @@ struct point
     point operator*(const T& rhs) const { return point(*this) *= rhs; }
     point operator/(const T& rhs) const { return point(*this) /= rhs; }
     bool operator==(const point& rhs) const { return equal(x, rhs.x) && equal(y, rhs.y); }
+    bool operator<(const point& rhs) const { return pair(x, y) < pair(rhs.x, rhs.y); }
 };
 
 struct line
@@ -102,6 +103,41 @@ point rotate(const point& p, T theta) // counter-clockwise
 }
 
 point rotate(const point& p) { return point(-p.y, p.x); } // pi/2 rad counter-clockwise
+
+bool cw(const point& p, const point& q, const point& r)
+{
+    return det(q - p, r - q) < 0;
+}
+
+bool ccw(const point& p, const point& q, const point& r)
+{
+    return det(q - p, r - q) > 0;
+}
+
+vector<point> convex_hull(vector<point> a) // counter-clockwise
+{
+    sort(all(a)); a.erase(unique(all(a)), a.end());
+    point p = a[0], q = a.back();
+    vector<point> up = { p }, down = { p };
+    for (int i = 1; i < sz(a); ++i)
+    {
+        if (i == sz(a) - 1 || cw(p, a[i], q))
+        {
+            while (up.size() > 1 && !cw(up[sz(up) - 2], up[sz(up) - 1], a[i]))
+                up.pop_back();
+            up.push_back(a[i]);
+        }
+        if (i == sz(a) - 1 || ccw(p, a[i], q))
+        {
+            while (sz(down) >= 2 && !ccw(down[sz(down) - 2], down[sz(down) - 1], a[i]))
+                down.pop_back();
+            down.push_back(a[i]);
+        }
+    }
+    up.pop_back();
+    while (sz(up) > 1) down.push_back(up.back()), up.pop_back();
+    return down;
+}
 
 int main()
 { _
