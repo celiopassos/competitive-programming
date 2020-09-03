@@ -32,7 +32,7 @@ struct IntegerModp
 {
     ll x;
     IntegerModp(ll x = 0) : x(x) {};
-    IntegerModp inv() const { return ll(power(x, MOD - 2, MOD)); }
+    IntegerModp inv() const { assert(x != 0); return ll(power(x, MOD - 2, MOD)); }
     IntegerModp& operator+=(const IntegerModp& rhs) { x = (x + rhs.x) % MOD; return *this; }
     IntegerModp& operator-=(const IntegerModp& rhs) { x = (x + MOD - rhs.x) % MOD; return *this; }
     IntegerModp& operator*=(const IntegerModp& rhs) { x = (x * rhs.x) % MOD; return *this; }
