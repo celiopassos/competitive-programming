@@ -35,9 +35,8 @@ private:
         return res;
     }
 public:
-    BIT(vector<T> a, T id) : id(id), n(sz(a))
+    BIT(const vector<T>& a, T id) : id(id), n(sz(a)), ft(a)
     {
-        ft = a;
         for (int i = 1; i < n; ++i)
             ft[i] = combine(ft[i - 1], ft[i]);
         for (int i = n - 1; i > 0; --i)
