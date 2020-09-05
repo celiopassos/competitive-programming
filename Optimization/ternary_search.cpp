@@ -16,7 +16,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 // xz
 
 template<typename F, typename T>
-pair<F, T> ternary_search(T l, T r, function<F(T)>&& f)
+pair<F, T> ternary_search(T l, T r, function<F(T)>& f)
 {
     const T eps = 2;
     while (r - l > eps)
