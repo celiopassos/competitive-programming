@@ -46,7 +46,7 @@ private:
     StringHash<MOD3, P3> hash3;
 public:
     BigHash(const string& s) : hash1(s), hash2(s), hash3(s) {}
-    auto query(int i, int j)
+    auto query(int i, int j) const
     {
         return tuple{ hash1.query(i, j), hash2.query(i, j), hash3.query(i, j) };
     }
