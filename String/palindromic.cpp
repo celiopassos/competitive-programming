@@ -22,7 +22,7 @@ private:
     const vector<int> row = vector(alphabet, 0);
 
     int n = 1, sz = 2, last = 0;
-    vector<int> s = vector(n, 0);
+    vector<int> s = vector(n, -1);
     vector<vector<int>> E = vector(sz, row);
     vector<int> len = vector(sz, 0);
     vector<int> link = vector(sz, 0);
@@ -35,7 +35,6 @@ public:
     PalindromicTree()
     {
         E.reserve(N), s.reserve(N), len.reserve(N), link.reserve(N);
-        s[0] = -1;
         link[0] = 1, link[1] = 1;
         len[0] = 0, len[1] = -1;
     }
