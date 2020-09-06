@@ -15,7 +15,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // xz
 
-template<typename T, bool top_down = true>
+template<typename T, bool top_down = false>
 class MinimumStack
 {
 private:
