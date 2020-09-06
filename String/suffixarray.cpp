@@ -15,8 +15,6 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // xz
 
-typedef complex<int> cp;
-
 vector<int> sort_cyclic_shifts(const string& s)
 {
     int n = sz(s);
