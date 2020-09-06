@@ -54,12 +54,6 @@ public:
         last = E[last][c];
     }
     int size() const { return sz - 2; } // not counting empty
-    int odd() const
-    {
-        int ct = 0;
-        for (int i = 2; i < sz; ++i) ct += len[i] & 1;
-        return ct;
-    }
 };
 
 int main()
