@@ -20,11 +20,11 @@ class SparseTable
 {
 private:
     const int n;
-    const function<T(T, T)>& op;
+    const function<T(T, T)> op;
     vector<int> log;
     vector<vector<T>> st;
 public:
-    SparseTable(const vector<T>& a, const function<T(T, T)>& op) : n(sz(a)), op(op)
+    SparseTable(const vector<T>& a, const function<T(T, T)> op) : n(sz(a)), op(op)
     {
         log.assign(n + 1, 0);
         for (int x = 1; x <= n; ++x) log[x] = 31 - __builtin_clz(x);
