@@ -1,0 +1,61 @@
+#include "bits/stdc++.h"
+
+using namespace std;
+
+#define _ ios_base::sync_with_stdio(0);cin.tie(0);
+#define endl '\n'
+#define debug(x) cerr << #x << " == " << (x) << '\n';
+#define all(X) X.begin(), X.end()
+#define sz(X) (int)X.size()
+
+using ll = long long;
+
+const int INF = 0x3f3f3f3f;
+const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+// xz
+
+template<typename T>
+class MinimumStack
+{
+private:
+    const T Tid;
+    const function<T(T, T)>& op;
+    stack<pair<T, T>> st;
+public:
+    MinimumStack(const T Tid, const function<T(T, T)>& op) : Tid(Tid), op(op) { }
+    T top() const { return st.top().first; }
+    T minimum() const { return st.empty() ? Tid : st.top().second; }
+    void push(T value) { st.push(pair<T, T>(value, op(value, minimum()))); }
+    void pop() { st.pop(); }
+    bool empty() const { return st.empty(); }
+};
+
+template<typename T>
+class MinimumQueue
+{
+private:
+    const function<T(T, T)>& op;
+    MinimumStack<T> in, out;
+    void move()
+    {
+        if (out.empty()) while (not in.empty())
+        {
+            out.push(in.top());
+            in.pop();
+        }
+    }
+public:
+    MinimumQueue(const T Tid, const function<T(T, T)>& op) : op(op), in(Tid, op), out(Tid, op) { }
+    T front() const { move(); return out.top(); }
+    T minimum() const { return op(in.minimum(), out.minimum()); }
+    void push(T value) { in.push(value); }
+    void pop() { move(); out.pop(); }
+    bool empty() const { return in.empty() && out.empty(); }
+};
+
+int main()
+{ _
+    exit(0);
+}
+
