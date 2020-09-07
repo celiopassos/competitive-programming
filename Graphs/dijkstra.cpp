@@ -34,7 +34,7 @@ int main()
         priority_queue<ii, vector<ii>, greater<ii>> pq; pq.push(pair(0, s));
         while (!pq.empty())
         {
-            auto [u, d] = pq.top(); pq.pop();
+            auto [d, u] = pq.top(); pq.pop();
             if (d > dist[u]) continue;
             for (auto [v, w] : E[u])
                 if (chmin(dist[v], dist[u] + w))
