@@ -41,9 +41,9 @@ class BigHash
 private:
     static constexpr ll MOD1 = 998244353, MOD2 = 1e9 + 7, MOD3 = 1e9 + 9;
     static constexpr ll P1 = 31, P2 = 37, P3 = 53;
-    StringHash<MOD1, P1> hash1;
-    StringHash<MOD2, P2> hash2;
-    StringHash<MOD3, P3> hash3;
+    const StringHash<MOD1, P1> hash1;
+    const StringHash<MOD2, P2> hash2;
+    const StringHash<MOD3, P3> hash3;
 public:
     BigHash(const string& s) : hash1(s), hash2(s), hash3(s) {}
     auto query(int i, int j) const
