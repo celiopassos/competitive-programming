@@ -18,15 +18,16 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename X, typename T=X>
 struct F1
 {
-    int L, R;
     X add;
     explicit F1(X add) : add(add) {}
-    void apply_aggregate(T& old) const
+    void apply_aggregate(T& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
     }
-    void compose(const F1& op) { add += op.add; }
-    void operator=(const F1& op) { add = op.add; }
+    void compose(const F1& op, int L, int R)
+    {
+        add += op.add;
+    }
 };
 
 template<typename T, typename F>
@@ -35,58 +36,56 @@ class SegmentTree
 private:
     const int n; const T Tid; const F Fid;
     vector<T> st; vector<F> lazy;
-    inline int left(int p) const { return 2 * p + 1; }
-    inline int right(int p) const { return 2 * p + 2; }
-    T combine(const T& resl, const T& resr) const
+    int left(int p) const { return 2 * p + 1; }
+    int right(int p) const { return 2 * p + 2; }
+    using Combiner = function<T(const T&, const T&)>;
+    Combiner combine;
+    void push(int p, int l, int r)
     {
-        return resl + resr;
-    }
-    void push(int p)
-    {
-        lazy[p].apply_aggregate(st[p]);
-        if (lazy[p].L != lazy[p].R)
+        lazy[p].apply_aggregate(st[p], l, r);
+        if (l != r)
         {
-            lazy[left(p)].compose(lazy[p]);
-            lazy[right(p)].compose(lazy[p]);
+            int m = l + (r - l) / 2;
+            lazy[left(p)].compose(lazy[p], l, m);
+            lazy[right(p)].compose(lazy[p], m + 1, r);
         }
         lazy[p] = Fid;
     }
     void update(int p, int l, int r, int ql, int qr, F op)
     {
-        push(p);
-        if (r < ql || qr < l) return;
-        if (ql <= l && r <= qr) lazy[p].compose(op), push(p);
+        if (r < ql || qr < l) push(p, l, r);
+        else if (ql <= l && r <= qr) { lazy[p].compose(op, l, r); push(p, l, r); }
         else
         {
-            int m = (l + r) / 2;
+            int m = l + (r - l) / 2;
+            push(p, l, r);
             update(left(p), l, m, ql, qr, op);
             update(right(p), m + 1, r, ql, qr, op);
             st[p] = combine(st[left(p)], st[right(p)]);
         }
-
     }
     T query(int p, int l, int r, int ql, int qr)
     {
-        push(p);
         if (r < ql || qr < l) return Tid;
+        push(p, l, r);
         if (ql <= l && r <= qr) return st[p];
-        int m = (l + r) / 2;
+        int m = l + (r - l) / 2;
         T resl = query(left(p), l, m, ql, qr);
         T resr = query(right(p), m + 1, r, ql, qr);
         return combine(resl, resr);
     }
 public:
-    SegmentTree(const vector<T>& a, T Tid, F Fid) : n(sz(a)), Tid(Tid), Fid(Fid)
+    SegmentTree(const vector<T>& a, Combiner combine, T Tid, F Fid) :
+        n(sz(a)), Tid(Tid), Fid(Fid), combine(combine)
     {
         st.assign(4 * n + 1, Tid);
         lazy.assign(4 * n + 1, Fid);
         function<void(int, int, int)> build = [&](int p, int l, int r)
         {
-            lazy[p].L = l, lazy[p].R = r;
             if (l == r) st[p] = a[l];
             else
             {
-                int m = (l + r) / 2;
+                int m = l + (r - l) / 2;
                 build(left(p), l, m), build(right(p), m + 1, r);
                 st[p] = combine(st[left(p)], st[right(p)]);
             }
