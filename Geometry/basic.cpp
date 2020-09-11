@@ -39,19 +39,6 @@ struct point
     bool operator<(const point& rhs) const { return pair(x, y) < pair(rhs.x, rhs.y); }
 };
 
-struct line
-{
-    T a, b, c;
-    line() : a(0), b(0), c(0) {}
-    line(const T& a, const T& b, const T& c) : a(a), b(b), c(c) {}
-    line(const point& p, const point& q)
-    {
-        a = p.y - q.y;
-        b = q.x - p.x;
-        c = - a * p.x - b * p.y;
-    }
-};
-
 point operator*(const T& a, const point& p) { return p * a; }
 
 T dot(const point& p, const point& q) { return p.x * q.x + p.y * q.y; }
@@ -71,30 +58,9 @@ bool parallel(const point& p, const point& q)
     return equal(det(p, q), 0);
 }
 
-bool parallel(const line& U, const line& V)
-{
-    return equal(det({ U.a, U.b }, { V.a, V.b }), 0);
-}
-
 point intersection(const point& p, const point& dp, const point& q, const point& dq)
 {
     return p + det(q - p, dq) / det(dp, dq) * dp;
-}
-
-point intersection(const line& U, const line& V)
-{
-    T x = -det({ U.c, U.b }, { V.c, V.b });
-    T y = -det({ U.a, U.c }, { V.a, V.c });
-    T z = det({ U.a, U.b }, { V.a, V.b });
-    return point(x / z, y / z);
-}
-
-bool equivalent(const line& U, const line& V)
-{
-    return
-        equal(det({ U.a, U.b }, { V.a, V.b }), 0) &&
-        equal(det({ U.a, U.c }, { V.a, V.c }), 0) &&
-        equal(det({ U.b, U.c }, { V.b, V.c }), 0);
 }
 
 point rotate(const point& p, T theta) // counter-clockwise
@@ -137,6 +103,40 @@ vector<point> convex_hull(vector<point> a) // counter-clockwise
     up.pop_back();
     while (sz(up) > 1) down.push_back(up.back()), up.pop_back();
     return down;
+}
+
+struct line
+{
+    T a, b, c;
+    line() : a(0), b(0), c(0) {}
+    line(const T& a, const T& b, const T& c) : a(a), b(b), c(c) {}
+    line(const point& p, const point& q)
+    {
+        a = p.y - q.y;
+        b = q.x - p.x;
+        c = - a * p.x - b * p.y;
+    }
+};
+
+bool parallel(const line& U, const line& V)
+{
+    return equal(det({ U.a, U.b }, { V.a, V.b }), 0);
+}
+
+point intersection(const line& U, const line& V)
+{
+    T x = -det({ U.c, U.b }, { V.c, V.b });
+    T y = -det({ U.a, U.c }, { V.a, V.c });
+    T z = det({ U.a, U.b }, { V.a, V.b });
+    return point(x / z, y / z);
+}
+
+bool equivalent(const line& U, const line& V)
+{
+    return
+        equal(det({ U.a, U.b }, { V.a, V.b }), 0) &&
+        equal(det({ U.a, U.c }, { V.a, V.c }), 0) &&
+        equal(det({ U.b, U.c }, { V.b, V.c }), 0);
 }
 
 int main()
