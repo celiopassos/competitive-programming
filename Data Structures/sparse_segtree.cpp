@@ -38,8 +38,10 @@ private:
     const int L, R;
     const T Tid; const F Fid;
     vector<T> st; vector<F> lazy;
-    using Combiner = function<T(T&, T&)>;
-    Combiner combine;
+    T combine(const T& resl, const T& resr)
+    {
+        return resl + resr;
+    }
     vector<int> LEFT, RIGHT;
     int ct = 1;
     int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = ct++) : LEFT[p]; }
@@ -80,8 +82,8 @@ private:
         return combine(resl, resr);
     }
 public:
-    SparseSegmentTree(int L, int R, int N, Combiner combine, T Tid, F Fid) :
-        L(L), R(R), Tid(Tid), Fid(Fid), combine(combine)
+    SparseSegmentTree(int L, int R, int N, T Tid, F Fid) :
+        L(L), R(R), Tid(Tid), Fid(Fid)
     {
         st.assign(N, Tid);
         lazy.assign(N, Fid);

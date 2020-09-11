@@ -38,8 +38,10 @@ private:
     vector<T> st; vector<F> lazy;
     int left(int p) const { return 2 * p + 1; }
     int right(int p) const { return 2 * p + 2; }
-    using Combiner = function<T(const T&, const T&)>;
-    Combiner combine;
+    T combine(const T& resl, const T& resr)
+    {
+        return resl + resr;
+    }
     void push(int p, int l, int r)
     {
         lazy[p].apply_aggregate(st[p], l, r);
@@ -75,8 +77,7 @@ private:
         return combine(resl, resr);
     }
 public:
-    SegmentTree(const vector<T>& a, Combiner combine, T Tid, F Fid) :
-        n(sz(a)), Tid(Tid), Fid(Fid), combine(combine)
+    SegmentTree(const vector<T>& a, T Tid, F Fid) : n(sz(a)), Tid(Tid), Fid(Fid)
     {
         st.assign(4 * n + 1, Tid);
         lazy.assign(4 * n + 1, Fid);
