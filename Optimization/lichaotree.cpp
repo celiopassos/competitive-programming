@@ -15,43 +15,51 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // xz
 
-template<typename T, typename F = T>
-struct Hull
+template<typename T, typename F>
+struct LiChaoTree
 {
-    vector<T> a;
-    int N;
-    const T infinity = T(LINF); // may wanna change if T is float
-    typedef complex<T> point;
-    vector<point> line;
-    Hull(const vector<T>& domain) : a(domain)
+    const int L, R;
+    const function<T(F, int)> get;
+    const F id;
+    vector<F> st;
+    vector<int> LEFT, RIGHT;
+    LiChaoTree(int L, int R, function<T(F, int)> get, F id) : L(L), R(R), get(get), id(id)
     {
-        sort(all(a)), a.erase(unique(all(a)), a.end());
-        int n = sz(a); N = 1 << (32 - __builtin_clz(n));
-        a.resize(N), iota(a.begin() + n, a.end(), a[n - 1] + 1);
-        line.assign(2 * N, point(0, infinity));
+        create();
     }
-    F dot(point p, point q) { return (conj(p) * q).real(); }
-    F f(point p, int i) { return dot(p, {a[i], 1}); }
-    void update(point nw)
+    int create()
     {
-        for (int p = 1, l = 0, r = N - 1; p < 2 * N;)
+        LEFT.push_back(-1);
+        RIGHT.push_back(-1);
+        st.push_back(id);
+        return sz(st) - 1;
+    }
+    int get_left(int p) { return LEFT[p] == -1 ? LEFT[p] = create() : LEFT[p]; }
+    int get_right(int p) { return RIGHT[p] == -1 ? RIGHT[p] = create() : RIGHT[p]; }
+    void update(F nw)
+    {
+        for (int p = 0, l = L, r = R; l <= r;)
         {
-            int m = (l + r) / 2;
-            bool left = f(nw, l) < f(line[p], l);
-            bool mid = f(nw, m) < f(line[p], m);
-            if (mid) swap(line[p], nw);
-            if (left != mid)
-                r = m, p = p << 1;
-            else
-                l = m + 1, p = p << 1 | 1;
+            int m = l + (r - l) / 2;
+            bool left = get(nw, l) < get(st[p], l);
+            bool mid = get(nw, m) < get(st[p], m);
+
+            if (mid) swap(nw, st[p]);
+            if (left != mid) p = get_left(p), r = m;
+            else p = get_right(p), l = m + 1;
         }
     }
-    F get(T x)
+    T compute(int x)
     {
-        int i = distance(a.begin(), lower_bound(all(a), x)), p = N + i;
-        assert(a[i] == x); // remove if T is float
-        F res = f(line[p], i);
-        while (p) res = min(res, f(line[p >>= 1], i));
+        T res = T(LINF);
+        for (int p = 0, l = L, r = R; l <= r;)
+        {
+            res = min(res, get(st[p], x));
+            int m = l + (r - l) / 2;
+            if (x == m) break;
+            else if (x < m) r = m, p = get_left(p);
+            else l = m + 1, p = get_right(p);
+        }
         return res;
     }
 };
