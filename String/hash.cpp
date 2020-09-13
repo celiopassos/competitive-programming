@@ -12,6 +12,8 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+template<ll MOD, ll P>
 class StringHash
 {
 private:
@@ -44,7 +46,7 @@ public:
     BigHash(const string& s) : hash1(s), hash2(s), hash3(s) {}
     auto query(int i, int j) const
     {
-        return tuple{ hash1.query(i, j), hash2.query(i, j), hash3.query(i, j) };
+        return tuple{ hash1.query(i, j), hash2.query(i, j), hash3.query(i, j), (j - i + 1) };
     }
 };
 
