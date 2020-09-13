@@ -20,7 +20,7 @@ struct F1
 {
     X add;
     explicit F1(X add) : add(add) {}
-    void apply_aggregate(T& old, int L, int R) const
+    void apply(T& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
     }
@@ -44,7 +44,7 @@ private:
     }
     void push(int p, int l, int r)
     {
-        lazy[p].apply_aggregate(st[p], l, r);
+        lazy[p].apply(st[p], l, r);
         if (l != r)
         {
             int m = l + (r - l) / 2;
