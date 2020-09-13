@@ -25,9 +25,9 @@ public:
     {
         const int n = sz(s);
         power.assign(n, 1LL);
-        h.assign(n, 0LL); h[0] = s[0] - 'a' + 1;
+        h.assign(n, 0LL); h[0] = s[0];
         for (int i = 1; i < n; power[i] = (power[i - 1] * P) % MOD, ++i)
-            h[i] = (P * h[i - 1] + (s[i] - 'a' + 1)) % MOD;
+            h[i] = (P * h[i - 1] + s[i]) % MOD;
     }
     ll query(int i, int j) const
     {
