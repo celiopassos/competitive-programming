@@ -25,9 +25,9 @@ public:
     {
         const int n = sz(s);
         power.assign(n, 1LL);
-        h.assign(n, 0LL); h[0] = s[0] - 'a' + 1;
+        h.assign(n, 0LL); h[0] = s[0] + 1;
         for (int i = 1; i < n; power[i] = (power[i - 1] * P) % MOD, ++i)
-            h[i] = (P * h[i - 1] + (s[i] - 'a' + 1)) % MOD;
+            h[i] = (P * h[i - 1] + s[i] + 1) % MOD;
     }
     ll query(int i, int j) const
     {
@@ -36,13 +36,11 @@ public:
     }
 };
 
-#define SEED ((((__TIME__[7] * 1337) ^ ((__TIME__[6] * 222) << 3)) + (__TIME__[8] + 44)) | 1)
-
 class BigHash
 {
 private:
     static constexpr ll MOD1 = 998244353, MOD2 = 1e9 + 7, MOD3 = 1e9 + 9;
-    static constexpr ll P1 = 31, P2 = 37, P3 = (53 + (SEED % 447)) | 1;
+    static constexpr ll P1 = 263, P2 = 271, P3 = 353;
     const StringHash<MOD1, P1> hash1;
     const StringHash<MOD2, P2> hash2;
     const StringHash<MOD3, P3> hash3;
