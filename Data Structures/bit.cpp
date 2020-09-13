@@ -17,11 +17,11 @@ template<typename T>
 class BIT
 {
 private:
-    inline T combine(T x, T y) { return x + y; }
-    inline T inv(T x) { return -x; }
+    T combine(T x, T y) { return x + y; }
+    T inv(T x) { return -x; }
 
-    inline int down(int p) { return (p & (p + 1)) - 1; }
-    inline int up(int p) { return p | (p + 1); }
+    int down(int p) { return (p & (p + 1)) - 1; }
+    int up(int p) { return p | (p + 1); }
 
     const int n; const T id;
     vector<T> ft;
