@@ -13,10 +13,6 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-// xz
-
-using T = double;
-
 const T EPS = 1e-9;
 const T PI = acos(-1);
 

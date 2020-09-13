@@ -12,10 +12,6 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-
-// xz
-
-vector<int> odd(const string& s)
 {
     int l = 0, r = -1, n = sz(s);
     vector d(n, 0);

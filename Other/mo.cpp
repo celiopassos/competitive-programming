@@ -12,10 +12,6 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-
-// xz
-
-int main()
 { _
     int q; cin >> q;
     vector<int> l(q, 0), r(q, 0);

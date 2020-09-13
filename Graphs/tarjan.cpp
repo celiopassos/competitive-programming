@@ -12,10 +12,6 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-
-// xz
-
-vvi E;
 vi dfs_num, dfs_low, S, visited;
 int dfs_counter = 0;
 

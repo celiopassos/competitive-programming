@@ -12,10 +12,6 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-
-// xz
-
-string max_suffix(string s)
 {
     s += "#";
     string res; res.push_back(s[0]);
