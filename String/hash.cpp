@@ -12,10 +12,6 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-
-// xz
-
-template<ll MOD, ll P>
 class StringHash
 {
 private:

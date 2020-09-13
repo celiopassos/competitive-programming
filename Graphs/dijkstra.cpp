@@ -13,10 +13,6 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-// xz
-
-using ii = pair<int, int>;
-
 int main()
 { _
     int n, m; cin >> n >> m;
