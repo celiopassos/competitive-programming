@@ -19,7 +19,7 @@ struct SegmentTree
     static const T id = T();
     static T combine(T x, T y) { return x + y; }
     T value = id;
-    void update(T add) { value = combine(value, add); }
+    void modify(T value) { this->value = value; }
     T query() { return value; }
 };
 
@@ -31,7 +31,7 @@ private:
     array<SegmentTree<T, Ns...>, 2 * N> st;
 public:
     template<typename... Args>
-    void update(int p, Args... args)
+    void modify(int p, Args... args)
     {
         for (p += N; p; p >>= 1) st[p].update(args...);
     }

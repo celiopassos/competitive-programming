@@ -20,7 +20,7 @@ struct BIT
     static T combine(T x, T y) { return x + y; }
     static T inv(T x) { return -x; }
     T value = id;
-    void update(T nw) { value = combine(value, nw); }
+    void modify(T value) { this->value = value; }
     int query() { return value; }
 };
 
@@ -40,7 +40,7 @@ private:
     }
 public:
     template<typename... Args>
-    void update(int p, Args... args)
+    void modify(int p, Args... args)
     {
         for (int i = p; i <= N; i = i | (i + 1))
             ft[i].update(args...);
