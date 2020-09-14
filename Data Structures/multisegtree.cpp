@@ -13,11 +13,19 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
+// Only useful if the elements don't form a group.
+// Otherwise, use BIT.
+
 template<typename T, int... Args>
 struct SegmentTree
 {
+    using ST = SegmentTree<T>;
     static const T id = T();
     static T combine(T x, T y) { return x + y; }
+    static void update(ST& a, ST& b, ST& c, T)
+    {
+        a.value = combine(b.value, c.value);
+    }
     T value = id;
     void modify(T value) { this->value = value; }
     T query() { return value; }
@@ -26,14 +34,21 @@ struct SegmentTree
 template<typename T, int N, int... Ns>
 struct SegmentTree<T, N, Ns...>
 {
-private:
     using ST = SegmentTree<T>;
+    using CUR = SegmentTree<T, N, Ns...>;
+    using NXT = SegmentTree<T, Ns...>;
     array<SegmentTree<T, Ns...>, 2 * N> st;
-public:
+    template<typename... Args>
+    static void update(CUR& a, CUR& b, CUR& c, int p, Args... args)
+    {
+        for (int r = p + N; r; r >>= 1)
+            NXT::update(a.st[r], b.st[r], c.st[r], args...);
+    }
     template<typename... Args>
     void modify(int p, Args... args)
     {
-        for (p += N; p; p >>= 1) st[p].update(args...);
+        st[p += N].modify(args...);
+        while (p >>= 1) NXT::update(st[p], st[p << 1], st[p << 1 | 1], args...);
     }
     template<typename... Args>
     T query(int l, int r, Args... args)
