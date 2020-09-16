@@ -12,46 +12,39 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-vi dfs_num, dfs_low, S, visited;
-int dfs_counter = 0;
 
-const int UNVISITED = -1;
-
-void tarjanSCC(int u)
+auto tarjan(const auto& E)
 {
-    dfs_low[u] = dfs_num[u] = dfs_counter++;
-    S.push_back(u);
-    visited[u] = 1;
+    int n = sz(E);
+    vector low(n, -1), num(n, -1), scc(n, -1);
 
-    for (auto v : E[u])
+    vector active(n, 0);
+    stack<int> st; int ct = 0;
+    function<void(int)> dfs = [&](int u)
     {
-        if (dfs_num[v] == UNVISITED)
-            tarjanSCC(v);
+        low[u] = num[u] = ct++;
+        active[u] = 1; st.push(u);
 
-        if (visited[v]) // if v is part of current SCC
-            dfs_low[u] = min(dfs_low[u], dfs_low[v]);
-    }
-
-    if (dfs_low[u] == dfs_num[u])
-    {
-        cout << "SCC:";
-        while (1)
+        for (auto v : E[u])
         {
-            int v = S.back(); S.pop_back();
-            visited[v] = 0;
-            cout << " " << v;
-            if (u == v) break;
+            if (num[v] == -1) dfs(v);
+            if (active[v]) low[u] = min(low[u], low[v]);
         }
-    }
+
+        if (low[u] == num[u]) do
+        {
+            scc[st.top()] = u;
+            active[st.top()] = 0; st.pop();
+        } while (not st.empty() && num[st.top()] >= num[u]);
+    };
+
+    for (int u = 0; u < n; ++u)
+        if (num[u] == -1) dfs(u);
+
+    return scc;
 }
 
 int main()
-{
-    int n = 10;
-    dfs_num.assign(n + 1, UNVISITED);
-    dfs_low.assign(n + 1, 0);
-    visited.assign(n + 1, 0);
-    dfs_counter = 0;
-    tarjanSCC(1);
+{ _
+    exit(0);
 }
-
