@@ -12,6 +12,8 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+vector<int> sort_cyclic_shifts(const string& s)
 {
     int n = sz(s);
     const int alphabet = 256;
