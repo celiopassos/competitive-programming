@@ -16,7 +16,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 const T EPS = 1e-9;
 const T PI = acos(-1);
 
-inline bool equal(const T& a, const T& b) { return abs(a - b) < EPS; }
+bool equal(const T& a, const T& b) { return abs(a - b) < EPS; }
 
 struct point
 {
