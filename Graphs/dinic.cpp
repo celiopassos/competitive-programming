@@ -12,6 +12,9 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+struct FlowEdge
+{
     int v, u;
     long long cap, flow = 0;
     FlowEdge(int v, int u, long long cap) : v(v), u(u), cap(cap) {}

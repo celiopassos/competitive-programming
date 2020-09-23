@@ -81,7 +81,6 @@ vector<int> lcp_array(const string& s, const vector<int>& p)
     return lcp;
 }
 
-
 int main()
 { _
     // auto lcp_query = [&](int i, int j)
