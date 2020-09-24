@@ -28,14 +28,13 @@ struct Dinic
     const int n, s, t;
     vector<vector<int>> E;
     vector<int> level, ptr;
-    void clear() { edges.clear(), E.assign(n, vector(0, 0)); }
     Dinic(int n, int s, int t) : n(n), s(s), t(t)
     {
         E.resize(n), level.resize(n), ptr.resize(n);
     }
     void add_edge(int u, int v, T cap)
     {
-        int m = sz(edges);
+        static int m = 0;
         edges.emplace_back(u, v, cap);
         edges.emplace_back(v, u, 0);
         E[u].push_back(m++);
