@@ -12,6 +12,7 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
 pair<F, T> ternary_search(T l, T r, function<F(T)>& f)
 {
     const T eps = 2;
