@@ -25,10 +25,10 @@ struct Dinic
     };
     vector<Edge> edges;
     const T inf = numeric_limits<T>::max();
-    const int n, s, t;
+    const int n;
     vector<vector<int>> E;
     vector<int> level, ptr;
-    Dinic(int n, int s, int t) : n(n), s(s), t(t)
+    Dinic(int n) : n(n)
     {
         E.resize(n), level.resize(n), ptr.resize(n);
     }
@@ -40,7 +40,7 @@ struct Dinic
         E[u].push_back(m++);
         E[v].push_back(m++);
     }
-    bool bfs()
+    bool bfs(int s, int t)
     {
         fill(all(level), -1); level[s] = 0;
         static queue<int> q; q.push(s);
@@ -57,27 +57,28 @@ struct Dinic
         }
         return level[t] != -1;
     }
-    T push(int u, T pushed)
+    T push(int u, int t, T pushed)
     {
         if (u == t || pushed == 0) return pushed;
         for (int& idx = ptr[u]; idx < sz(E[u]); ++idx)
         {
             auto &edge = edges[E[u][idx]], &back = edges[E[u][idx] ^ 1];
             if (level[edge.to] != level[u] + 1 || edge.free() <= 0) continue;
-            T pushing = push(edge.to, min(pushed, edge.free()));
+            T pushing = push(edge.to, t, min(pushed, edge.free()));
             if (pushing == 0) continue;
             edge.flow += pushing, back.flow -= pushing;
             return pushing;
         }
         return 0;
     }
-    F flow()
+    F max_flow(int s, int t)
     {
+        for (auto& edge : edges) edge.flow = 0;
         F f = 0;
-        while (bfs())
+        while (bfs(s, t))
         {
             fill(all(ptr), 0);
-            while (T pushed = push(s, inf)) f += pushed;
+            while (T pushed = push(s, t, inf)) f += pushed;
         }
         return f;
     }
