@@ -13,34 +13,35 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-ll power(ll x, int p, ll MOD)
+template<typename T>
+T power(T x, int p)
 {
-    ll res = 1;
+    T res = 1;
     while (p)
     {
-        if (p & 1) res = (res * x) % MOD;
+        if (p & 1) res *= x;
         p >>= 1;
-        x = (x * x) % MOD;
+        x *= x;
     }
     return res;
 }
 
 template<ll MOD>
-struct IntegerModp
+struct Mint
 {
     ll x;
-    IntegerModp(ll x = 0) : x(x) {};
-    IntegerModp inv() const { assert(x != 0); return ll(power(x, MOD - 2, MOD)); }
-    IntegerModp& operator+=(const IntegerModp& rhs) { x = (x + rhs.x) % MOD; return *this; }
-    IntegerModp& operator-=(const IntegerModp& rhs) { x = (x + MOD - rhs.x) % MOD; return *this; }
-    IntegerModp& operator*=(const IntegerModp& rhs) { x = (x * rhs.x) % MOD; return *this; }
-    IntegerModp& operator/=(const IntegerModp& rhs) { return *this *= rhs.inv(); }
-    IntegerModp operator+(const IntegerModp& rhs) const { return IntegerModp(*this) += rhs; }
-    IntegerModp operator-(const IntegerModp& rhs) const { return IntegerModp(*this) -= rhs; }
-    IntegerModp operator*(const IntegerModp& rhs) const { return IntegerModp(*this) *= rhs; }
-    IntegerModp operator/(const IntegerModp& rhs) const { return IntegerModp(*this) /= rhs; }
-    bool operator==(const IntegerModp& rhs) const { return x == rhs.x; }
-    bool operator<(const IntegerModp& rhs) const { return x < rhs.x; }
+    Mint(ll x = 0) : x(x % MOD) {};
+    Mint inv() const { assert(x != 0); return power(*this, MOD - 2); }
+    Mint& operator+=(const Mint& rhs) { x = (x + rhs.x) % MOD; return *this; }
+    Mint& operator-=(const Mint& rhs) { x = (x + MOD - rhs.x) % MOD; return *this; }
+    Mint& operator*=(const Mint& rhs) { x = (x * rhs.x) % MOD; return *this; }
+    Mint& operator/=(const Mint& rhs) { return *this *= rhs.inv(); }
+    Mint operator+(const Mint& rhs) const { return Mint(*this) += rhs; }
+    Mint operator-(const Mint& rhs) const { return Mint(*this) -= rhs; }
+    Mint operator*(const Mint& rhs) const { return Mint(*this) *= rhs; }
+    Mint operator/(const Mint& rhs) const { return Mint(*this) /= rhs; }
+    bool operator==(const Mint& rhs) const { return x == rhs.x; }
+    bool operator<(const Mint& rhs) const { return x < rhs.x; }
 };
 
 int main()
