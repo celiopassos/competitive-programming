@@ -17,37 +17,28 @@ template<typename T>
 class BIT
 {
 private:
-    T combine(T x, T y) { return x + y; }
+    T op(T x, T y) { return x + y; }
     T inv(T x) { return -x; }
-
-    int down(int p) { return (p & (p + 1)) - 1; }
-    int up(int p) { return p | (p + 1); }
-
+    int b(int p) { return p & (-p); }
     const int n; const T id;
     vector<T> ft;
     T query(int p)
     {
         T res = id;
-        for (int i = p; i >= 0; i = down(i))
-            res = combine(ft[i], res);
+        for (int i = p; i >= 1; i -= b(i)) res = op(ft[i], res);
         return res;
     }
 public:
-    BIT(const vector<T>& a, T id) : id(id), n(sz(a)), ft(a)
+    BIT(const vector<T>& a, T id) : n(sz(a)), id(id)
     {
-        for (int i = 1; i < n; ++i)
-            ft[i] = combine(ft[i - 1], ft[i]);
-        for (int i = n - 1; i > 0; --i)
-            if (down(i) >= 0) ft[i] = combine(inv(ft[down(i)]), ft[i]);
+        ft.assign(n + 1, id);
+        for (int i = 1; i <= n; ++i) ft[i] = op(ft[i - 1], a[i - 1]);
+        for (int i = n; i >= 1; --i) ft[i] = op(inv(ft[i - b(i)]), ft[i]);
     }
-    T query(int l, int r)
-    {
-        if (l == 0) return query(r);
-        return combine(inv(query(l - 1)), query(r));
-    }
+    T query(int l, int r) { return op(inv(query(l)), query(r + 1)); }
     void update(int p, T value)
     {
-        for (int i = p; i < n; i = up(i)) ft[i] = combine(ft[i], value);
+        for (int i = p + 1; i <= n; i += b(i)) ft[i] = op(ft[i], value);
     }
 };
 
