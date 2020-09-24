@@ -13,10 +13,9 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-auto kuhn(int n, int m, const auto& E)
+int kuhn(int n, int m, const auto& E)
 {
-    vector matchA(n, -1), matchB(m, -1), vis(m, 0);
-
+    vector<int> matchA(n, -1), matchB(m, -1), vis(m, 0);
     function<bool(int)> augment = [&](int u)
     {
         for (auto v : E[u])
@@ -30,20 +29,19 @@ auto kuhn(int n, int m, const auto& E)
         }
         return false;
     };
-
+    int ct = 0;
     while (true)
     {
-        vis.assign(m, 0);
+        fill(all(vis), 0);
         bool aux = false;
         for (int u = 0; u < n; ++u)
-            if (matchA[u] == -1) aux = aux || augment(u);
+            if (matchA[u] == -1 && augment(u)) ct += (aux = true);
         if (not aux) break;
     }
-    return matchA;
+    return ct;
 }
 
 int main()
 { _
     exit(0);
 }
-
