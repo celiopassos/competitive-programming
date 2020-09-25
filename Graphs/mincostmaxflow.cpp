@@ -42,10 +42,23 @@ struct MCMF
     }
     pair<Cap, Cost> flow(int s, int t)
     {
+        for (auto& edge : edges) edge.flow = 0;
+        fill(all(pi), 0);
+
+        vector<Cap> dist(n);
+        vector<int> parent(n);
+        using ii = pair<Cap, int>;
+        priority_queue<ii, vector<ii>, greater<ii>> pq;
+
+        auto fix_potentials = [&]()
+        {
+            for (int u = 0; u < n; ++u)
+                if (dist[u] != inf) pi[u] += dist[u] - dist[t];
+        };
         auto spfa = [&]()
         {
-            fill(all(pi), INF); pi[s] = 0;
-            queue<int> q; q.push(s);
+            fill(all(dist), inf), fill(all(parent), -1);
+            queue<int> q; q.push(s); dist[s] = 0;
             while (not q.empty())
             {
                 int u = q.front(); q.pop();
@@ -53,17 +66,17 @@ struct MCMF
                 {
                     const auto& edge = edges[idx];
                     if (not edge.free()) continue;
-                    if (chmin(pi[edge.to], pi[u] + edge.cost))
+                    if (chmin(dist[edge.to], dist[u] + edge.cost))
+                    {
+                        parent[edge.to] = idx;
                         q.push(edge.to);
+                    }
                 }
             }
+            if (dist[t] == inf) return false;
+            fix_potentials();
+            return true;
         };
-        spfa(); // remove if no negative cost edges
-
-        vector<Cap> dist(n);
-        vector<int> parent(n);
-        using ii = pair<Cap, int>;
-        priority_queue<ii, vector<ii>, greater<ii>> pq;
         auto dijkstra = [&]()
         {
             fill(all(dist), inf), fill(all(parent), -1);
@@ -85,11 +98,12 @@ struct MCMF
                     }
                 }
             }
-            if (parent[t] == -1) return false;
-            for (int u = 0; u < n; ++u)
-                if (parent[u] != -1 || u == s) pi[u] += dist[u] - dist[t];
+            if (dist[t] == inf) return false;
+            fix_potentials();
             return true;
         };
+
+        spfa(); // may remove if no negative cost edges initially
 
         Cap flow = 0;
         Cost cost = 0;
@@ -115,4 +129,3 @@ int main()
 { _
     exit(0);
 }
-
