@@ -4,17 +4,29 @@ generator=$1
 judge=$2
 solution=$3
 
-for ((int i = 1; i <= 100; i++)) do
-    $generator > input.txt
-    $judge < input.txt > correct.txt
-    $solution < input.txt > output.txt
-    if ! cmp -s output.txt correct.txt
+while true;
+do
+    printf "Generating...\n"
+    ./$generator > input.txt
+    printf "\n"
+
+    printf "Judge:\n"
+    time ./$judge < input.txt > correct.txt
+    printf "\n"
+
+    printf "Solution:\n"
+    time ./$solution < input.txt > output.txt
+    printf "\n"
+
+    if [ "$?" -ne 0 ]
     then
-        echo "Failed: wrong answer."
+        printf "Failed: runtime error ($?).\n"
         break
-    elif [ $? -ne 0 ]
-        echo "Failed: runtime error."
+    elif ! cmp -s output.txt correct.txt
+    then
+        printf "Failed: wrong answer.\n"
         break
     fi
-    echo "OK!"
+    printf "OK!\n"
+    printf "===============================\n"
 done
