@@ -12,6 +12,8 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+class PalindromicTree
 {
 private:
     const int alphabet = 26, N = 3e5;

@@ -12,6 +12,8 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+template<typename T>
 struct HLD
 {
     vector<int> parent, depth, heavy, head, pos;
@@ -53,7 +55,7 @@ struct HLD
             if (c != parent[v] && c != heavy[v])
                 decompose(c, c, E);
     }
-    T query(int a, int b, SegmentTree<T>& st)
+    T query(int a, int b, auto& st)
     {
         T res = st.Tid;
         for (; head[a] != head[b]; b = parent[head[b]])

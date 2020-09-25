@@ -12,6 +12,8 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+template<typename T, typename F>
 struct LiChaoTree
 {
     const int L, R;
@@ -19,10 +21,8 @@ struct LiChaoTree
     const F id;
     vector<F> st;
     vector<int> LEFT, RIGHT;
-    LiChaoTree(int L, int R, function<T(F, int)> get, F id) : L(L), R(R), get(get), id(id)
-    {
-        create();
-    }
+    LiChaoTree(int L, int R, function<T(F, int)> get, F id) :
+        L(L), R(R), get(get), id(id) { create(); }
     int create()
     {
         LEFT.push_back(-1);
