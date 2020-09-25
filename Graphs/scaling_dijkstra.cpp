@@ -13,48 +13,45 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-int main()
-{ _
-    int n, m; cin >> n >> m;
+bool chmin(auto& x, auto y) { return y < x ? x = y, true : false; }
+
+template<typename T>
+auto dijkstra(int s, const auto& E)
+{
+    const int n = sz(E);
 
     int logmax = 0;
-    vector E(n, vector(0, pair(0, 0)));
-    for (int j = 0; j < m; ++j)
-    {
-        int u, v, w; cin >> u >> v >> w; --u, --v;
-        E[u].push_back(pair(v, w)), E[v].push_back(pair(u, w));
-        logmax = max(logmax, 31 - __builtin_clz(w));
-    }
+    for (int u = 0; u < n; ++u)
+        for (auto [v, w] : E[u])
+            logmax = max(logmax, __builtin_clzll(1LL) - __builtin_clzll(w));
 
-    vector p(n, 0), dist(n, 0), d(n, 0);
-    vector<vector<int>> bucket(n - 1);
+    vector<T> pi(n, 0), dist(n, 0), d(n, 0);
+    vector<vector<int>> bucket(n);
 
-    auto chmin = [](auto& x, auto y){ return y < x ? x = y, true : false; };
-
-    auto dial = [&](int s, int i)
+    for (int i = logmax; i >= 0; --i)
     {
         for (int u = 0; u < n; ++u)
-            p[u] = dist[u] << 1, d[u] = n - 1;
+            pi[u] = dist[u] << 1, d[u] = n;
         bucket[d[s] = 0].push_back(s);
 
-        for (int k = 0; k < n - 1; ++k)
+        for (int k = 0; k < n; ++k)
             while (not bucket[k].empty())
             {
                 int u = bucket[k].back(); bucket[k].pop_back();
                 if (d[u] < k) continue;
                 for (auto [v, w] : E[u])
-                    if (chmin(d[v], d[u] + p[u] - p[v] + (w >> i)))
+                    if (chmin(d[v], d[u] + pi[u] - pi[v] + (w >> i)))
                     {
                         bucket[d[v]].push_back(v);
                         dist[v] = dist[u] + (w >> i);
                     }
             }
-    };
+    }
+    return dist;
+}
 
-    int s = 0;
-    for (int i = logmax; i >= 0; --i) dial(s, i);
-
+int main()
+{ _
     exit(0);
-
 }
 
