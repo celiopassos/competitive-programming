@@ -15,6 +15,12 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 auto chmin(auto& x, auto y) { return y < x ? x = y, true : false; }
 
+template<typename T>
+struct better_queue : public priority_queue<T>
+{
+    void clear() { this->c.clear(); }
+};
+
 template<typename Cap, typename Cost>
 struct MCMF
 {
@@ -33,7 +39,12 @@ struct MCMF
     vector<Edge> edges;
     vector<vector<int>> E;
 
-    MCMF(int n) : n(n) { E.resize(n); }
+    MCMF(int n) : n(n)
+    {
+        E.resize(n);
+        dist.resize(n), vis.resize(n), parent.resize(n);
+        pi.assign(n, 0);
+    }
 
     int m = 0;
     bool negative = false;
@@ -45,73 +56,70 @@ struct MCMF
         E[v].push_back(m++);
         if (cost < 0) negative = true;
     }
+
+    vector<Cost> pi, dist;
+    vector<int> parent, vis;
+
+    bool fix_potentials(int t)
+    {
+        if (not vis[t]) return false;
+        for (int u = 0; u < n; ++u)
+            if (vis[u]) pi[u] += dist[u] - dist[t];
+        return true;;
+    }
+    bool spfa(int s, int t)
+    {
+        fill(all(dist), infcost), fill(all(vis), 0);
+        static queue<int> q; q.push(s); dist[s] = 0;
+        while (not q.empty())
+        {
+            int v = q.front(); q.pop(); vis[v] = 1;
+            for (auto idx : E[v])
+            {
+                const auto& edge = edges[idx];
+                if (not edge.free()) continue;
+                if (chmin(dist[edge.to], dist[v] + edge.cost))
+                    q.push(edge.to);
+            }
+        }
+        return fix_potentials(t);
+    }
+    bool dijkstra(int s, int t)
+    {
+        fill(all(dist), infcost), fill(all(parent), -1), fill(all(vis), 0);
+        struct Q
+        {
+            Cost key; int v;
+            Q(Cost key, int v) : key(key), v(v) {}
+            bool operator<(Q rhs) const { return key > rhs.key; }
+        };
+        static better_queue<Q> pq; pq.emplace(0, s); dist[s] = 0;
+        while (not pq.empty())
+        {
+            auto [d, v] = pq.top(); pq.pop();
+            if (vis[v]++) continue;
+            if (v == t) { pq.clear(); break; }
+            for (auto idx : E[v])
+            {
+                const auto& edge = edges[idx];
+                if (vis[edge.to] || not edge.free()) continue;
+                Cost cost = edge.cost + pi[v] - pi[edge.to];
+                if (chmin(dist[edge.to], dist[v] + cost))
+                {
+                    parent[edge.to] = idx;
+                    pq.emplace(dist[edge.to], edge.to);
+                }
+            }
+        }
+        return fix_potentials(t);
+    }
     pair<Cap, Cost> flow(int s, int t)
     {
         for (auto& edge : edges) edge.flow = 0;
-
-        vector<Cost> pi(n, 0), dist(n, 0);
-        vector<int> parent(n), vis(n);
-
-        auto fix_potentials = [&]()
-        {
-            if (not vis[t]) return false;
-            for (int u = 0; u < n; ++u)
-                if (vis[u]) pi[u] += dist[u] - dist[t];
-            return true;
-        };
-        auto spfa = [&]()
-        {
-            fill(all(dist), infcost), fill(all(vis), 0);
-            queue<int> q; q.push(s); dist[s] = 0;
-            while (not q.empty())
-            {
-                int v = q.front(); q.pop(); vis[v] = 1;
-                for (auto idx : E[v])
-                {
-                    const auto& edge = edges[idx];
-                    if (not edge.free()) continue;
-                    if (chmin(dist[edge.to], dist[v] + edge.cost))
-                        q.push(edge.to);
-                }
-            }
-            return fix_potentials();
-        };
-        auto dijkstra = [&]()
-        {
-            fill(all(dist), infcost), fill(all(parent), -1), fill(all(vis), 0);
-            struct Q
-            {
-                Cost key;
-                int v;
-                bool operator<(Q rhs) const { return key > rhs.key; }
-            };
-            priority_queue<Q> pq;
-            pq.push({ 0, s }); dist[s] = 0;
-            while (not pq.empty())
-            {
-                auto [d, v] = pq.top(); pq.pop();
-                if (vis[v]++) continue;
-                if (v == t) break;
-                for (auto idx : E[v])
-                {
-                    const auto& edge = edges[idx];
-                    if (vis[edge.to] || not edge.free()) continue;
-                    Cost cost = edge.cost + pi[v] - pi[edge.to];
-                    if (chmin(dist[edge.to], dist[v] + cost))
-                    {
-                        parent[edge.to] = idx;
-                        pq.push({ dist[edge.to], edge.to });
-                    }
-                }
-            }
-            return fix_potentials();
-        };
-
-        if (negative) spfa();
-
+        if (negative) spfa(s, t);
         Cap flow = 0;
         Cost cost = 0;
-        while (dijkstra())
+        while (dijkstra(s, t))
         {
             Cap pushed = infcap;
             Cost price = 0;
