@@ -25,7 +25,7 @@ struct Dinic
     };
     vector<Edge> edges;
     const T inf = numeric_limits<T>::max();
-    const int n;
+    int n, m = 0;
     bool scale = true;
     int logmax = 1, scaling = 1;
     vector<vector<int>> E;
@@ -36,7 +36,6 @@ struct Dinic
     }
     void add_edge(int u, int v, T cap)
     {
-        static int m = 0;
         edges.emplace_back(u, v, cap);
         edges.emplace_back(v, u, 0);
         E[u].push_back(m++);
