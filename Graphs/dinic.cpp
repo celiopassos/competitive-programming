@@ -40,7 +40,7 @@ struct Dinic
         edges.emplace_back(v, u, 0);
         E[u].push_back(m++);
         E[v].push_back(m++);
-        logmax = max(logmax, 31 - __builtin_clzll(cap));
+        logmax = max(logmax, __builtin_clzll(1LL) - __builtin_clzll(cap));
     }
     bool bfs(int s, int t)
     {
@@ -91,4 +91,3 @@ int main()
 { _
     exit(0);
 }
-
