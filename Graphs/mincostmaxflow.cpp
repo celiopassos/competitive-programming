@@ -42,8 +42,8 @@ struct MCMF
     MCMF(int n) : n(n)
     {
         E.resize(n);
-        dist.resize(n), vis.resize(n), parent.resize(n);
-        pi.assign(n, 0);
+        pi.resize(n), dist.resize(n);
+        vis.resize(n), parent.resize(n);
     }
 
     int m = 0;
@@ -116,6 +116,7 @@ struct MCMF
     pair<Cap, Cost> flow(int s, int t)
     {
         for (auto& edge : edges) edge.flow = 0;
+        fill(all(pi), 0);
         if (negative) spfa(s, t);
         Cap flow = 0;
         Cost cost = 0;

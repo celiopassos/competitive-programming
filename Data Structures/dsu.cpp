@@ -24,13 +24,9 @@ public:
         rk.assign(n, 0), p.assign(n, 0), sz.assign(n, 1);
         for (int i = 0; i < n; ++i) p[i] = i;
     }
-    int find_set(int i)
-    {
-        while (p[i] != i) i = p[i];
-        return i;
-    }
-    int set_size(int i) const { return sz[find_set(i)]; }
-    int num_sets() const { return num_disjoint_sets; }
+    int find_set(int i) { return p[i] == i ? i : p[i] = findset(p[i]); }
+    int set_size(int i) { return sz[find_set(i)]; }
+    int num_sets() { return num_disjoint_sets; }
     void union_set(int i, int j)
     {
         int x = find_set(i), y = find_set(j);
