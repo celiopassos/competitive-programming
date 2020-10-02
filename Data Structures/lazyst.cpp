@@ -13,12 +13,12 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename X, typename T>
+template<typename X>
 struct F1
 {
     X add;
     explicit F1(X add) : add(add) {}
-    void apply(T& old, int L, int R) const
+    void apply(auto& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
     }
@@ -27,7 +27,7 @@ struct F1
         add += op.add;
     }
     bool operator==(const F1& op) const { return add == op.add; }
-    static T combine(const T& lhs, const T& rhs)
+    static auto combine(const auto& lhs, const auto& rhs)
     {
         return lhs + rhs;
     }
