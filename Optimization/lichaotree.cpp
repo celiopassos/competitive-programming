@@ -23,14 +23,14 @@ template<typename T>
 struct Function
 {
     T a = 0, b = numeric_limits<T>::max();
-    T operator[](T x) const { return a * x + b; }
+    T operator()(T x) const { return a * x + b; }
     bool operator==(const Function& rhs) const
     {
         return a == rhs.a && b == rhs.b;
     }
 };
 
-template<typename Func, typename Codomain, typename Domain=Codomain>
+template<typename Func, typename Domain>
 struct LiChaoTree
 {
     Domain L, R;
@@ -55,26 +55,25 @@ struct LiChaoTree
         while (l <= r)
         {
             Domain m = l + (r - l) / 2;
-            bool lft = add[l] < st[p][l];
-            bool mid = add[m] < st[p][m];
-            bool stop = (st[p] == inf);
+            bool lft = add(l) < st[p](l);
+            bool mid = add(m) < st[p](m);
             if (mid) swap(add, st[p]);
-            if (stop) break;
+            if (add == inf) break;
             if (lft != mid)
                 p = left(p), r = m;
             else
                 p = right(p), l = m + 1;
         }
     }
-    Codomain compute(Domain x) // returns minimum
+    auto compute(Domain x) // returns minimum
     {
-        Codomain res = inf[x];
+        auto res = inf(x);
         Domain l = L, r = R;
         int p = 0;
         while (l <= r)
         {
             if (st[p] == inf) break;
-            res = min(res, st[p][x]);
+            res = min(res, st[p](x));
             Domain m = l + (r - l) / 2;
             if (x == m) break;
             else if (x < m)
@@ -90,4 +89,3 @@ int main()
 { _
     exit(0);
 }
-
