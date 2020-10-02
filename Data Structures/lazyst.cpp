@@ -34,7 +34,7 @@ struct F1
 };
 
 template<typename T, typename F>
-class SegmentTree
+class LazyST
 {
 private:
     const int n; const T Tid; const F Fid;
@@ -77,7 +77,7 @@ private:
         return F::combine(resl, resr);
     }
 public:
-    SegmentTree(const vector<T>& a, T Tid, F Fid) : n(sz(a)), Tid(Tid), Fid(Fid)
+    LazyST(const vector<T>& a, T Tid, F Fid) : n(sz(a)), Tid(Tid), Fid(Fid)
     {
         st.assign(4 * n + 1, Tid);
         lazy.assign(4 * n + 1, Fid);

@@ -34,16 +34,17 @@ struct F1
 };
 
 template<typename T, typename F>
-class SparseSegmentTree
+class SparseST
 {
 private:
     const int L, R;
     const T Tid; const F Fid;
     vector<T> st; vector<F> lazy;
     vector<int> LEFT, RIGHT;
-    int ct = 1;
-    int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = ct++) : LEFT[p]; }
-    int right(int p) { return RIGHT[p] == -1 ? (RIGHT[p] = ct++) : RIGHT[p]; }
+    int ct = 0;
+    int create() { return ct++; }
+    int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = create()) : LEFT[p]; }
+    int right(int p) { return RIGHT[p] == -1 ? (RIGHT[p] = create()) : RIGHT[p]; }
     void push(int p, int l, int r)
     {
         if (lazy[p] == Fid) return; // may wanna remove this...
@@ -80,12 +81,12 @@ private:
         return F::combine(resl, resr);
     }
 public:
-    SparseSegmentTree(int L, int R, int N, T Tid, F Fid) :
-        L(L), R(R), Tid(Tid), Fid(Fid)
+    SparseST(int L, int R, int N, T Tid, F Fid) : L(L), R(R), Tid(Tid), Fid(Fid)
     {
         st.assign(N, Tid);
         lazy.assign(N, Fid);
         LEFT.assign(N, -1), RIGHT.assign(N, -1);
+        create();
     }
     void update(int l, int r, F op) { update(0, L, R, l, r, op); }
     T query(int l, int r) { return query(0, L, R, l, r); }
