@@ -5,7 +5,7 @@ using namespace std;
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) X.begin(), X.end()
+#define all(X) begin(X), end(X)
 #define sz(X) (int)X.size()
 
 using ll = long long;
@@ -24,10 +24,6 @@ struct Function
 {
     T a = 0, b = numeric_limits<T>::max();
     T operator()(T x) const { return a * x + b; }
-    bool operator==(const Function& rhs) const
-    {
-        return a == rhs.a && b == rhs.b;
-    }
 };
 
 template<typename Func, typename Domain>
@@ -49,6 +45,12 @@ struct LiChaoTree
     }
     int left(int p) { return LEFT[p] == -1 ? LEFT[p] = create() : LEFT[p]; }
     int right(int p) { return RIGHT[p] == -1 ? RIGHT[p] = create() : RIGHT[p]; }
+
+    bool is_inf(const Func& f) const
+    {
+        return f(L) == inf(L) && f(R) == inf(R);
+    }
+
     void update(Func add)
     {
         Domain l = L, r = R; int p = 0;
@@ -58,21 +60,22 @@ struct LiChaoTree
             bool lft = add(l) < st[p](l);
             bool mid = add(m) < st[p](m);
             if (mid) swap(add, st[p]);
-            if (add == inf) break;
+            if (is_inf(add)) break;
             if (lft != mid)
                 p = left(p), r = m;
             else
                 p = right(p), l = m + 1;
         }
     }
-    auto compute(Domain x) // returns minimum
+
+    auto operator()(Domain x) // returns minimum
     {
         auto res = inf(x);
         Domain l = L, r = R;
         int p = 0;
         while (l <= r)
         {
-            if (st[p] == inf) break;
+            if (is_inf(st[p])) break;
             res = min(res, st[p](x));
             Domain m = l + (r - l) / 2;
             if (x == m) break;
