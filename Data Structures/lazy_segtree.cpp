@@ -13,7 +13,7 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename X, typename T=X>
+template<typename X, typename T>
 struct F1
 {
     X add;
@@ -26,6 +26,11 @@ struct F1
     {
         add += op.add;
     }
+    bool operator==(const F1& op) const { return add == op.add; }
+    static T combine(const T& lhs, const T& rhs)
+    {
+        return lhs + rhs;
+    }
 };
 
 template<typename T, typename F>
@@ -36,12 +41,9 @@ private:
     vector<T> st; vector<F> lazy;
     int left(int p) const { return 2 * p + 1; }
     int right(int p) const { return 2 * p + 2; }
-    T combine(const T& resl, const T& resr)
-    {
-        return resl + resr;
-    }
     void push(int p, int l, int r)
     {
+        if (lazy[p] == Fid) return; // may wanna remove this...
         lazy[p].apply(st[p], l, r);
         if (l != r)
         {
@@ -61,7 +63,7 @@ private:
             push(p, l, r);
             update(left(p), l, m, ql, qr, op);
             update(right(p), m + 1, r, ql, qr, op);
-            st[p] = combine(st[left(p)], st[right(p)]);
+            st[p] = F::combine(st[left(p)], st[right(p)]);
         }
     }
     T query(int p, int l, int r, int ql, int qr)
@@ -72,7 +74,7 @@ private:
         int m = l + (r - l) / 2;
         T resl = query(left(p), l, m, ql, qr);
         T resr = query(right(p), m + 1, r, ql, qr);
-        return combine(resl, resr);
+        return F::combine(resl, resr);
     }
 public:
     SegmentTree(const vector<T>& a, T Tid, F Fid) : n(sz(a)), Tid(Tid), Fid(Fid)
@@ -86,7 +88,7 @@ public:
             {
                 int m = l + (r - l) / 2;
                 build(left(p), l, m), build(right(p), m + 1, r);
-                st[p] = combine(st[left(p)], st[right(p)]);
+                st[p] = F::combine(st[left(p)], st[right(p)]);
             }
         };
         build(0, 0, n - 1);

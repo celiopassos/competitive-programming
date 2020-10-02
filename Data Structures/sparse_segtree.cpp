@@ -27,6 +27,10 @@ struct F1
         add += op.add;
     }
     bool operator==(const F1& op) const { return add == op.add; }
+    static T combine(const T& lhs, const T& rhs)
+    {
+        return lhs + rhs;
+    }
 };
 
 template<typename T, typename F>
@@ -36,10 +40,6 @@ private:
     const int L, R;
     const T Tid; const F Fid;
     vector<T> st; vector<F> lazy;
-    T combine(const T& resl, const T& resr)
-    {
-        return resl + resr;
-    }
     vector<int> LEFT, RIGHT;
     int ct = 1;
     int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = ct++) : LEFT[p]; }
@@ -66,7 +66,7 @@ private:
             push(p, l, r);
             update(left(p), l, m, ql, qr, op);
             update(right(p), m + 1, r, ql, qr, op);
-            st[p] = combine(st[left(p)], st[right(p)]);
+            st[p] = F::combine(st[left(p)], st[right(p)]);
         }
     }
     T query(int p, int l, int r, int ql, int qr)
@@ -77,7 +77,7 @@ private:
         int m = l + (r - l) / 2;
         T resl = query(left(p), l, m, ql, qr);
         T resr = query(right(p), m + 1, r, ql, qr);
-        return combine(resl, resr);
+        return F::combine(resl, resr);
     }
 public:
     SparseSegmentTree(int L, int R, int N, T Tid, F Fid) :
