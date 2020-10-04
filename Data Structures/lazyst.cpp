@@ -5,7 +5,7 @@ using namespace std;
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) X.begin(), X.end()
+#define all(X) begin(X), end(X)
 #define sz(X) (int)X.size()
 
 using ll = long long;
@@ -13,12 +13,12 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename X, typename T=X>
+template<typename X>
 struct F1
 {
     X add;
     explicit F1(X add) : add(add) {}
-    void apply(T& old, int L, int R) const
+    void apply(auto& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
     }
@@ -27,23 +27,20 @@ struct F1
         add += op.add;
     }
     bool operator==(const F1& op) const { return add == op.add; }
+    static auto combine(const auto& lhs, const auto& rhs)
+    {
+        return lhs + rhs;
+    }
 };
 
 template<typename T, typename F>
-class SparseSegmentTree
+class LazyST
 {
 private:
-    const int L, R;
-    const T Tid; const F Fid;
+    const int n; const T Tid; const F Fid;
     vector<T> st; vector<F> lazy;
-    T combine(const T& resl, const T& resr)
-    {
-        return resl + resr;
-    }
-    vector<int> LEFT, RIGHT;
-    int ct = 1;
-    int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = ct++) : LEFT[p]; }
-    int right(int p) { return RIGHT[p] == -1 ? (RIGHT[p] = ct++) : RIGHT[p]; }
+    int left(int p) const { return 2 * p + 1; }
+    int right(int p) const { return 2 * p + 2; }
     void push(int p, int l, int r)
     {
         if (lazy[p] == Fid) return; // may wanna remove this...
@@ -66,7 +63,7 @@ private:
             push(p, l, r);
             update(left(p), l, m, ql, qr, op);
             update(right(p), m + 1, r, ql, qr, op);
-            st[p] = combine(st[left(p)], st[right(p)]);
+            st[p] = F::combine(st[left(p)], st[right(p)]);
         }
     }
     T query(int p, int l, int r, int ql, int qr)
@@ -77,18 +74,27 @@ private:
         int m = l + (r - l) / 2;
         T resl = query(left(p), l, m, ql, qr);
         T resr = query(right(p), m + 1, r, ql, qr);
-        return combine(resl, resr);
+        return F::combine(resl, resr);
     }
 public:
-    SparseSegmentTree(int L, int R, int N, T Tid, F Fid) :
-        L(L), R(R), Tid(Tid), Fid(Fid)
+    LazyST(const vector<T>& a, T Tid, F Fid) : n(sz(a)), Tid(Tid), Fid(Fid)
     {
-        st.assign(N, Tid);
-        lazy.assign(N, Fid);
-        LEFT.assign(N, -1), RIGHT.assign(N, -1);
+        st.assign(4 * n + 1, Tid);
+        lazy.assign(4 * n + 1, Fid);
+        function<void(int, int, int)> build = [&](int p, int l, int r)
+        {
+            if (l == r) st[p] = a[l];
+            else
+            {
+                int m = l + (r - l) / 2;
+                build(left(p), l, m), build(right(p), m + 1, r);
+                st[p] = F::combine(st[left(p)], st[right(p)]);
+            }
+        };
+        build(0, 0, n - 1);
     }
-    void update(int l, int r, F op) { update(0, L, R, l, r, op); }
-    T query(int l, int r) { return query(0, L, R, l, r); }
+    void update(int l, int r, F op) { update(0, 0, n - 1, l, r, op); }
+    T query(int l, int r) { return query(0, 0, n - 1, l, r); }
 };
 
 int main()

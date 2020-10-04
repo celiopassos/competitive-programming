@@ -5,7 +5,7 @@ using namespace std;
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) X.begin(), X.end()
+#define all(X) begin(X), end(X)
 #define sz(X) (int)X.size()
 
 using ll = long long;
@@ -53,33 +53,7 @@ public:
     }
 };
 
-void solve()
-{
-    int n; cin >> n;
-    constexpr int N = 1024;
-
-    BIT<int, N, N> bit;
-
-    for (string q; (cin >> q) && q != "END";)
-    {
-        if (q == "SET")
-        {
-            int x, y, num; cin >> x >> y >> num;
-            bit.update(x, y, num - bit.query(x, x, y, y));
-        }
-        else
-        {
-            int x1, x2, y1, y2; cin >> x1 >> y1 >> x2 >> y2;
-            int ans = bit.query(x1, x2, y1, y2);
-            cout << ans << endl;
-        }
-    }
-    cout << endl;
-}
-
 int main()
 { _
-    int t; cin >> t;
-    while (t--) solve();
     exit(0);
 }

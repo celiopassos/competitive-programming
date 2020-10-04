@@ -5,7 +5,7 @@ using namespace std;
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) X.begin(), X.end()
+#define all(X) begin(X), end(X)
 #define sz(X) (int)X.size()
 
 using ll = long long;
@@ -53,13 +53,13 @@ struct SegmentTree<T, N, Ns...>
     template<typename... Args>
     T query(int l, int r, Args... args)
     {
-        T resl = ST::id, resr = ST::id;
+        T res = ST::id;
         for (l += N, r += N + 1; l < r; l >>= 1, r >>= 1)
         {
-            if (l & 1) resl = ST::combine(resl, st[l++].query(args...));
-            if (r & 1) resr = ST::combine(st[--r].query(args...), resr);
+            if (l & 1) res = ST::combine(res, st[l++].query(args...));
+            if (r & 1) res = ST::combine(st[--r].query(args...), res);
         }
-        return ST::combine(resl, resr);
+        return res;
     }
 };
 

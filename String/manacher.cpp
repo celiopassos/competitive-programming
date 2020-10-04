@@ -5,13 +5,15 @@ using namespace std;
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) X.begin(), X.end()
+#define all(X) begin(X), end(X)
 #define sz(X) (int)X.size()
 
 using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
+auto odd
 {
     int l = 0, r = -1, n = sz(s);
     vector d(n, 0);
@@ -25,7 +27,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
     return d;
 }
 
-vector<int> even(const string& s) // is this correct?? must test
+auto even(const string& s) // is this correct?? must test
 {
     int n = sz(s);
     string r; r.push_back('*');

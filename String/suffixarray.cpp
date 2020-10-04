@@ -5,7 +5,7 @@ using namespace std;
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) X.begin(), X.end()
+#define all(X) begin(X), end(X)
 #define sz(X) (int)X.size()
 
 using ll = long long;
@@ -80,7 +80,6 @@ vector<int> lcp_array(const string& s, const vector<int>& p)
     }
     return lcp;
 }
-
 
 int main()
 { _
