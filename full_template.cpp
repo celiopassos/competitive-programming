@@ -5,9 +5,11 @@
 #include "bits/stdc++.h"
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/detail/standard_policies.hpp>
+#include <ext/rope>
 
 using namespace std;
 using namespace __gnu_pbds;
+using namespace __gnu_cxx; // rope
 
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
