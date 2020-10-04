@@ -13,28 +13,24 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-pair<F, T> ternary_search(T l, T r, function<F(T)>& f)
+auto ternary_search(auto l, auto r, auto&& f, auto EPS=2)
 {
-    const T eps = 2;
-    while (r - l > eps)
+    using T = decltype(l);
+    while (r - l > EPS)
     {
         T m1 = l + (r - l) / 3;
         T m2 = r - (r - l) / 3;
-        if (f(m1) < f(m2)) l = m1;
+        if (f(m1) > f(m2)) l = m1;
         else r = m2;
     }
     T c = l;
     for (T x = c + 1; x <= r; ++x)
-        if (f(x) > f(c)) c = x;
-    return { f(c), c }; // maximum
+        if (f(x) < f(c)) c = x;
+    return pair(f(c), c);
 }
 
 int main()
 { _
-    int n = 10;
-    auto f = [&](int x) { return n * x * (10 - x); };
-    int x = ternary_search<int, int>(0, 10, f).first;
-    debug(x);
     exit(0);
 }
 
