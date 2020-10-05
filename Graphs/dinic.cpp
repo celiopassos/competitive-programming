@@ -13,7 +13,7 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename T, typename F>
+template<typename T, typename F=T>
 struct Dinic
 {
     struct Edge
@@ -26,7 +26,7 @@ struct Dinic
     vector<Edge> edges;
     const T inf = numeric_limits<T>::max();
     int n, m = 0;
-    int logmax = 1, scaling = 1;
+    int logmax = 1, lim = 1;
     vector<vector<int>> E;
     vector<int> level, ptr;
     Dinic(int n) : n(n)
@@ -51,7 +51,7 @@ struct Dinic
             for (auto idx : E[u])
             {
                 int v = edges[idx].to;
-                if (level[v] != -1 || edges[idx].free() < scaling) continue;
+                if (level[v] != -1 || edges[idx].free() < lim) continue;
                 level[v] = level[u] + 1;
                 q.push(v);
             }
@@ -64,7 +64,7 @@ struct Dinic
         for (int& idx = ptr[u]; idx < sz(E[u]); ++idx)
         {
             auto &edge = edges[E[u][idx]], &back = edges[E[u][idx] ^ 1];
-            if (level[edge.to] != level[u] + 1 || edge.free() < scaling) continue;
+            if (level[edge.to] != level[u] + 1 || edge.free() < lim) continue;
             T pushing = push(edge.to, t, min(pushed, edge.free()));
             if (pushing == 0) continue;
             edge.flow += pushing, back.flow -= pushing;
@@ -72,11 +72,11 @@ struct Dinic
         }
         return 0;
     }
-    F flow(int s, int t, bool scale = true)
+    F flow(int s, int t, bool scale = false)
     {
         for (auto& edge : edges) edge.flow = 0;
         F f = 0;
-        for (scaling = scale ? logmax : 1; scaling > 0; scaling >>= 1)
+        for (lim = scale ? (1 << logmax) : 1; lim > 0; lim >>= 1)
             while (bfs(s, t))
             {
                 fill(all(ptr), 0);
