@@ -12,44 +12,42 @@ using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-{ _
-    int q; cin >> q;
-    vector<int> l(q, 0), r(q, 0);
 
-    int k = 1;
-    while (k * k <= n) ++k;
+// with K = n / sqrt(q), complexity is O(n * sqrt(q))
 
-    vector<int> I(q, 0); iota(all(I), 0);
-    sort(all(I), [&](int i, int j)
-        {
-            if (l[i] / k != l[j] / k) return l[i] / k < l[j] / k;
-            if ((l[i] / k) & 1) return r[j] < r[i];
-            else return r[i] < r[j];
-        }
-    );
+void mo(auto Q, auto& eval, auto& remove, auto& insert, int K)
+{
+    int q = sz(Q);
+    vector<int> Z(q, 0); iota(all(Z), 0);
 
-    int lcur = 0, rcur = 0;
+    auto cmp = [&](int i, int j)
+    {
+        if (Q[i].first / K != Q[j].first / K)
+            return Q[i].first / K < Q[j].first / K;
+        if ((Q[i].first / K) & 1)
+            return Q[i].second > Q[j].second;
+        return Q[i].second < Q[j].second;
+    };
+    sort(all(Z), cmp);
 
-    auto remove = [&](int x) {  };
-    auto insert = [&](int x) {  };
+    int lcur = 0, rcur = 0; insert(0);
 
     auto update = [&](int l, int r)
     {
-        while (l < lcur) insert(a[--lcur]);
-        while (rcur < r) insert(a[++rcur]);
-        while (lcur < l) remove(a[lcur++]);
-        while (r < rcur) remove(a[rcur--]);
+        while (l < lcur) insert(--lcur);
+        while (rcur < r) insert(++rcur);
+        while (lcur < l) remove(lcur++);
+        while (r < rcur) remove(rcur--);
     };
 
-    vector<int> ans(q, 0);
-    for (auto z : I)
+    for (auto z : Z)
     {
-        update(l[z], r[z]);
+        update(Q[z].first, Q[z].second);
+        eval(z);
     }
-
-    for (int z = 0; z < q; ++z)
-        cout << ans[z] << endl;
-
-    exit(0);
 }
 
+int main()
+{ _
+    exit(0);
+}
