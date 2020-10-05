@@ -26,7 +26,6 @@ struct Dinic
     vector<Edge> edges;
     const T inf = numeric_limits<T>::max();
     int n, m = 0;
-    bool scale = true;
     int logmax = 1, scaling = 1;
     vector<vector<int>> E;
     vector<int> level, ptr;
@@ -73,7 +72,7 @@ struct Dinic
         }
         return 0;
     }
-    F flow(int s, int t)
+    F flow(int s, int t, bool scale = true)
     {
         for (auto& edge : edges) edge.flow = 0;
         F f = 0;
