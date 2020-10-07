@@ -13,7 +13,7 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename T, typename F=T>
+template<typename T>
 struct Dinic
 {
     struct Edge
@@ -35,6 +35,7 @@ struct Dinic
     }
     void add_edge(int u, int v, T cap)
     {
+        if (cap == 0) return;
         edges.emplace_back(u, v, cap);
         edges.emplace_back(v, u, 0);
         E[u].push_back(m++);
@@ -72,10 +73,10 @@ struct Dinic
         }
         return 0;
     }
-    F flow(int s, int t, bool scale = false)
+    T flow(int s, int t, bool scale = false)
     {
         for (auto& edge : edges) edge.flow = 0;
-        F f = 0;
+        T f = 0;
         for (lim = scale ? (1 << logmax) : 1; lim > 0; lim >>= 1)
             while (bfs(s, t))
             {
