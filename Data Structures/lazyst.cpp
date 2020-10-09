@@ -24,7 +24,7 @@ struct F1
     }
     void compose(const F1& op, int L, int R)
     {
-        add += op.add;
+        add += op.add; (void)L, (void)R;
     }
     bool operator==(const F1& op) const { return add == op.add; }
     static auto combine(const auto& lhs, const auto& rhs)
@@ -77,10 +77,12 @@ private:
         return F::combine(resl, resr);
     }
 public:
-    LazyST(const vector<T>& a, T Tid, F Fid) : n(sz(a)), Tid(Tid), Fid(Fid)
+    LazyST(int n, T Tid, F Fid) : n(n), Tid(Tid), Fid(Fid)
     {
-        st.assign(4 * n + 1, Tid);
-        lazy.assign(4 * n + 1, Fid);
+        st.assign(4 * n + 1, Tid), lazy.assign(4 * n + 1, Fid);
+    }
+    LazyST(const vector<T>& a, T Tid, F Fid) : LazyST(sz(a), Tid, Fid)
+    {
         function<void(int, int, int)> build = [&](int p, int l, int r)
         {
             if (l == r) st[p] = a[l];
