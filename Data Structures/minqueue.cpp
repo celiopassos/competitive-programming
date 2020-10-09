@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -33,7 +33,7 @@ public:
     }
     void pop() { st.pop(); }
     bool empty() const { return st.empty(); }
-    int size() const { return st.size(); }
+    int size() const { return size(st); }
 };
 
 template<typename T>
@@ -58,7 +58,7 @@ public:
     void push(T value) { in.push(value); }
     void pop() { move(); out.pop(); }
     bool empty() const { return in.empty() && out.empty(); }
-    int size() const { return in.size() + out.size(); }
+    int size() const { return size(in) + size(out); }
 };
 
 int main()

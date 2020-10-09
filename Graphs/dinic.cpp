@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -60,7 +60,7 @@ struct Dinic
     T push(int u, int t, T pushed)
     {
         if (u == t || pushed == 0) return pushed;
-        for (int& idx = ptr[u]; idx < sz(E[u]); ++idx)
+        for (int& idx = ptr[u]; idx < size(E[u]); ++idx)
         {
             auto &edge = edges[E[u][idx]], &back = edges[E[u][idx] ^ 1];
             if (level[edge.to] != level[u] + 1 || edge.free() == 0) continue;

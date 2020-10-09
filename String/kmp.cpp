@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -15,7 +15,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 auto prefix_function(const string& s)
 {
-    int n = sz(s);
+    int n = size(s);
     vector p(n, 0);
     for (int i = 1; i < n; ++i)
     {
@@ -30,7 +30,7 @@ auto prefix_function(const string& s)
 vector<vector<int>> compute_automaton(string s)
 {
     s += '#';
-    int n = sz(s);
+    int n = size(s);
     vector p = prefix_function(s);
     vector aut(n, vector(26, 0));
     for (int i = 0; i < n; ++i)

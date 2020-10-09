@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -36,7 +36,7 @@ struct LiChaoTree
 
     LiChaoTree(Domain L, Domain R) : L(L), R(R) { create(); }
 
-    int size() { return sz(st); }
+    int size() { return size(st); }
     int create()
     {
         LEFT.push_back(-1), RIGHT.push_back(-1);

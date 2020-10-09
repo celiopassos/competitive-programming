@@ -2,7 +2,7 @@
 //where xi = i
 //O(n)
 int lagrangeInterpolation(const vi &v, int x){
-	int n = v.size();
+	int n = size(v);
 	vi inv(n+1, 1), inv_fact(n+1, 1), pref(n+2, 1), suff(n+2, 1);
 	for(int i = 2; i <= n; i++){
 		inv[i] = MOD - (MOD/i)*(ll)inv[MOD%i] % MOD;

@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -18,7 +18,7 @@ bool chmin(auto& x, auto y) { return y < x ? x = y, true : false; }
 template<typename T>
 auto dijkstra(int s, const auto& E)
 {
-    const int n = sz(E);
+    const int n = size(E);
 
     int logmax = 0;
     for (int u = 0; u < n; ++u)

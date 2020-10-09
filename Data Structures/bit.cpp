@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -34,7 +34,7 @@ private:
     }
 public:
     BIT(int n, T id) : n(n), id(id) { ft.assign(n + 1, id); }
-    BIT(const vector<T>& a, T id) : BIT(sz(a), id)
+    BIT(const vector<T>& a, T id) : BIT(size(a), id)
     {
         for (int i = 1; i <= n; ++i) ft[i] = F::op(ft[i - 1], a[i - 1]);
         for (int i = n; i >= 1; --i) ft[i] = F::op(F::inv(ft[i - b(i)]), ft[i]);

@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -37,7 +37,7 @@ template<typename T>
 ll inversions(vector<T> v)
 {
     vector<T> u = v;
-    return merge_sort(v, u, 0, sz(v) - 1);
+    return merge_sort(v, u, 0, size(v) - 1);
 }
 
 int main()
