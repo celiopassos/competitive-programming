@@ -24,7 +24,7 @@ struct F1
     }
     void compose(const F1& op, int L, int R)
     {
-        add += op.add;
+        add += op.add; (void)L, (void)R;
     }
     bool operator==(const F1& op) const { return add == op.add; }
     static auto combine(const auto& lhs, const auto& rhs)
@@ -41,8 +41,12 @@ private:
     const T Tid; const F Fid;
     vector<T> st; vector<F> lazy;
     vector<int> LEFT, RIGHT;
-    int ct = 0;
-    int create() { return ct++; }
+    int create()
+    {
+        st.push_back(Tid), lazy.push_back(Fid);
+        LEFT.push_back(-1), RIGHT.push_back(-1);
+        return sz(st) - 1;
+    }
     int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = create()) : LEFT[p]; }
     int right(int p) { return RIGHT[p] == -1 ? (RIGHT[p] = create()) : RIGHT[p]; }
     void push(int p, int l, int r)
@@ -72,22 +76,16 @@ private:
     }
     T query(int p, int l, int r, int ql, int qr)
     {
-        if (r < ql || qr < l) return Tid;
+        if (p == -1 || r < ql || qr < l) return Tid;
         push(p, l, r);
         if (ql <= l && r <= qr) return st[p];
         int m = l + (r - l) / 2;
-        T resl = query(left(p), l, m, ql, qr);
-        T resr = query(right(p), m + 1, r, ql, qr);
+        T resl = query(LEFT[p], l, m, ql, qr);
+        T resr = query(RIGHT[p], m + 1, r, ql, qr);
         return F::combine(resl, resr);
     }
 public:
-    SparseST(int L, int R, int N, T Tid, F Fid) : L(L), R(R), Tid(Tid), Fid(Fid)
-    {
-        st.assign(N, Tid);
-        lazy.assign(N, Fid);
-        LEFT.assign(N, -1), RIGHT.assign(N, -1);
-        create();
-    }
+    SparseST(int L, int R, T Tid, F Fid) : L(L), R(R), Tid(Tid), Fid(Fid) { create(); }
     void update(int l, int r, F op) { update(0, L, R, l, r, op); }
     T query(int l, int r) { return query(0, L, R, l, r); }
 };
@@ -96,4 +94,3 @@ int main()
 { _
     exit(0);
 }
-
