@@ -43,8 +43,7 @@ private:
     vector<int> LEFT, RIGHT;
     int create()
     {
-        st.push_back(Tid), lazy.push_back(Fid);
-        LEFT.push_back(-1), RIGHT.push_back(-1);
+        st.push_back(Tid), lazy.push_back(Fid), LEFT.push_back(-1), RIGHT.push_back(-1);
         return sz(st) - 1;
     }
     int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = create()) : LEFT[p]; }

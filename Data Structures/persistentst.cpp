@@ -24,10 +24,7 @@ private:
     vector<int> left, right, root, last;
     int create(int rt)
     {
-        left.push_back(-1);
-        right.push_back(-1);
-        last.push_back(rt);
-        st.push_back(Tid);
+        left.push_back(-1), right.push_back(-1), last.push_back(rt), st.push_back(Tid);
         return sz(st) - 1;
     }
     int copy(int p, int rt)
