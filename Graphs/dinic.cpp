@@ -42,7 +42,7 @@ struct Dinic
     }
     bool bfs(int s, int t)
     {
-        fill(all(level), -1); level[s] = 0;
+        fill(all(level), 0); level[s] = 1;
         static queue<int> q; q.push(s);
         while (not q.empty())
         {
@@ -50,12 +50,12 @@ struct Dinic
             for (auto idx : E[u])
             {
                 int v = edges[idx].to;
-                if (level[v] != -1 || edges[idx].free() == 0) continue;
+                if (level[v] != 0 || edges[idx].free() == 0) continue;
                 level[v] = level[u] + 1;
                 q.push(v);
             }
         }
-        return level[t] != -1;
+        return level[t] != 0;
     }
     T push(int u, int t, T pushed)
     {
