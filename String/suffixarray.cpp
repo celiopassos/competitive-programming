@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -15,7 +15,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 vector<int> sort_cyclic_shifts(const string& s)
 {
-    int n = sz(s);
+    int n = size(s);
     const int alphabet = 256;
     vector p(n, 0), c(n, 0), cnt(max(alphabet, n), 0);
     for (int i = 0; i < n; i++) cnt[s[i]]++;
@@ -64,7 +64,7 @@ vector<int> suffix_array(string s)
 
 vector<int> lcp_array(const string& s, const vector<int>& p)
 {
-    int n = sz(s);
+    int n = size(s);
     vector pos(n, 0);
     for (int i = 0; i < n; ++i) pos[p[i]] = i;
 

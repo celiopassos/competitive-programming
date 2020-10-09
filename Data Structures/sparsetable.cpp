@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -22,7 +22,7 @@ private:
     vector<int> log;
     vector<vector<T>> st;
 public:
-    SparseTable(const vector<T>& a, const function<T(T, T)> op) : n(sz(a)), op(op)
+    SparseTable(const vector<T>& a, const function<T(T, T)> op) : n(size(a)), op(op)
     {
         log.assign(n + 1, 0);
         for (int x = 1; x <= n; ++x) log[x] = 31 - __builtin_clz(x);

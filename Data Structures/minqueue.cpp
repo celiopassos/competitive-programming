@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 

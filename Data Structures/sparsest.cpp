@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -44,7 +44,7 @@ private:
     int create()
     {
         st.push_back(Tid), lazy.push_back(Fid), LEFT.push_back(-1), RIGHT.push_back(-1);
-        return sz(st) - 1;
+        return size(st) - 1;
     }
     int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = create()) : LEFT[p]; }
     int right(int p) { return RIGHT[p] == -1 ? (RIGHT[p] = create()) : RIGHT[p]; }

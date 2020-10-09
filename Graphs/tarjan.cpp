@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -15,7 +15,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 auto tarjan(const auto& E)
 {
-    int n = sz(E);
+    int n = size(E);
     vector low(n, -1), num(n, -1), scc(n, -1), active(n, 0);
     stack<int> st; int ct = 0;
     function<void(int)> dfs = [&](int u)

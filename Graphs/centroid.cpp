@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -46,7 +46,7 @@ private:
 public:
     CentroidDecomposition(const vector<vector<int>>& E) : E(E)
     {
-        int n = sz(E);
+        int n = size(E);
         par.assign(n, -1), subsz.assign(n, 0), vis.assign(n, 0);
         level.assign(n, 0), dist.assign(n, vector(32 - __builtin_clz(n), 0));
         build(0, -1);

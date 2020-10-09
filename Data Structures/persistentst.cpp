@@ -5,8 +5,8 @@ using namespace std;
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) (X).begin(), (X).end()
-#define sz(X) (int)X.size()
+#define all(X) begin(X), end(X)
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -25,7 +25,7 @@ private:
     int create(int rt)
     {
         left.push_back(-1), right.push_back(-1), last.push_back(rt), st.push_back(Tid);
-        return sz(st) - 1;
+        return size(st) - 1;
     }
     int copy(int p, int rt)
     {
@@ -57,7 +57,7 @@ private:
     }
 public:
     PersistentST(int n, T Tid, auto op) : n(n), Tid(Tid), op(op) { root.push_back(create(0)); }
-    PersistentST(const vector<T>& a, T Tid, auto op) : PersistentST(sz(a), Tid, op)
+    PersistentST(const vector<T>& a, T Tid, auto op) : PersistentST(size(a), Tid, op)
     {
         function<void(int, int, int)> build = [&](int p, int l, int r)
         {
@@ -74,12 +74,12 @@ public:
     }
     int duplicate(int version)
     {
-        root.push_back(copy(root[version], sz(root)));
-        return sz(root) - 1;
+        root.push_back(copy(root[version], size(root)));
+        return size(root) - 1;
     }
     void modify(int version, int pos, T value) // modifies version in place
     {
-        assert(version < sz(root));
+        assert(version < size(root));
         modify(root[version], 0, n - 1, pos, value);
     }
     T query(int version, int l, int r)

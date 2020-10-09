@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -21,7 +21,7 @@ private:
 public:
     StringHash(const string& s)
     {
-        const int n = sz(s);
+        const int n = size(s);
         power.assign(n, 1LL);
         h.assign(n, 0LL); h[0] = s[0] + 1;
         for (int i = 1; i < n; power[i] = (power[i - 1] * P) % MOD, ++i)

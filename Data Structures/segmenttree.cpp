@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -23,7 +23,7 @@ private:
     vector<T> st;
 public:
     SegmentTree(int n, T Tid, auto op) : n(n), Tid(Tid), op(op) { st.assign(2 * n, Tid); }
-    SegmentTree(const vector<T>& a, T Tid, auto op) : SegmentTree(sz(a), Tid, op)
+    SegmentTree(const vector<T>& a, T Tid, auto op) : SegmentTree(size(a), Tid, op)
     {
         for (int i = 0; i < n; ++i) st[n + i] = a[i];
         for (int i = n - 1; i > 0; --i)

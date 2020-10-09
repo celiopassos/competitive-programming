@@ -14,8 +14,8 @@ using namespace __gnu_cxx; // rope
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) (X).begin(), (X).end()
-#define sz(X) (int)X.size()
+#define all(X) begin(X), end(X)
+#define size(X) (int)size(X)
 
 template<typename T>
 using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;

@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -21,7 +21,7 @@ struct HLD
     int cur_pos;
     HLD(const vector<vector<int>>& E) : E(E)
     {
-        int n = sz(E);
+        int n = size(E);
         parent.assign(n, 0);
         depth.assign(n, 0);
         heavy.assign(n, -1);

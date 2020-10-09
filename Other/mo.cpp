@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -17,7 +17,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 void mo(auto Q, auto& eval, auto& remove, auto& insert, int K)
 {
-    int q = sz(Q);
+    int q = size(Q);
     vector<int> Z(q, 0); iota(all(Z), 0);
 
     auto cmp = [&](int i, int j)

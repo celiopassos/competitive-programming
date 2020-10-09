@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -30,7 +30,7 @@ private:
         R[u] = ct++;
     }
 public:
-    LCA(const vector<vector<int>>& E, int root) : E(E), n(sz(E)), lg(32 - __builtin_clz(n))
+    LCA(const vector<vector<int>>& E, int root) : E(E), n(size(E)), lg(32 - __builtin_clz(n))
     {
         L.assign(n, 0), R.assign(n, 0), h.assign(n, -1);
         up.assign(n, vector<int>(lg));

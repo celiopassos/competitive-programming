@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define sz(X) (int)X.size()
+#define size(X) (int)size(X)
 
 using ll = long long;
 
@@ -81,7 +81,7 @@ public:
     {
         st.assign(4 * n + 1, Tid), lazy.assign(4 * n + 1, Fid);
     }
-    LazyST(const vector<T>& a, T Tid, F Fid) : LazyST(sz(a), Tid, Fid)
+    LazyST(const vector<T>& a, T Tid, F Fid) : LazyST(size(a), Tid, Fid)
     {
         function<void(int, int, int)> build = [&](int p, int l, int r)
         {
