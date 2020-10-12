@@ -34,7 +34,7 @@ struct Dinic
     }
     void add_edge(int u, int v, T cap)
     {
-        if (cap == 0) return;
+        if (cap <= 0) return;
         edges.emplace_back(u, v, cap);
         edges.emplace_back(v, u, 0);
         E[u].push_back(m++);
@@ -50,7 +50,7 @@ struct Dinic
             for (auto idx : E[u])
             {
                 int v = edges[idx].to;
-                if (level[v] != 0 || edges[idx].free() == 0) continue;
+                if (level[v] != 0 || edges[idx].free() <= 0) continue;
                 level[v] = level[u] + 1;
                 q.push(v);
             }
@@ -63,7 +63,7 @@ struct Dinic
         for (int& idx = ptr[u]; idx < size(E[u]); ++idx)
         {
             auto &edge = edges[E[u][idx]], &back = edges[E[u][idx] ^ 1];
-            if (level[edge.to] != level[u] + 1 || edge.free() == 0) continue;
+            if (level[edge.to] != level[u] + 1 || edge.free() <= 0) continue;
             T pushing = push(edge.to, t, min(pushed, edge.free()));
             if (pushing == 0) continue;
             edge.flow += pushing, back.flow -= pushing;
