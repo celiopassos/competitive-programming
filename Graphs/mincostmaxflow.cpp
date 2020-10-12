@@ -65,11 +65,11 @@ struct MCMF
         if (not vis[t]) return false;
         for (int u = 0; u < n; ++u)
             if (vis[u]) pi[u] += dist[u] - dist[t];
-        return true;;
+        return true;
     }
-    bool spfa(int s, int t)
+    bool spfa(int s, int t, bool fix = false)
     {
-        fill(all(dist), infcost), fill(all(vis), 0);
+        fill(all(dist), infcost), fill(all(parent), 0), fill(all(vis), 0);
         static queue<int> q; q.push(s); dist[s] = 0;
         while (not q.empty())
         {
@@ -79,14 +79,18 @@ struct MCMF
                 const auto& edge = edges[idx];
                 if (not edge.free()) continue;
                 if (chmin(dist[edge.to], dist[v] + edge.cost))
+                {
+                    parent[edge.to] = idx;
                     q.push(edge.to);
+                }
             }
         }
-        return fix_potentials(t);
+        if (fix) return fix_potentials(t);
+        else return vis[t];
     }
     bool dijkstra(int s, int t)
     {
-        fill(all(dist), infcost), fill(all(parent), -1), fill(all(vis), 0);
+        fill(all(dist), infcost), fill(all(parent), 0), fill(all(vis), 0);
         struct Q
         {
             Cost key; int v;
@@ -117,7 +121,7 @@ struct MCMF
     {
         for (auto& edge : edges) edge.flow = 0;
         fill(all(pi), 0);
-        if (negative) spfa(s, t);
+        if (negative) spfa(s, t, true);
         Cap flow = 0;
         Cost cost = 0;
         while (dijkstra(s, t))

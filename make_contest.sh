@@ -8,3 +8,5 @@ do
 done
 
 cp -P bits $1/bits
+
+touch $1/input.txt
