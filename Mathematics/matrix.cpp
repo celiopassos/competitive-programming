@@ -22,7 +22,8 @@ template<typename T> struct Matrix
         A.assign(n, vector(m, T(0)));
     }
     Matrix(vector<vector<T>> B) : n(size(B)), m(size(B[0])), A(B) { }
-    vector<T>& operator[](int i){ return A[i]; }
+
+    vector<T>& operator[](int i) { return A[i]; }
 
     template<typename op> Matrix& compose(const Matrix& rhs)
     {
@@ -45,16 +46,29 @@ template<typename T> struct Matrix
                     res[i][j] += A[i][k] * A[k][j];
         return res;
     }
-    Matrix& operator+(const Matrix& rhs) { return Matrix(*this) += rhs; }
-    Matrix& operator-(const Matrix& rhs) { return Matrix(*this) -= rhs; }
-    Matrix& operator*(const Matrix& rhs) { return Matrix(*this) *= rhs; }
-    vector<T> operator*(const vector<T>& rhs)
+    Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
+    Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
+    Matrix operator*(const Matrix& rhs) const { return Matrix(*this) *= rhs; }
+    vector<T> operator*(const vector<T>& rhs) const
     {
         assert(m == size(rhs));
         vector<T> res(n, T(0));
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < m; ++j)
                 res[i] += A[i][j] * rhs[j];
+        return res;
+    }
+    Matrix power(ll p) const
+    {
+        assert(n == m);
+        Matrix res(n, n);
+        for (int i = 0; i < n; ++i) res[i][i] = T(i);
+        Matrix M = (*this);
+        while (p > 0)
+        {
+            if (p & 1) res *= M;
+            M = M * M, p >>= 1;
+        }
         return res;
     }
 };
