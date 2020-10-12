@@ -31,7 +31,7 @@ private:
         return pair(-1, coef);
     }
 public:
-    bool insert(V x)
+    bool insert(V x) // returns true if dimension increases
     {
         auto [i, coef] = reduce(x);
         if (i == -1) return false;
@@ -40,18 +40,18 @@ public:
         alpha[i][dim - 1] = 1;
         return true;
     }
-    auto solve(V x) const
+    auto solve(V x) const // returns coefficients of inserted vectors
     {
         auto [i, coef] = reduce(x);
         return pair(i == -1, coef);
     }
-    V combination(V coef) const
+    V combination(V coef) const // coefficients of current basis
     {
         V res;
-        for (int i = 0; i < N; ++i)
-            if (coef[i]) res ^= basis[i];
+        for (int i = 0; i < N; ++i) if (coef[i]) res ^= basis[i];
         return res;
     }
+    int dimension() const { return dim; }
 };
 
 int main()
