@@ -14,12 +14,17 @@ const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 const double PI = acos(-1);
-const double EPS = 1e-9;
+
+template<typename T> struct EPS
+{
+    using S = typename conditional<is_floating_point<T>::value, T, int>::type;
+    static constexpr S value = S(1e-9);
+};
 
 template<typename T>
 bool equal(T a, T b)
 {
-    return abs(a - b) <= EPS;
+    return abs(a - b) <= EPS<T>::value;
 }
 
 template<typename T>
@@ -28,68 +33,68 @@ struct pt
     T x, y;
     pt() : x(0), y(0) {}
     pt(T x, T y) : x(x), y(y) {}
-    pt& operator+=(pt rhs) { x += rhs.x, y += rhs.y; return *this; }
-    pt& operator-=(pt rhs) { x -= rhs.x, y -= rhs.y; return *this; }
-    pt& operator*=(T rhs) { x *= rhs, y *= rhs; return *this; }
-    pt& operator/=(T rhs) { x /= rhs, y /= rhs; return *this; }
-    pt operator+(pt rhs) const { return pt(*this) += rhs; }
-    pt operator-(pt rhs) const { return pt(*this) -= rhs; }
-    pt operator*(T rhs) const { return pt(*this) *= rhs; }
-    pt operator/(T rhs) const { return pt(*this) /= rhs; }
-    bool operator==(pt rhs) const { return equal(x, rhs.x) && equal(y, rhs.y); }
-    bool operator<(pt rhs) const { return pair(x, y) < pair(rhs.x, rhs.y); }
+    pt& operator+=(const pt& rhs) { x += rhs.x, y += rhs.y; return *this; }
+    pt& operator-=(const pt& rhs) { x -= rhs.x, y -= rhs.y; return *this; }
+    pt& operator*=(const T& rhs) { x *= rhs, y *= rhs; return *this; }
+    pt& operator/=(const T& rhs) { x /= rhs, y /= rhs; return *this; }
+    pt operator+(const pt& rhs) const { return pt(*this) += rhs; }
+    pt operator-(const pt& rhs) const { return pt(*this) -= rhs; }
+    pt operator*(const T& rhs) const { return pt(*this) *= rhs; }
+    pt operator/(const T& rhs) const { return pt(*this) /= rhs; }
+    bool operator==(const pt& rhs) const { return equal(x, rhs.x) && equal(y, rhs.y); }
+    bool operator<(const pt& rhs) const { return pair(x, y) < pair(rhs.x, rhs.y); }
 };
 
 template<typename T>
-pt<T> operator*(const T& a, pt<T> p) { return p * a; }
+pt<T> operator*(const T& a, const pt<T>& p) { return p * a; }
 
 template<typename T>
-T dot(pt<T> p, pt<T> q) { return p.x * q.x + p.y * q.y; }
+T dot(const pt<T>& p, const pt<T>& q) { return p.x * q.x + p.y * q.y; }
 
 template<typename T>
-T sqnorm(pt<T> p) { return dot(p, p); }
+T sqnorm(const pt<T>& p) { return dot(p, p); }
 
 template<typename T>
-T norm(pt<T> p) { return sqrt(dot(p, p)); }
+T norm(const pt<T>& p) { return sqrt(dot(p, p)); }
 
 template<typename T>
-T proj(pt<T> p, pt<T> q) { return dot(p, q) / norm(q); }
+T proj(const pt<T>& p, const pt<T>& q) { return dot(p, q) / norm(q); }
 
 template<typename T>
-T angle(pt<T> p, pt<T> q) { return acos(dot(p / norm(p), q / norm(q))); }
+T angle(const pt<T>& p, const pt<T>& q) { return acos(dot(p / norm(p), q / norm(q))); }
 
 template<typename T>
-T det(pt<T> p, pt<T> q) { return p.x * q.y - p.y * q.x; }
+T det(const pt<T>& p, const pt<T>& q) { return p.x * q.y - p.y * q.x; }
 
 template<typename T>
-bool parallel(pt<T> p, pt<T> q)
+bool parallel(const pt<T>& p, const pt<T>& q)
 {
     return equal(det(p, q), 0);
 }
 
 template<typename T>
-pt<T> intersection(pt<T> p, pt<T> dp, pt<T> q, pt<T> dq)
+pt<T> intersection(const pt<T>& p, const pt<T>& dp, const pt<T>& q, const pt<T>& dq)
 {
     return p + det(q - p, dq) / det(dp, dq) * dp;
 }
 
 template<typename T>
-pt<T> rotate(pt<T> p, T theta) // counter-clockwise
+pt<T> rotate(const pt<T>& p, T theta) // counter-clockwise
 {
     return pt<T>(cos(theta) * p.x - sin(theta) * p.y, sin(theta) * p.x + cos(theta) * p.y);
 }
 
 template<typename T>
-pt<T> rotate(pt<T> p) { return pt<T>(-p.y, p.x); } // pi/2 rad counter-clockwise
+pt<T> rotate(const pt<T>& p) { return pt<T>(-p.y, p.x); } // pi/2 rad counter-clockwise
 
 template<typename T>
-bool cw(pt<T> p, pt<T> q, pt<T> r)
+bool cw(const pt<T>& p, const pt<T>& q, const pt<T>& r)
 {
     return det(q - p, r - q) < 0;
 }
 
 template<typename T>
-bool ccw(pt<T> p, pt<T> q, pt<T> r)
+bool ccw(const pt<T>& p, const pt<T>& q, const pt<T>& r)
 {
     return det(q - p, r - q) > 0;
 }
@@ -126,7 +131,7 @@ struct line
     T a, b, c;
     line() : a(0), b(0), c(0) {}
     line(const T& a, const T& b, const T& c) : a(a), b(b), c(c) {}
-    line(pt<T> p, pt<T> q)
+    line(const pt<T>& p, const pt<T>& q)
     {
         a = p.y - q.y;
         b = q.x - p.x;
