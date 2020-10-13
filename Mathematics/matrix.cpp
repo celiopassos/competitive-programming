@@ -79,14 +79,16 @@ template<typename T> struct Matrix
     }
 };
 
-template<typename T>
-auto reduce(Matrix<T>& A, vector<T>& b)
+template<typename T, bool save>
+auto reduce(Matrix<T>& A)
 {
     const int n = A.n, m = A.m;
 
     T det = T(1);
 
-    vector<int> pivot(m, -1);
+    auto pivot = save ? optional<vector<int>>(in_place, m, -1) : nullopt;
+    auto E = save ? optional<Matrix<T>>(in_place, n, n) : nullopt;
+    if (save) for (int i = 0; i < n; ++i) (*E)[i][i] = T(1);
 
     for (int col = 0, row = 0; col < m && row < n; ++col)
     {
@@ -94,36 +96,37 @@ auto reduce(Matrix<T>& A, vector<T>& b)
         for (int i = row; i < n; ++i)
             if (abs(A[i][col]) > abs(A[sel][col])) sel = i;
 
-        if (abs(A[sel][col]) <= EPS<T>::value)
-        {
-            det = T(0);
-            continue;
-        }
+        if (abs(A[sel][col]) <= EPS<T>::value) { det = T(0); continue; }
         else det *= A[sel][col];
 
         if (sel != row)
         {
-            swap(A[sel], A[row]), swap(b[sel], b[row]);
+            swap(A[sel], A[row]);
+            if (save) swap((*E)[sel], (*E)[row]);
             det *= T(-1);
         }
 
         for (int i = 0; i < n; ++i) if (i != row)
         {
             T c = A[i][col] / A[row][col];
-            for (int j = col; j < m; ++j) A[i][j] -= c * A[row][j];
-            b[i] -= c * b[row];
+            for (int j = col; j < m; ++j)
+                A[i][j] -= c * A[row][j];
+            if (save) for (int j = 0; j < n; ++j)
+                (*E)[i][j] -= c * (*E)[row][j];
         }
 
-        pivot[col] = row++;
+        if (save) (*pivot)[col] = row;
+        ++row;
     }
-    return pair(det, pivot);
+
+    return tuple(det, pivot, E);
 }
 
 template<typename T>
 T determinant(Matrix<T> A)
 {
-    vector<T> b(A.n, T(0));
-    return reduce<T>(A, b).first;
+    auto [det, pivot, E] = reduce<T, false>(A);
+    return det;
 }
 
 // returns a solution and a kernel basis (if set to true)
@@ -133,7 +136,10 @@ auto gauss(Matrix<T> A, vector<T> b, bool basis = false)
 {
     const int n = A.n, m = A.m;
 
-    auto [det, pivot] = reduce(A, b);
+    auto [det, oppivot, opE] = reduce<T, true>(A);
+    auto &pivot = *oppivot, &E = *opE;
+
+    b = E * b;
 
     auto solve = [&](const vector<T>& b)
     {
@@ -153,7 +159,7 @@ auto gauss(Matrix<T> A, vector<T> b, bool basis = false)
     if (basis) for (int j = 0; j < m; ++j) if (pivot[j] == -1)
     {
         vector<T> e(m, T(0)); e[j] = T(1);
-        auto y = solve(A * e); y[j] = T(-1);
+        auto y = solve(A * e); y[j] += T(-1);
         pack.push_back(y);
     }
 
@@ -164,4 +170,3 @@ int main()
 { _
     exit(0);
 }
-
