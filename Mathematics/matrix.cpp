@@ -13,11 +13,7 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename T> struct EPS
-{
-    using S = typename conditional<is_floating_point<T>::value, T, int>::type;
-    static constexpr S value = S(1e-9);
-};
+const double EPS = 1e-6;
 
 template<typename T> struct Matrix
 {
@@ -96,7 +92,7 @@ auto reduce(Matrix<T>& A)
         for (int i = row; i < n; ++i)
             if (abs(A[i][col]) > abs(A[sel][col])) sel = i;
 
-        if (abs(A[sel][col]) <= EPS<T>::value) { det = T(0); continue; }
+        if (abs(A[sel][col]) <= EPS) { det = T(0); continue; }
         else det *= A[sel][col];
 
         if (sel != row)
@@ -152,7 +148,7 @@ auto gauss(Matrix<T> A, vector<T> b, bool basis = false)
     vector<T> x = solve(b), bhat = A * x;
 
     for (int i = 0; i < n; ++i)
-        if (abs(bhat[i] - b[i]) > EPS<T>::value) return vector<vector<T>>(0);
+        if (abs(bhat[i] - b[i]) > EPS) return vector<vector<T>>(0);
 
     vector<vector<T>> pack(1, x);
 

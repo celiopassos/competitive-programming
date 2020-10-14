@@ -14,12 +14,7 @@ const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 const double PI = acos(-1);
-
-template<typename T> struct EPS
-{
-    using S = typename conditional<is_floating_point<T>::value, T, int>::type;
-    static constexpr S value = S(1e-9);
-};
+const double EPS = 1e-9;
 
 template<typename T>
 bool equal(T a, T b)
@@ -28,83 +23,83 @@ bool equal(T a, T b)
 }
 
 template<typename T>
-struct pt
+struct point
 {
     T x, y;
-    pt() : x(0), y(0) {}
-    pt(T x, T y) : x(x), y(y) {}
-    pt& operator+=(const pt& rhs) { x += rhs.x, y += rhs.y; return *this; }
-    pt& operator-=(const pt& rhs) { x -= rhs.x, y -= rhs.y; return *this; }
-    pt& operator*=(const T& rhs) { x *= rhs, y *= rhs; return *this; }
-    pt& operator/=(const T& rhs) { x /= rhs, y /= rhs; return *this; }
-    pt operator+(const pt& rhs) const { return pt(*this) += rhs; }
-    pt operator-(const pt& rhs) const { return pt(*this) -= rhs; }
-    pt operator*(const T& rhs) const { return pt(*this) *= rhs; }
-    pt operator/(const T& rhs) const { return pt(*this) /= rhs; }
-    bool operator==(const pt& rhs) const { return equal(x, rhs.x) && equal(y, rhs.y); }
-    bool operator<(const pt& rhs) const { return pair(x, y) < pair(rhs.x, rhs.y); }
+    point() : x(0), y(0) {}
+    point(T x, T y) : x(x), y(y) {}
+    point& operator+=(const point& rhs) { x += rhs.x, y += rhs.y; return *this; }
+    point& operator-=(const point& rhs) { x -= rhs.x, y -= rhs.y; return *this; }
+    point& operator*=(const T& rhs) { x *= rhs, y *= rhs; return *this; }
+    point& operator/=(const T& rhs) { x /= rhs, y /= rhs; return *this; }
+    point operator+(const point& rhs) const { return point(*this) += rhs; }
+    point operator-(const point& rhs) const { return point(*this) -= rhs; }
+    point operator*(const T& rhs) const { return point(*this) *= rhs; }
+    point operator/(const T& rhs) const { return point(*this) /= rhs; }
+    bool operator==(const point& rhs) const { return equal(x, rhs.x) && equal(y, rhs.y); }
+    bool operator<(const point& rhs) const { return pair(x, y) < pair(rhs.x, rhs.y); }
 };
 
 template<typename T>
-pt<T> operator*(const T& a, const pt<T>& p) { return p * a; }
+point<T> operator*(const T& a, const point<T>& p) { return p * a; }
 
 template<typename T>
-T dot(const pt<T>& p, const pt<T>& q) { return p.x * q.x + p.y * q.y; }
+T dot(const point<T>& p, const point<T>& q) { return p.x * q.x + p.y * q.y; }
 
 template<typename T>
-T sqnorm(const pt<T>& p) { return dot(p, p); }
+T sqnorm(const point<T>& p) { return dot(p, p); }
 
 template<typename T>
-T norm(const pt<T>& p) { return sqrt(dot(p, p)); }
+T norm(const point<T>& p) { return sqrt(dot(p, p)); }
 
 template<typename T>
-T proj(const pt<T>& p, const pt<T>& q) { return dot(p, q) / norm(q); }
+T proj(const point<T>& p, const point<T>& q) { return dot(p, q) / norm(q); }
 
 template<typename T>
-T angle(const pt<T>& p, const pt<T>& q) { return acos(dot(p / norm(p), q / norm(q))); }
+T angle(const point<T>& p, const point<T>& q) { return acos(dot(p / norm(p), q / norm(q))); }
 
 template<typename T>
-T det(const pt<T>& p, const pt<T>& q) { return p.x * q.y - p.y * q.x; }
+T det(const point<T>& p, const point<T>& q) { return p.x * q.y - p.y * q.x; }
 
 template<typename T>
-bool parallel(const pt<T>& p, const pt<T>& q)
+bool parallel(const point<T>& p, const point<T>& q)
 {
     return equal(det(p, q), 0);
 }
 
 template<typename T>
-pt<T> intersection(const pt<T>& p, const pt<T>& dp, const pt<T>& q, const pt<T>& dq)
+point<T> intersection(const point<T>& p, const point<T>& dp, const point<T>& q, const point<T>& dq)
 {
     return p + det(q - p, dq) / det(dp, dq) * dp;
 }
 
 template<typename T>
-pt<T> rotate(const pt<T>& p, T theta) // counter-clockwise
+point<T> rotate(const point<T>& p, T theta) // counter-clockwise
 {
-    return pt<T>(cos(theta) * p.x - sin(theta) * p.y, sin(theta) * p.x + cos(theta) * p.y);
+    return point<T>(cos(theta) * p.x - sin(theta) * p.y, sin(theta) * p.x + cos(theta) * p.y);
 }
 
 template<typename T>
-pt<T> rotate(const pt<T>& p) { return pt<T>(-p.y, p.x); } // pi/2 rad counter-clockwise
+point<T> rotate(const point<T>& p) { return point<T>(-p.y, p.x); } // pi/2 rad counter-clockwise
 
 template<typename T>
-bool cw(const pt<T>& p, const pt<T>& q, const pt<T>& r)
+bool cw(const point<T>& p, const point<T>& q, const point<T>& r)
 {
     return det(q - p, r - q) < 0;
 }
 
 template<typename T>
-bool ccw(const pt<T>& p, const pt<T>& q, const pt<T>& r)
+bool ccw(const point<T>& p, const point<T>& q, const point<T>& r)
 {
     return det(q - p, r - q) > 0;
 }
 
 template<typename T>
-vector<pt<T>> convex_hull(vector<pt<T>> a) // counter-clockwise
+vector<point<T>> convex_hull(vector<point<T>> a) // counter-clockwise
 {
     sort(all(a)); a.erase(unique(all(a)), a.end());
-    pt<T> p = a[0], q = a.back();
-    vector<pt<T>> up = { p }, down = { p };
+    point<T> p = a[0], q = a.back();
+    vector<point<T>> up = { p }, down = { p };
     for (int i = 1; i < size(a); ++i)
     {
         if (i == size(a) - 1 || cw(p, a[i], q))
@@ -131,7 +126,7 @@ struct line
     T a, b, c;
     line() : a(0), b(0), c(0) {}
     line(const T& a, const T& b, const T& c) : a(a), b(b), c(c) {}
-    line(const pt<T>& p, const pt<T>& q)
+    line(const point<T>& p, const point<T>& q)
     {
         a = p.y - q.y;
         b = q.x - p.x;
@@ -146,12 +141,12 @@ bool parallel(line<T> U, line<T> V)
 }
 
 template<typename T>
-pt<T> intersection(line<T> U, line<T> V)
+point<T> intersection(line<T> U, line<T> V)
 {
     T x = -det({ U.c, U.b }, { V.c, V.b });
     T y = -det({ U.a, U.c }, { V.a, V.c });
     T z = det({ U.a, U.b }, { V.a, V.b });
-    return pt<T>(x / z, y / z);
+    return point<T>(x / z, y / z);
 }
 
 template<typename T>
