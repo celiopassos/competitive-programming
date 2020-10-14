@@ -13,10 +13,12 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
+template<typename T>
 struct F1
 {
-    static auto op(const auto& x, const auto& y) { return x + y; }
-    static auto inv(const auto& x) { return -x; }
+    const T id = 0;
+    static T op(const T& x, const T& y) { return x + y; }
+    static T inv(const T& x) { return -x; }
 };
 
 template<typename T, typename F>
@@ -24,17 +26,17 @@ class BIT
 {
 private:
     int b(int p) { return p & (-p); }
-    const int n; const T id;
+    const int n;
     vector<T> ft;
     T query(int p)
     {
-        T res = id;
+        T res = F::id;
         for (int i = p; i >= 1; i -= b(i)) res = F::op(ft[i], res);
         return res;
     }
 public:
-    BIT(int n, T id) : n(n), id(id) { ft.assign(n + 1, id); }
-    BIT(const vector<T>& a, T id) : BIT(size(a), id)
+    BIT(int n) : n(n) { ft.assign(n + 1, F::id); }
+    BIT(const vector<T>& a) : BIT(size(a), F::id)
     {
         for (int i = 1; i <= n; ++i) ft[i] = F::op(ft[i - 1], a[i - 1]);
         for (int i = n; i >= 1; --i) ft[i] = F::op(F::inv(ft[i - b(i)]), ft[i]);
