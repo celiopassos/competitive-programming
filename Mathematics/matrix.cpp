@@ -13,11 +13,13 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-const double EPS = 1e-6;
+const long double EPS = 1e-9;
+
+// may wanna use T = long double ...
 
 template<typename T> struct Matrix
 {
-    const int n, m;
+    int n, m;
     vector<vector<T>> A;
     Matrix(int n, int m) : n(n), m(m)
     {
@@ -30,27 +32,33 @@ template<typename T> struct Matrix
     template<typename op> Matrix& compose(const Matrix& rhs)
     {
         assert(n == rhs.n && m == rhs.m);
-        Matrix res(n, m);
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < m; ++j)
-                res[i][j] = op(A[i][j], rhs[i][j]);
-        return res;
+                A[i][j] = op(A[i][j], rhs[i][j]);
+        return *this;
     }
     Matrix& operator+=(const Matrix& rhs) { return compose<std::plus<T>>(rhs); }
     Matrix& operator-=(const Matrix& rhs) { return compose<std::minus<T>>(rhs); }
-    Matrix& operator*=(const Matrix& rhs)
+    Matrix& operator*=(const Matrix& rhs) { return *this = (*this * rhs); }
+    Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
+    Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
+    Matrix operator*(const Matrix& rhs)
     {
         assert(m == rhs.n);
         Matrix res(n, rhs.m);
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < rhs.m; ++j)
                 for (int k = 0; k < m; ++k)
-                    res[i][j] += A[i][k] * A[k][j];
+                    res[i][j] += A[i][k] * rhs.A[k][j];
         return res;
     }
-    Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
-    Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
-    Matrix operator*(const Matrix& rhs) const { return Matrix(*this) *= rhs; }
+    friend Matrix operator*(const T& alpha, Matrix M)
+    {
+        for (int i = 0; i < M.n; ++i)
+            for (int j = 0; j < M.m; ++j)
+                M[i][j] *= alpha;
+        return M;
+    }
     vector<T> operator*(const vector<T>& rhs) const
     {
         assert(m == size(rhs));
@@ -64,12 +72,12 @@ template<typename T> struct Matrix
     {
         assert(n == m);
         Matrix res(n, n);
-        for (int i = 0; i < n; ++i) res[i][i] = T(i);
+        for (int i = 0; i < n; ++i) res[i][i] = T(1);
         Matrix M = (*this);
         while (p > 0)
         {
             if (p & 1) res *= M;
-            M = M * M, p >>= 1;
+            M *= M, p >>= 1;
         }
         return res;
     }
