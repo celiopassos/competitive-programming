@@ -25,15 +25,15 @@ T power(T x, ll p)
     return res;
 }
 
-template<ll MOD>
+template<int MOD>
 struct Mint
 {
-    ll x;
-    Mint(ll x = 0) : x(((x % MOD) + MOD) % MOD) {};
+    int x;
+    Mint(ll x = 0) : x(int((x %= MOD) < 0 ? x + MOD : x)) {};
     Mint inv() const { assert(x != 0); return power(*this, MOD - 2); }
     Mint& operator+=(const Mint& rhs) { if ((x += rhs.x) >= MOD) x -= MOD; return *this; }
     Mint& operator-=(const Mint& rhs) { return *this += MOD - rhs.x; }
-    Mint& operator*=(const Mint& rhs) { x = (x * rhs.x) % MOD; return *this; }
+    Mint& operator*=(const Mint& rhs) { x = int((1LL * x * rhs.x) % MOD); return *this; }
     Mint& operator/=(const Mint& rhs) { return *this *= rhs.inv(); }
     Mint operator+(const Mint& rhs) const { return Mint(*this) += rhs; }
     Mint operator-(const Mint& rhs) const { return Mint(*this) -= rhs; }
@@ -41,7 +41,7 @@ struct Mint
     Mint operator/(const Mint& rhs) const { return Mint(*this) /= rhs; }
     bool operator==(const Mint& rhs) const { return x == rhs.x; }
     bool operator<(const Mint& rhs) const { return x < rhs.x; }
-    operator ll() const { return x; }
+    operator int() const { return x; }
     friend istream& operator>>(istream& in, Mint& a)
     {
         ll x; in >> x;
