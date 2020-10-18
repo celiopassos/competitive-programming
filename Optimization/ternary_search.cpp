@@ -13,7 +13,7 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-auto ternary_search(auto l, auto r, auto&& f, auto EPS=2)
+auto ternary_search(auto l, auto r, auto&& f, auto EPS)
 {
     using T = decltype(l);
     while (r - l > EPS)
@@ -24,8 +24,7 @@ auto ternary_search(auto l, auto r, auto&& f, auto EPS=2)
         else r = m2;
     }
     T c = l;
-    for (T x = c + 1; x <= r; ++x)
-        if (f(x) < f(c)) c = x;
+    for (T x = c + 1; x <= r; ++x) if (f(x) < f(c)) c = x;
     return pair(f(c), c);
 }
 
