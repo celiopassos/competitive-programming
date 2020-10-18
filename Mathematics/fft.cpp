@@ -14,11 +14,26 @@ const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 // Primes for NTT
-// 65537        = 1 + (2 ^ 16)
-// 7340033      = 1 + 7 * (2 ^ 20)
-// 998244353    = 1 + 7 * 17 * (2 ^ 23)
-// 469762049    = 1 + 7 * (2 ^ 26)
-// 167772161    = 1 + 5 * (2 ^ 25)
+// 998244353 = 1 + 7 * 17 * (2 ^ 23)
+// 469762049 = 1 + 7 * (2 ^ 26)
+// 167772161 = 1 + 5 * (2 ^ 25)
+
+constexpr int MODs[] = { 998244353, 469762049, 167772161 };
+constexpr int preexp[] = { 7 * 17, 7, 5 };
+constexpr int explog[] = { 23, 26, 25 };
+constexpr int primitive[] = { 3, 3, 3 };
+
+template<int idx>
+constexpr auto getroot(int e)
+{
+    using M = Mint<MODs[idx]>;
+    return power(M(primitive[idx]), preexp[idx] * (1LL << (explog[idx] - e)));
+}
+
+int logceil(int n)
+{
+    return __builtin_clz(1) - __builtin_clz(n) + !!(n & (n - 1));
+}
 
 template<typename T>
 void fft(vector<T>& p, vector<T>& aux, T x, int idx, int n)
@@ -46,13 +61,20 @@ void fft(vector<T>& p, T root)
 }
 
 template<typename T>
-vector<T> multiply(vector<T> p, vector<T> q, T root)
+vector<T> convolution(vector<T> p, vector<T> q, T root)
 {
+    const int n = size(p), m = size(q);
+    const int e = logceil(n + m), N = 1 << e;
+
+    p.resize(N, T()), q.resize(N, T());
+
     fft(p, root), fft(q, root);
-    for (int i = 0; i < size(p); ++i) p[i] *= q[i];
+    for (int i = 0; i < N; ++i) p[i] *= q[i];
 
     fft(p, T(1) / root);
-    for (int i = 0; i < size(p); ++i) p[i] /= T(size(p));
+    for (int i = 0; i < N; ++i) p[i] /= T(size(p));
+
+    p.resize(n + m - 1);
 
     return p;
 }
