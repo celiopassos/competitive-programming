@@ -61,10 +61,12 @@ void fft(vector<T>& p, T root)
 }
 
 template<typename T>
-vector<T> convolution(vector<T> p, vector<T> q, T root)
+vector<T> convolution(vector<T> p, vector<T> q, auto&& rootbuild)
 {
     const int n = size(p), m = size(q);
     const int e = logceil(n + m), N = 1 << e;
+
+    T root = rootbuild(e);
 
     p.resize(N, T(0)), q.resize(N, T(0));
 
