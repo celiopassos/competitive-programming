@@ -13,19 +13,22 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-auto ternary_search(auto l, auto r, auto&& f, auto EPS)
+template<typename... Args>
+auto ternary_search(auto l, auto r, auto eps, auto&& f, Args... args)
 {
     using T = decltype(l);
-    while (r - l > EPS)
+    while (r - l > eps)
     {
-        T m1 = l + (r - l) / 3;
-        T m2 = r - (r - l) / 3;
-        if (f(m1) > f(m2)) l = m1;
+        T m1 = l + (r - l) / 3, m2 = r - (r - l) / 3;
+        if (f(m1, args...) > f(m2, args...)) l = m1;
         else r = m2;
     }
     T c = l;
-    for (T x = c + 1; x <= r; ++x) if (f(x) < f(c)) c = x;
-    return pair(f(c), c);
+    if (is_floating_point<T>::value)
+        return pair(f(c, args...), c);
+    for (T x = c + 1; x <= r; ++x)
+        if (f(x, args...) < f(c, args...)) c = x;
+    return pair(f(c, args...), c);
 }
 
 int main()
