@@ -66,7 +66,7 @@ vector<T> convolution(vector<T> p, vector<T> q, T root)
     const int n = size(p), m = size(q);
     const int e = logceil(n + m), N = 1 << e;
 
-    p.resize(N, T()), q.resize(N, T());
+    p.resize(N, T(0)), q.resize(N, T(0));
 
     fft(p, root), fft(q, root);
     for (int i = 0; i < N; ++i) p[i] *= q[i];
