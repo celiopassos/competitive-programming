@@ -13,10 +13,9 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename... Args>
-auto ternary_search(auto l, auto r, auto eps, auto&& f, Args... args)
+template<typename T, typename... Args>
+auto ternary_search(T l, T r, T eps, auto&& f, Args... args)
 {
-    using T = decltype(l);
     while (r - l > eps)
     {
         T m1 = l + (r - l) / 3, m2 = r - (r - l) / 3;
@@ -24,8 +23,6 @@ auto ternary_search(auto l, auto r, auto eps, auto&& f, Args... args)
         else r = m2;
     }
     T c = l;
-    if (is_floating_point<T>::value)
-        return pair(f(c, args...), c);
     for (T x = c + 1; x <= r; ++x)
         if (f(x, args...) < f(c, args...)) c = x;
     return pair(f(c, args...), c);
@@ -35,4 +32,3 @@ int main()
 { _
     exit(0);
 }
-
