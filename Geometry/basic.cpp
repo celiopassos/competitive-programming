@@ -19,7 +19,7 @@ const double EPS = 1e-9;
 template<typename T>
 bool equal(T a, T b)
 {
-    return abs(a - b) <= EPS<T>::value;
+    return abs(a - b) <= EPS;
 }
 
 template<typename T>
