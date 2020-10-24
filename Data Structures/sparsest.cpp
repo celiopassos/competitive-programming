@@ -13,12 +13,14 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename X>
+template<typename T, typename X = T>
 struct F1
 {
+    inline static const T Tid = T(0);
+    inline static const F1 Fid = F1(0);
     X add;
     explicit F1(X add) : add(add) {}
-    void apply(auto& old, int L, int R) const
+    void apply(T& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
     }
@@ -27,30 +29,30 @@ struct F1
         add += op.add; (void)L, (void)R;
     }
     bool operator==(const F1& op) const { return add == op.add; }
-    static auto combine(const auto& lhs, const auto& rhs)
+    static T op(const T& lhs, const T& rhs)
     {
         return lhs + rhs;
     }
 };
 
-template<typename T, typename F>
+template<typename F>
 class SparseST
 {
 private:
     const int L, R;
-    const T Tid; const F Fid;
+    using T = typename remove_const<decltype(F::Tid)>::type;
     vector<T> st; vector<F> lazy;
     vector<int> LEFT, RIGHT;
     int create()
     {
-        st.push_back(Tid), lazy.push_back(Fid), LEFT.push_back(-1), RIGHT.push_back(-1);
+        st.push_back(F::Tid), lazy.push_back(F::Fid), LEFT.push_back(-1), RIGHT.push_back(-1);
         return size(st) - 1;
     }
     int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = create()) : LEFT[p]; }
     int right(int p) { return RIGHT[p] == -1 ? (RIGHT[p] = create()) : RIGHT[p]; }
     void push(int p, int l, int r)
     {
-        if (lazy[p] == Fid) return; // may wanna remove this...
+        if (lazy[p] == F::Fid) return; // may wanna remove this...
         lazy[p].apply(st[p], l, r);
         if (l != r)
         {
@@ -58,7 +60,7 @@ private:
             lazy[left(p)].compose(lazy[p], l, m);
             lazy[right(p)].compose(lazy[p], m + 1, r);
         }
-        lazy[p] = Fid;
+        lazy[p] = F::Fid;
     }
     void update(int p, int l, int r, int ql, int qr, F op)
     {
@@ -75,7 +77,7 @@ private:
     }
     T query(int p, int l, int r, int ql, int qr)
     {
-        if (p == -1 || r < ql || qr < l) return Tid;
+        if (p == -1 || r < ql || qr < l) return F::Tid;
         push(p, l, r);
         if (ql <= l && r <= qr) return st[p];
         int m = l + (r - l) / 2;
@@ -84,8 +86,8 @@ private:
         return F::combine(resl, resr);
     }
 public:
-    SparseST(int L, int R, T Tid, F Fid) : L(L), R(R), Tid(Tid), Fid(Fid) { create(); }
-    void update(int l, int r, F op) { update(0, L, R, l, r, op); }
+    SparseST(int L, int R) : L(L), R(R) { create(); }
+    void update(int l, int r) { update(0, L, R, l, r); }
     T query(int l, int r) { return query(0, L, R, l, r); }
 };
 
