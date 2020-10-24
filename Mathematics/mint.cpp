@@ -41,7 +41,7 @@ struct Mint
     Mint operator/(const Mint& rhs) const { return Mint(*this) /= rhs; }
     bool operator==(const Mint& rhs) const { return x == rhs.x; }
     bool operator<(const Mint& rhs) const { return x < rhs.x; }
-    operator int() const { return x; }
+    friend ostream& operator<<(ostream& out, const Mint& a) { out << a.x; return out; }
     friend istream& operator>>(istream& in, Mint& a)
     {
         ll x; in >> x;
