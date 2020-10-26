@@ -13,42 +13,39 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<ll MOD, ll P>
-class StringHash
+template<typename T> struct StringHash
 {
 private:
-    vector<ll> power, h;
+    static const T B;
+    const int n;
+    vector<T> p, h;
+    template<typename... Args> T concat() { return T(0); }
 public:
-    StringHash(const string& s)
+    StringHash(const string& s) : n(size(s)), p(n, T(1)), h(n, T(0))
     {
         const int n = size(s);
-        power.assign(n, 1LL);
-        h.assign(n, 0LL); h[0] = s[0] + 1;
-        for (int i = 1; i < n; power[i] = (power[i - 1] * P) % MOD, ++i)
-            h[i] = (P * h[i - 1] + s[i] + 1) % MOD;
+        h[0] = T(s[0] + 1);
+        for (int i = 1; i < n; p[i] = p[i - 1] * B, ++i)
+            h[i] = (B * h[i - 1] + T(s[i] + 1));
     }
-    ll query(int i, int j) const
+    T query(int i, int j) const
     {
-        if (i == 0) return h[j];
-        return (h[j] + (MOD - (h[i - 1] * power[j - (i - 1)]) % MOD)) % MOD;
+        return i > 0 ? h[j] - h[i - 1] * p[j - i + 1] : h[j];
+    }
+    template<typename... Args> T concat(int i, int j, Args... args) // reverse order
+    {
+        return query(i, j) + p[j - i + 1] * concat(args...);
     }
 };
 
-class BigHash
-{
-private:
-    static constexpr ll MOD1 = 998244353, MOD2 = 1e9 + 7, MOD3 = 1e9 + 9;
-    static constexpr ll P1 = 263, P2 = 271, P3 = 353;
-    const StringHash<MOD1, P1> hash1;
-    const StringHash<MOD2, P2> hash2;
-    const StringHash<MOD3, P3> hash3;
-public:
-    BigHash(const string& s) : hash1(s), hash2(s), hash3(s) {}
-    auto query(int i, int j) const
-    {
-        return tuple{ hash1.query(i, j), hash2.query(i, j), hash3.query(i, j), (j - i + 1) };
-    }
-};
+constexpr int MODs[] = { 998244353, 1000000007, 1000000009 };
+constexpr int base[] = { 263, 271, 353 };
+
+// using T = Pointwise<Mint<MODs[0]>, Mint<MODs[1]>, Mint<MODs[2]>>;
+// using H = StringHash<T>;
+
+// template<>
+// const T H::B(base[0], base[1], base[2]);
 
 int main()
 { _
