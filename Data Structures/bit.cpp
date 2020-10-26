@@ -25,7 +25,7 @@ template<typename G>
 class BIT
 {
 private:
-    using T = decltype(G::id);
+    using T = typename remove_const<decltype(G::id)>::type;
     int b(int p) { return p & (-p); }
     const int n;
     vector<T> ft;

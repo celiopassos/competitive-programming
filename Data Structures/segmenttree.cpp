@@ -24,7 +24,7 @@ template<typename M>
 struct SegmentTree
 {
 private:
-    using T = remove_const<decltype(M::id)>::type;
+    using T = typename remove_const<decltype(M::id)>::type;
     const int n;
     vector<T> st;
 public:

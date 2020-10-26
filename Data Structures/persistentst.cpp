@@ -24,7 +24,7 @@ template<typename M>
 class PersistentST
 {
 private:
-    using T = remove_const<decltype(M::id)>::type;
+    using T = typename remove_const<decltype(G::id)>::type;
     const int n;
     vector<T> st;
     vector<int> left, right, root, last;

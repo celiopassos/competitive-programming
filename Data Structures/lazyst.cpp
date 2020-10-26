@@ -16,10 +16,10 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T, typename X = T>
 struct F1
 {
-    inline static const T Tid = T(0);
-    inline static const F1 Fid = F1(0);
+    static constexpr T Tid = T(0);
+    static constexpr F1 Fid = F1(0);
     X add;
-    explicit F1(X add) : add(add) {}
+    constexpr explicit F1(X add) : add(add) {}
     void apply(T& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
