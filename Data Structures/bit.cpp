@@ -37,7 +37,7 @@ private:
     }
 public:
     BIT(int n) : n(n) { ft.assign(n + 1, G::id); }
-    BIT(const vector<T>& a) : BIT(size(a), G::id)
+    BIT(const vector<T>& a) : BIT(size(a))
     {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);
         for (int i = n; i >= 1; --i) ft[i] = G::op(G::inv(ft[i - b(i)]), ft[i]);
