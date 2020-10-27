@@ -18,34 +18,31 @@ struct Pointwise
 {
     Pointwise() { }
     Pointwise(auto init) { (void)init; }
-    Pointwise& operator+=(const Pointwise& rhs) { (void)rhs; return *this; };
-    Pointwise& operator-=(const Pointwise& rhs) { (void)rhs; return *this; };
-    Pointwise& operator*=(const Pointwise& rhs) { (void)rhs; return *this; };
-    Pointwise& operator/=(const Pointwise& rhs) { (void)rhs; return *this; };
-    Pointwise operator+(const Pointwise& rhs) const { (void)rhs; return Pointwise(); };
-    Pointwise operator-(const Pointwise& rhs) const { (void)rhs; return Pointwise(); };
-    Pointwise operator*(const Pointwise& rhs) const { (void)rhs; return Pointwise(); };
-    Pointwise operator/(const Pointwise& rhs) const { (void)rhs; return Pointwise(); };
-    tuple<> get() { return tuple<>(); }
 };
 
 template<typename T, typename... Ts>
 struct Pointwise<T, Ts...>
 {
+    static constexpr bool base = (sizeof...(Ts) == 0);
     T value;
     Pointwise<Ts...> nxt;
     Pointwise(T value, Ts... args) : value(value), nxt(args...) { }
     Pointwise(auto init) : value(init), nxt(init) { }
     Pointwise() : value(T()), nxt() { }
-    Pointwise& operator+=(const Pointwise& rhs) { value += rhs.value, nxt += rhs.nxt; return *this; };
-    Pointwise& operator-=(const Pointwise& rhs) { value -= rhs.value, nxt -= rhs.nxt; return *this; };
-    Pointwise& operator*=(const Pointwise& rhs) { value *= rhs.value, nxt *= rhs.nxt; return *this; };
-    Pointwise& operator/=(const Pointwise& rhs) { value /= rhs.value, nxt /= rhs.nxt; return *this; };
+    Pointwise& operator+=(const Pointwise& rhs) { value += rhs.value; if constexpr (not base) nxt += rhs.nxt; return *this; };
+    Pointwise& operator-=(const Pointwise& rhs) { value -= rhs.value; if constexpr (not base) nxt -= rhs.nxt; return *this; };
+    Pointwise& operator*=(const Pointwise& rhs) { value *= rhs.value; if constexpr (not base) nxt *= rhs.nxt; return *this; };
+    Pointwise& operator/=(const Pointwise& rhs) { value /= rhs.value; if constexpr (not base) nxt /= rhs.nxt; return *this; };
     Pointwise operator+(const Pointwise& rhs) const { return Pointwise(*this) += rhs; };
     Pointwise operator-(const Pointwise& rhs) const { return Pointwise(*this) -= rhs; };
     Pointwise operator*(const Pointwise& rhs) const { return Pointwise(*this) *= rhs; };
     Pointwise operator/(const Pointwise& rhs) const { return Pointwise(*this) /= rhs; };
-    auto get() { return tuple_cat(tuple<T&>(value), nxt.get()); }
+    bool operator==(const Pointwise& rhs) const
+    {
+        if constexpr (bool x = (value == rhs.value); base) return x;
+        else return x && nxt == rhs.nxt;
+    }
+    auto get() { if constexpr (auto t = tuple<T&>(value); base) return t; else return tuple_cat(t, nxt.get()); }
 };
 
 int main()
