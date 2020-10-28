@@ -20,7 +20,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 // E.g., linear function:
 
 template<typename T>
-struct Function
+struct Linear
 {
     T a = 0, b = numeric_limits<T>::max();
     T operator()(T x) const { return a * x + b; }
@@ -36,12 +36,11 @@ struct LiChaoTree
 
     LiChaoTree(Domain L, Domain R) : L(L), R(R) { create(); }
 
-    int size() { return size(st); }
     int create()
     {
         LEFT.push_back(-1), RIGHT.push_back(-1);
         st.push_back(inf);
-        return size() - 1;
+        return size(st) - 1;
     }
     int left(int p) { return LEFT[p] == -1 ? LEFT[p] = create() : LEFT[p]; }
     int right(int p) { return RIGHT[p] == -1 ? RIGHT[p] = create() : RIGHT[p]; }
@@ -68,7 +67,7 @@ struct LiChaoTree
         }
     }
 
-    auto operator()(Domain x) // returns minimum
+    auto query(Domain x) // returns minimum
     {
         auto res = inf(x);
         Domain l = L, r = R;
