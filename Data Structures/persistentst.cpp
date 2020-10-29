@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define size(X) (int)size(X)
+#define size(X) (int)std::size(X)
 
 using ll = long long;
 
@@ -14,17 +14,23 @@ const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 template<typename T>
+struct M1
+{
+    static constexpr T id = 0;
+    static T op(const T& x, const T& y) { return x + y; }
+};
+
+template<typename M>
 class PersistentST
 {
 private:
+    using T = typename remove_const<decltype(G::id)>::type;
     const int n;
-    const T Tid;
-    const function<T(T, T)> op;
     vector<T> st;
     vector<int> left, right, root, last;
     int create(int rt)
     {
-        left.push_back(-1), right.push_back(-1), last.push_back(rt), st.push_back(Tid);
+        left.push_back(-1), right.push_back(-1), last.push_back(rt), st.push_back(M::id);
         return size(st) - 1;
     }
     int copy(int p, int rt)
@@ -43,21 +49,21 @@ private:
             int m = l + (r - l) / 2;
             if (pos <= m) modify(left[p] = copy(left[p], last[p]), l, m, pos, value);
             else modify(right[p] = copy(right[p], last[p]), m + 1, r, pos, value);
-            st[p] = op(left[p] != -1 ? st[left[p]] : Tid, right[p] != -1 ? st[right[p]] : Tid);
+            st[p] = M::op(left[p] != -1 ? st[left[p]] : M::id, right[p] != -1 ? st[right[p]] : M::id);
         }
     }
     T query(int p, int l, int r, int ql, int qr)
     {
-        if (p == -1 || r < ql || qr < l) return Tid;
+        if (p == -1 || r < ql || qr < l) return M::id;
         if (ql <= l && r <= qr) return st[p];
         int m = l + (r - l) / 2;
         T resl = query(left[p], l, m, ql, qr);
         T resr = query(right[p], m + 1, r, ql, qr);
-        return op(resl, resr);
+        return M::op(resl, resr);
     }
 public:
-    PersistentST(int n, T Tid, auto op) : n(n), Tid(Tid), op(op) { root.push_back(create(0)); }
-    PersistentST(const vector<T>& a, T Tid, auto op) : PersistentST(size(a), Tid, op)
+    PersistentST(int n) : n(n) { root.push_back(create(0)); }
+    PersistentST(const vector<T>& a) : PersistentST(size(a))
     {
         function<void(int, int, int)> build = [&](int p, int l, int r)
         {
@@ -67,7 +73,7 @@ public:
                 int m = l + (r - l) / 2;
                 left[p] = create(), right[p] = create();
                 build(left[p], l, m), build(right[p], m + 1, r);
-                st[p] = op(st[left[p]], st[right[p]]);
+                st[p] = M::op(st[left[p]], st[right[p]]);
             }
         };
         build(0, 0, n - 1);

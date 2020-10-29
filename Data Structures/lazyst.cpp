@@ -6,19 +6,21 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define size(X) (int)size(X)
+#define size(X) (int)std::size(X)
 
 using ll = long long;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename X>
+template<typename T, typename X = T>
 struct F1
 {
+    static constexpr T Tid = T(0);
+    static constexpr F1 Fid = F1(0);
     X add;
-    explicit F1(X add) : add(add) {}
-    void apply(auto& old, int L, int R) const
+    constexpr explicit F1(X add) : add(add) {}
+    void apply(T& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
     }
@@ -27,23 +29,25 @@ struct F1
         add += op.add; (void)L, (void)R;
     }
     bool operator==(const F1& op) const { return add == op.add; }
-    static auto combine(const auto& lhs, const auto& rhs)
+    static T op(const T& lhs, const T& rhs)
     {
         return lhs + rhs;
     }
 };
 
-template<typename T, typename F>
+template<typename F>
 class LazyST
 {
 private:
-    const int n; const T Tid; const F Fid;
-    vector<T> st; vector<F> lazy;
+    const int n;
+    using T = typename remove_const<decltype(F::Tid)>::type;
+    vector<T> st;
+    vector<F> lazy;
     int left(int p) const { return 2 * p + 1; }
     int right(int p) const { return 2 * p + 2; }
     void push(int p, int l, int r)
     {
-        if (lazy[p] == Fid) return; // may wanna remove this...
+        if (lazy[p] == F::Fid) return; // may wanna remove this...
         lazy[p].apply(st[p], l, r);
         if (l != r)
         {
@@ -51,7 +55,7 @@ private:
             lazy[left(p)].compose(lazy[p], l, m);
             lazy[right(p)].compose(lazy[p], m + 1, r);
         }
-        lazy[p] = Fid;
+        lazy[p] = F::Fid;
     }
     void update(int p, int l, int r, int ql, int qr, F op)
     {
@@ -63,25 +67,22 @@ private:
             push(p, l, r);
             update(left(p), l, m, ql, qr, op);
             update(right(p), m + 1, r, ql, qr, op);
-            st[p] = F::combine(st[left(p)], st[right(p)]);
+            st[p] = F::op(st[left(p)], st[right(p)]);
         }
     }
     T query(int p, int l, int r, int ql, int qr)
     {
-        if (r < ql || qr < l) return Tid;
+        if (r < ql || qr < l) return F::Tid;
         push(p, l, r);
         if (ql <= l && r <= qr) return st[p];
         int m = l + (r - l) / 2;
         T resl = query(left(p), l, m, ql, qr);
         T resr = query(right(p), m + 1, r, ql, qr);
-        return F::combine(resl, resr);
+        return F::op(resl, resr);
     }
 public:
-    LazyST(int n, T Tid, F Fid) : n(n), Tid(Tid), Fid(Fid)
-    {
-        st.assign(4 * n + 1, Tid), lazy.assign(4 * n + 1, Fid);
-    }
-    LazyST(const vector<T>& a, T Tid, F Fid) : LazyST(size(a), Tid, Fid)
+    LazyST(int n) : n(n) { st.assign(4 * n + 1, F::Tid), lazy.assign(4 * n + 1, F::Fid); }
+    LazyST(const vector<T>& a) : LazyST(size(a))
     {
         function<void(int, int, int)> build = [&](int p, int l, int r)
         {
@@ -90,7 +91,7 @@ public:
             {
                 int m = l + (r - l) / 2;
                 build(left(p), l, m), build(right(p), m + 1, r);
-                st[p] = F::combine(st[left(p)], st[right(p)]);
+                st[p] = F::op(st[left(p)], st[right(p)]);
             }
         };
         build(0, 0, n - 1);
@@ -101,6 +102,12 @@ public:
 
 int main()
 { _
+    const int n = 10;
+    using F = F1<int>;
+    F inst(n);
+    vector<F> v;
+    v.assign(n, F::Fid);
+    LazyST<F> st(n);
     exit(0);
 }
 

@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define size(X) (int)size(X)
+#define size(X) (int)std::size(X)
 
 using ll = long long;
 
@@ -41,7 +41,7 @@ struct Mint
     Mint operator/(const Mint& rhs) const { return Mint(*this) /= rhs; }
     bool operator==(const Mint& rhs) const { return x == rhs.x; }
     bool operator<(const Mint& rhs) const { return x < rhs.x; }
-    operator int() const { return x; }
+    friend ostream& operator<<(ostream& out, const Mint& a) { out << a.x; return out; }
     friend istream& operator>>(istream& in, Mint& a)
     {
         ll x; in >> x;

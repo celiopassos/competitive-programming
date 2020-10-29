@@ -8,7 +8,7 @@
 #include <ext/rope>
 
 using namespace std;
-using namespace __gnu_pbds;
+using namespace __gnu_pbds; // policy-based
 using namespace __gnu_cxx; // rope
 
 #define _ ios_base::sync_with_stdio(0);cin.tie(0);
@@ -17,11 +17,18 @@ using namespace __gnu_cxx; // rope
 #define all(X) begin(X), end(X)
 #define size(X) (int)size(X)
 
-template<typename T>
-using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 using ll = long long;
 
+template<typename T>
+using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+
 mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
+
+template<typename T>
+struct better_queue : public priority_queue<T>
+{
+    void clear() { this->c.clear(); }
+};
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
