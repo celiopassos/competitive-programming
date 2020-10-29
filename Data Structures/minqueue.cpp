@@ -6,7 +6,7 @@ using namespace std;
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define size(X) (int)size(X)
+#define size(X) (int)std::size(X)
 
 using ll = long long;
 
@@ -24,7 +24,7 @@ template<typename M, bool top_down = false>
 class MinimumStack
 {
 private:
-    using T = remove_const<decltype(M::id)>::type;
+    using T = typename remove_const<decltype(M::id)>::type;
     stack<pair<T, T>> st;
 public:
     T top() const { return st.top().first; }
@@ -38,14 +38,14 @@ public:
     }
     void pop() { st.pop(); }
     bool empty() const { return st.empty(); }
-    int size() const { return size(st); }
+    int (size)() const { return size(st); }
 };
 
 template<typename M>
 class MinimumQueue
 {
 private:
-    using T = remove_const<decltype(M::id)>::type;
+    using T = typename remove_const<decltype(M::id)>::type;
     MinimumStack<M, false> in;
     MinimumStack<M, true> out;
     void move()
@@ -62,7 +62,7 @@ public:
     void push(T value) { in.push(value); }
     void pop() { move(); out.pop(); }
     bool empty() const { return in.empty() && out.empty(); }
-    int size() const { return size(in) + size(out); }
+    int (size)() const { return size(in) + size(out); }
 };
 
 int main()
