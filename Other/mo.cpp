@@ -13,22 +13,42 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-// with K = n / sqrt(q), complexity is O(n * sqrt(q))
-
-void mo(auto Q, auto& eval, auto& remove, auto& insert, int K)
+ll hilbert(int x, int y, int N)
 {
-    int q = size(Q);
+    ll d = 0;
+    for (int s = N >> 1; s > 0; s >>= 1)
+    {
+        int rx = (x & s) > 0, ry = (y & s) > 0;
+        d += 1LL * s * s * ((3 * rx) ^ ry);
+        if (ry == 0)
+        {
+            if (rx == 1) x = N - 1 - x, y = N - 1 - y;
+            swap(x, y);
+        }
+    }
+    return d;
+}
+
+int logceil(int n)
+{
+    return __builtin_clz(1) - __builtin_clz(n) + !!(n & -n);
+}
+
+void mo(const auto& queries, auto& eval, auto& remove, auto& insert, int n)
+{
+    const int q = size(queries), N = 1 << logceil(n);
+
     vector<int> Z(q, 0); iota(all(Z), 0);
 
-    auto cmp = [&](int i, int j)
+    vector<ll> h(q, 0LL);
+
+    for (int z = 0; z < q; ++z)
     {
-        if (Q[i].first / K != Q[j].first / K)
-            return Q[i].first / K < Q[j].first / K;
-        if ((Q[i].first / K) & 1)
-            return Q[i].second > Q[j].second;
-        return Q[i].second < Q[j].second;
-    };
-    sort(all(Z), cmp);
+        auto [l, r] = queries[z];
+        h[z] = hilbert(l, r, N);
+    }
+
+    sort(all(Z), [&h](int z, int w) { return h[z] < h[w]; });
 
     int lcur = 0, rcur = 0; insert(0);
 
@@ -42,8 +62,8 @@ void mo(auto Q, auto& eval, auto& remove, auto& insert, int K)
 
     for (auto z : Z)
     {
-        update(Q[z].first, Q[z].second);
-        eval(z);
+        auto [l, r] = queries[z];
+        update(l, r), eval(z);
     }
 }
 
