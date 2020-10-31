@@ -15,7 +15,7 @@ using namespace __gnu_cxx; // rope
 #define endl '\n'
 #define debug(x) cerr << #x << " == " << (x) << '\n';
 #define all(X) begin(X), end(X)
-#define size(X) (int)size(X)
+#define size(X) (int)std::size(X)
 
 using ll = long long;
 
