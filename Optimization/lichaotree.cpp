@@ -83,55 +83,5 @@ struct LiChaoTree
 
 int main()
 { _
-    int n, m; cin >> n >> m;
-
-    vector E(0, tuple(0, 0, 0));
-
-    vector a(m, 0), b(m, 0), s(m, 0), e(m, 0);
-    for (int j = 0; j < m; ++j)
-    {
-        cin >> a[j] >> b[j] >> s[j] >> e[j];
-
-        --a[j], --b[j];
-
-        E.emplace_back(s[j], 0, j);
-        E.emplace_back(e[j], 1, j);
-    }
-
-    sort(all(E));
-
-    const int tmax = 1e6;
-
-    using F = Linear<ll>;
-    vector LCT(n, LiChaoTree<F, int>(0, tmax + 1));
-
-    auto sq = [&](ll x) { return x * x; };
-
-    vector cost(m, LINF);
-
-    LCT[0].update(F{ 0LL, 0LL });
-
-    for (auto [t, type, j] : E)
-    {
-        if (type == 0)
-        {
-            auto Q = LCT[a[j]].query(s[j]);
-            if (Q < LINF) cost[j] = sq(s[j]) + Q;
-        }
-        else
-        {
-            auto Q = cost[j];
-            assert(Q >= 0);
-            if (Q < LINF) LCT[b[j]].update(F{ -2 * e[j], sq(e[j]) + Q });
-        }
-    }
-
-    ll ans = LINF;
-
-    for (int j = 0; j < m; ++j)
-        if (b[j] == n - 1) ans = min(ans, cost[j]);
-
-    cout << ans << endl;
-
     exit(0);
 }
