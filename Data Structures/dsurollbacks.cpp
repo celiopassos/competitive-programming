@@ -18,20 +18,20 @@ class DSU
 private:
     vector<int> p, sz;
     stack<pair<int&, int>> snapshots;
-    int num_disjoint_sets;
+    int num;
 public:
-    DSU(const int n) : num_disjoint_sets(n)
+    DSU(const int n) : num(n)
     {
         p.assign(n, 0), sz.assign(n, 1);
-        for (int i = 0; i < n; ++i) p[i] = i;
+        for (int u = 0; u < n; ++u) p[u] = u;
     }
-    int find_set(int i) const
+    int find_set(int u) const
     {
-        while (p[i] != i) i = p[i];
-        return i;
+        while (p[u] != u) u = p[u];
+        return u;
     }
-    int set_size(int i) const { return sz[find_set(i)]; }
-    int num_sets() const { return num_disjoint_sets; }
+    int getsize(int u) const { return sz[find_set(u)]; }
+    int (size)() const { return num; }
     void save(int& x)
     {
         snapshots.push(pair<int&, int>(x, x));
@@ -44,22 +44,12 @@ public:
             snapshots.pop();
         }
     }
-    void union_set(int i, int j)
+    void union_set(int u, int v)
     {
-        int x = find_set(i), y = find_set(j);
-
+        int x = find_set(u), y = find_set(v);
         if (sz[x] < sz[y]) swap(x, y);
-
-        save(num_disjoint_sets);
-        save(p[y]);
-        save(sz[x]);
-
-        if (x != y)
-        {
-            --num_disjoint_sets;
-            p[y] = x;
-            sz[x] += sz[y];
-        }
+        save(num), save(p[y]), save(sz[x]);
+        if (x != y) num -= 1, p[y] = x, sz[x] += sz[y];
     }
 };
 
