@@ -18,35 +18,29 @@ bool chmin(auto& x, auto y)
     return y < x ? x = y, true : false;
 }
 
+template<typename T>
+auto dijkstra(int s, const auto& E)
+{
+    vector dist(size(E), T(LINF)); dist[s] = T(0);
+    struct Data
+    {
+        T key; int v;
+        Data(T key, int v) : key(key), v(v) { }
+        bool operator<(const Data& rhs) const { return key > rhs.key; }
+    };
+    priority_queue<Data> pq; pq.emplace(dist[s], s);
+    while (!pq.empty())
+    {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d > dist[u]) continue;
+        for (auto [v, w] : E[u])
+            if (chmin(dist[v], dist[u] + w)) pq.emplace(dist[v], v);
+    }
+    return dist;
+}
+
 int main()
 { _
-    int n, m; cin >> n >> m;
-    vector E(n, vector(0, pair(0, 0)));
-    for (int j = 0; j < m; ++j)
-    {
-        int u, v, w; cin >> u >> v >> w; --u, --v;
-        E[u].emplace_back(v, w), E[v].emplace_back(u, w);
-    }
-
-    auto dijkstra = [&](int s)
-    {
-        vector dist(n, INF); dist[s] = 0;
-        struct Data
-        {
-            int key; int v;
-            bool operator<(const Data& rhs) const { return key > rhs.key; }
-        };
-        priority_queue<Data> pq; pq.push(Data{ 0, s });
-        while (!pq.empty())
-        {
-            auto [d, u] = pq.top(); pq.pop();
-            if (d > dist[u]) continue;
-            for (auto [v, w] : E[u])
-                if (chmin(dist[v], dist[u] + w)) pq.push(Data{ dist[v], v });
-        }
-        return dist;
-    };
-
     exit(0);
 }
 
