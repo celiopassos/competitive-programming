@@ -68,14 +68,6 @@ public:
 
 int main()
 { _
-    int n, q; cin >> n >> q;
-    vector<vector<int>> E(n);
-    for (int j = 0; j < n - 1; ++j)
-    {
-        int u, v; cin >> u >> v; --u, --v;
-        E[u].push_back(v), E[v].push_back(u);
-    }
-    CentroidDecomposition cd(E);
     exit(0);
 }
 
