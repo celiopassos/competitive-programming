@@ -18,6 +18,7 @@ struct Pointwise
 {
     Pointwise() { }
     Pointwise(auto init) { (void)init; }
+    auto get() { return tuple<>(); }
 };
 
 template<typename T, typename... Ts>
@@ -37,12 +38,18 @@ struct Pointwise<T, Ts...>
     Pointwise operator-(const Pointwise& rhs) const { return Pointwise(*this) -= rhs; };
     Pointwise operator*(const Pointwise& rhs) const { return Pointwise(*this) *= rhs; };
     Pointwise operator/(const Pointwise& rhs) const { return Pointwise(*this) /= rhs; };
+    bool operator<(const Pointwise& rhs) const
+    {
+        if constexpr (base) return value < rhs.value;
+        else if (value == rhs.value) return nxt < rhs.nxt;
+        else return value < rhs.value;
+    }
     bool operator==(const Pointwise& rhs) const
     {
-        if constexpr (bool x = (value == rhs.value); base) return x;
-        else return x && nxt == rhs.nxt;
+        if constexpr (base) return value == rhs.value;
+        else return value == rhs.value && nxt == rhs.nxt;
     }
-    auto get() { if constexpr (auto t = tuple<T&>(value); base) return t; else return tuple_cat(t, nxt.get()); }
+    auto get() { return tuple_cat(tuple<T&>(value), nxt.get()); }
 };
 
 int main()
