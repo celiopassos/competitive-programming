@@ -18,12 +18,6 @@ class StringHash
 {
 private:
     vector<ll> power, h;
-    ll rconcat(ll sum) const { return sum; }
-    template<typename... Args>
-    ll rconcat(ll sum, int i, int j, Args... args) const
-    {
-        return rconcat((sum * power[j - i + 1] % MOD + query(i, j)) % MOD, args...);
-    }
 public:
     StringHash(const string& s)
     {
@@ -38,8 +32,10 @@ public:
         if (i == 0) return h[j];
         return (h[j] + (MOD - (h[i - 1] * power[j - i + 1]) % MOD)) % MOD;
     }
-    template<typename... Args>
-    ll concat(Args... args) const { return rconcat(0LL, args...); }
+    ll concat(ll prefix, int i, int j) const
+    {
+        return (prefix * power[j - i + 1] % MOD + query(i, j)) % MOD;
+    }
 };
 
 class BigHash
