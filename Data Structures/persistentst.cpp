@@ -24,7 +24,7 @@ template<typename M>
 class PersistentST
 {
 private:
-    using T = typename remove_const<decltype(G::id)>::type;
+    using T = typename remove_const<decltype(M::id)>::type;
     const int n;
     vector<T> st;
     vector<int> left, right, root, last;
@@ -71,7 +71,7 @@ public:
             else
             {
                 int m = l + (r - l) / 2;
-                left[p] = create(), right[p] = create();
+                left[p] = create(0), right[p] = create(0);
                 build(left[p], l, m), build(right[p], m + 1, r);
                 st[p] = M::op(st[left[p]], st[right[p]]);
             }

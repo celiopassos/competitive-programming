@@ -34,6 +34,7 @@ public:
     SparseTable(const vector<T>& a) : SparseTable(a, [](T x, T y){ return min(x, y); }) { }
     T query(int l, int r) const
     {
+        assert(l <= r);
         int x = log[r - l + 1];
         return op(st[l][x], st[r - (1 << x) + 1][x]);
     }

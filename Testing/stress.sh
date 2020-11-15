@@ -12,21 +12,24 @@ do
 
     printf "Judge:\n"
     time ./$judge < input.txt > correct.txt
+    retjudge=$?
     printf "\n"
 
     printf "Solution:\n"
     time ./$solution < input.txt > output.txt
+    retsolution=$?
     printf "\n"
 
-    if [ "$?" -ne 0 ]
+    if [ "$retsolution" -ne 0 ]
     then
-        printf "Failed: runtime error ($?).\n"
+        printf "Failed (solution): runtime error ($retsolution).\n"
         break
     elif ! cmp -s output.txt correct.txt
     then
         printf "Failed: wrong answer.\n"
         break
     fi
+
     printf "OK!\n"
     printf "===============================\n"
 done

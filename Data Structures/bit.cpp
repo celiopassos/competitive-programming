@@ -19,6 +19,7 @@ struct G1
     static constexpr T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
     static T inv(const T& x) { return -x; }
+    static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
 template<typename G>
@@ -27,7 +28,7 @@ class BIT
 private:
     using T = typename remove_const<decltype(G::id)>::type;
     int b(int p) { return p & (-p); }
-    const int n;
+    const int n, h;
     vector<T> ft;
     T query(int p)
     {
@@ -36,7 +37,7 @@ private:
         return res;
     }
 public:
-    BIT(int n) : n(n) { ft.assign(n + 1, G::id); }
+    BIT(int n) : n(n), h(31 - __builtin_clz(n + 1)) { ft.assign(n + 1, G::id); }
     BIT(const vector<T>& a) : BIT(size(a))
     {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);
@@ -46,6 +47,20 @@ public:
     void update(int p, T value)
     {
         for (int i = p + 1; i <= n; i += b(i)) ft[i] = G::op(ft[i], value);
+    }
+    int lower_bound(T value) // first r such that G::cmp(query(0, r), value) == false
+    {
+        T prefix = G::id;
+        int pos = 0;
+        for (int x = h; x >= 0; --x)
+        {
+            if (pos + (1 << x) <= n && G::cmp(G::op(prefix, ft[pos + (1 << x)]), value) == true)
+            {
+                pos += 1 << x;
+                prefix = G::op(prefix, ft[pos]);
+            }
+        }
+        return pos;
     }
 };
 

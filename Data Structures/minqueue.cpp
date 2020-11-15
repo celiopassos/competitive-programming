@@ -57,7 +57,7 @@ private:
         }
     }
 public:
-    T front() const { move(); return out.top(); }
+    T front() { move(); return out.top(); }
     T minimum() const { return op(out.minimum(), in.minimum()); }
     void push(T value) { in.push(value); }
     void pop() { move(); out.pop(); }

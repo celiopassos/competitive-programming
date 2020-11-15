@@ -16,27 +16,25 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 class DSU
 {
 private:
-    vector<int> p, rk, sz;
-    int num_disjoint_sets;
+    vector<int> p, rk;
+    int components;
 public:
-    DSU(int n) : num_disjoint_sets(n)
+    DSU(int n) : p(n, 0), rk(n, 0), components(n)
     {
-        rk.assign(n, 0), p.assign(n, 0), sz.assign(n, 1);
-        for (int i = 0; i < n; ++i) p[i] = i;
+        for (int i = 0; i < n; ++i) p[i] = -1;
     }
-    int find_set(int i) { return p[i] == i ? i : p[i] = findset(p[i]); }
-    int set_size(int i) { return sz[find_set(i)]; }
-    int num_sets() { return num_disjoint_sets; }
-    void union_set(int i, int j)
+    int find(int i) { return p[i] < 0 ? i : p[i] = find(p[i]); }
+    int find_size(int i) { return -p[find(i)]; }
+    int (size)() const { return components; }
+    void unite(int i, int j)
     {
-        int x = find_set(i), y = find_set(j);
+        int x = find(i), y = find(j);
         if (rk[x] < rk[y]) swap(x, y);
         if (x != y)
         {
-            --num_disjoint_sets;
-            p[y] = x;
+            --components;
+            p[x] += p[y], p[y] = x;
             rk[x] += (rk[x] == rk[y]);
-            sz[x] += sz[y];
         }
     }
 };

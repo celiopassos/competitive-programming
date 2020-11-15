@@ -16,26 +16,22 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 class DSU
 {
 private:
-    vector<int> p, sz;
+    vector<int> p;
+    int components;
     stack<pair<int&, int>> snapshots;
-    int num;
+    void save(int& x) { snapshots.push(pair<int&, int>(x, x)); }
 public:
-    DSU(const int n) : num(n)
+    DSU(int n) : p(n), components(n)
     {
-        p.assign(n, 0), sz.assign(n, 1);
-        for (int u = 0; u < n; ++u) p[u] = u;
+        for (int u = 0; u < n; ++u) p[u] = -1;
     }
-    int find_set(int u) const
+    int find(int u) const
     {
-        while (p[u] != u) u = p[u];
+        while (p[u] >= 0) u = p[u];
         return u;
     }
-    int getsize(int u) const { return sz[find_set(u)]; }
-    int (size)() const { return num; }
-    void save(int& x)
-    {
-        snapshots.push(pair<int&, int>(x, x));
-    }
+    int find_size(int u) const { return -p[find(u)]; }
+    int (size)() const { return components; }
     void rollback()
     {
         for (int t = 0; t < 3; ++t)
@@ -44,12 +40,12 @@ public:
             snapshots.pop();
         }
     }
-    void union_set(int u, int v)
+    void unite(int u, int v)
     {
-        int x = find_set(u), y = find_set(v);
-        if (sz[x] < sz[y]) swap(x, y);
-        save(num), save(p[y]), save(sz[x]);
-        if (x != y) num -= 1, p[y] = x, sz[x] += sz[y];
+        int x = find(u), y = find(v);
+        if (-p[x] < -p[y]) swap(x, y);
+        save(components), save(p[x]), save(p[y]);
+        if (x != y) components -= 1, p[x] += p[y], p[y] = x;
     }
 };
 
