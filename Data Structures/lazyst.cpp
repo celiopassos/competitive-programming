@@ -80,34 +80,25 @@ private:
         T resr = query(right(p), m + 1, r, ql, qr);
         return F::op(resl, resr);
     }
+    void build(int p, int l, int r, const vector<T>& a)
+    {
+        if (l == r) st[p] = a[l];
+        else
+        {
+            int m = l + (r - l) / 2;
+            build(left(p), l, m, a), build(right(p), m + 1, r, a);
+            st[p] = F::op(st[left(p)], st[right(p)]);
+        }
+    }
 public:
     LazyST(int n) : n(n) { st.assign(4 * n + 1, F::Tid), lazy.assign(4 * n + 1, F::Fid); }
-    LazyST(const vector<T>& a) : LazyST(size(a))
-    {
-        function<void(int, int, int)> build = [&](int p, int l, int r)
-        {
-            if (l == r) st[p] = a[l];
-            else
-            {
-                int m = l + (r - l) / 2;
-                build(left(p), l, m), build(right(p), m + 1, r);
-                st[p] = F::op(st[left(p)], st[right(p)]);
-            }
-        };
-        build(0, 0, n - 1);
-    }
+    LazyST(const vector<T>& a) : LazyST(size(a)) { build(0, 0, n - 1, a); }
     void update(int l, int r, F op) { update(0, 0, n - 1, l, r, op); }
     T query(int l, int r) { return query(0, 0, n - 1, l, r); }
 };
 
 int main()
 { _
-    const int n = 10;
-    using F = F1<int>;
-    F inst(n);
-    vector<F> v;
-    v.assign(n, F::Fid);
-    LazyST<F> st(n);
     exit(0);
 }
 

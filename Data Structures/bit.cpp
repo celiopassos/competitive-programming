@@ -37,7 +37,7 @@ private:
         return res;
     }
 public:
-    BIT(int n) : n(n), h(31 - __builtin_clz(n + 1)) { ft.assign(n + 1, G::id); }
+    BIT(int n) : n(n), h(31 - __builtin_clz(n)), ft(n + 1, G::id) { }
     BIT(const vector<T>& a) : BIT(size(a))
     {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);

@@ -28,7 +28,7 @@ private:
     const int n;
     vector<T> st;
 public:
-    SegmentTree(int n) : n(n) { st.assign(2 * n, M::id); }
+    SegmentTree(int n) : n(n), st(2 * n, M::id) { }
     SegmentTree(const vector<T>& a) : SegmentTree(size(a))
     {
         for (int i = 0; i < n; ++i) st[n + i] = a[i];

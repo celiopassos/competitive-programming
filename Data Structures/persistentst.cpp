@@ -61,23 +61,20 @@ private:
         T resr = query(right[p], m + 1, r, ql, qr);
         return M::op(resl, resr);
     }
+    void build(int p, int l, int r, const vector<T>& a)
+    {
+        if (l == r) st[p] = a[l];
+        else
+        {
+            int m = l + (r - l) / 2;
+            left[p] = create(0), right[p] = create(0);
+            build(left[p], l, m, a), build(right[p], m + 1, r, a);
+            st[p] = M::op(st[left[p]], st[right[p]]);
+        }
+    }
 public:
     PersistentST(int n) : n(n) { root.push_back(create(0)); }
-    PersistentST(const vector<T>& a) : PersistentST(size(a))
-    {
-        function<void(int, int, int)> build = [&](int p, int l, int r)
-        {
-            if (l == r) st[p] = a[l];
-            else
-            {
-                int m = l + (r - l) / 2;
-                left[p] = create(0), right[p] = create(0);
-                build(left[p], l, m), build(right[p], m + 1, r);
-                st[p] = M::op(st[left[p]], st[right[p]]);
-            }
-        };
-        build(0, 0, n - 1);
-    }
+    PersistentST(const vector<T>& a) : PersistentST(size(a)) { build(0, 0, n - 1, a); }
     int duplicate(int version)
     {
         root.push_back(copy(root[version], size(root)));
