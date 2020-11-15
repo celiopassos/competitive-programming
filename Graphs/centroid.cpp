@@ -52,14 +52,15 @@ public:
         build(0, -1);
     }
     int operator[](int u) const { return par[u]; }
-    int lca(int u, int v) // centroid lca, not tree lca
+    int getlevel(int u) const { return level[u]; }
+    int lca(int u, int v) const // centroid lca, not tree lca
     {
         if (level[u] < level[v]) swap(u, v);
         while (level[u] > level[v]) u = par[u];
         while (u != v) u = par[u], v = par[v];
         return u;
     }
-    int distance(int u, int v)
+    int distance(int u, int v) const
     {
         int w = lca(u, v);
         return dist[u][level[w]] + dist[v][level[w]];
@@ -68,14 +69,6 @@ public:
 
 int main()
 { _
-    int n, q; cin >> n >> q;
-    vector<vector<int>> E(n);
-    for (int j = 0; j < n - 1; ++j)
-    {
-        int u, v; cin >> u >> v; --u, --v;
-        E[u].push_back(v), E[v].push_back(u);
-    }
-    CentroidDecomposition cd(E);
     exit(0);
 }
 
