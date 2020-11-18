@@ -30,12 +30,9 @@ private:
     vector<T> st;
     int binary_search(int p, T prefix, T value)
     {
-        if (p >= n)
-            return p - n + M::cmp(M::op(prefix, st[p]), value);
-        else if (T x = M::op(prefix, st[p << 1]); M::cmp(x, value))
-            return binary_search(p << 1 | 1, x, value);
-        else
-            return binary_search(p << 1, prefix, value);
+        while (p < n) if (T x = M::op(prefix, st[p <<= 1]); M::cmp(x, value))
+            prefix = x, p |= 1;
+        return p - n + M::cmp(M::op(prefix, st[p]), value);
     }
 public:
     SegmentTree(int n) : n(n), st(2 * n, M::id) { }
@@ -60,12 +57,13 @@ public:
         }
         return M::op(resl, resr);
     }
-    int lower_bound(T value) { return lower_bound(0, value); }
-    int lower_bound(int i, T value) // first j with M::cmp(query(i, j), value) == false
+    int lower_bound(T value) { return lower_bound(0, n - 1, value); }
+    // first x in [a, b] with M::cmp(query(a, x), value) == false
+    int lower_bound(int a, int b, T value)
     {
         static deque<int> deq;
         static stack<int> stk;
-        for (int l = i + n, r = 2 * n; l < r; l >>= 1, r >>= 1)
+        for (int l = a + n, r = b + n + 1; l < r; l >>= 1, r >>= 1)
         {
             if (l & 1) deq.push_back(l++);
             if (r & 1) stk.push(--r);
@@ -77,7 +75,7 @@ public:
             if (T x = M::op(prefix, st[p]); M::cmp(x, value)) prefix = x;
             else { deq.clear(); return binary_search(p, prefix, value); }
         }
-        return n;
+        return b + 1;
     }
 };
 
