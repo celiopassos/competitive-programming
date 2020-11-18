@@ -18,6 +18,7 @@ struct M1
 {
     static constexpr T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
+    static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
 template<typename M>
@@ -27,6 +28,15 @@ private:
     using T = typename remove_const<decltype(M::id)>::type;
     const int n;
     vector<T> st;
+    int binary_search(int p, T prefix, T value)
+    {
+        if (p >= n)
+            return p - n + M::cmp(M::op(prefix, st[p]), value);
+        else if (T x = M::op(prefix, st[p << 1]); M::cmp(x, value))
+            return binary_search(p << 1 | 1, x, value);
+        else
+            return binary_search(p << 1, prefix, value);
+    }
 public:
     SegmentTree(int n) : n(n), st(2 * n, M::id) { }
     SegmentTree(const vector<T>& a) : SegmentTree(size(a))
@@ -50,10 +60,28 @@ public:
         }
         return M::op(resl, resr);
     }
+    int lower_bound(T value) { return lower_bound(0, value); }
+    int lower_bound(int i, T value) // first j with M::cmp(query(i, j), value) == false
+    {
+        static deque<int> deq;
+        static stack<int> stk;
+        for (int l = i + n, r = 2 * n; l < r; l >>= 1, r >>= 1)
+        {
+            if (l & 1) deq.push_back(l++);
+            if (r & 1) stk.push(--r);
+        }
+        while (not empty(stk)) deq.push_back(stk.top()), stk.pop();
+        for (T prefix = M::id; not empty(deq);)
+        {
+            int p = deq.front(); deq.pop_front();
+            if (T x = M::op(prefix, st[p]); M::cmp(x, value)) prefix = x;
+            else { deq.clear(); return binary_search(p, prefix, value); }
+        }
+        return n;
+    }
 };
 
 int main()
 { _
     exit(0);
 }
-
