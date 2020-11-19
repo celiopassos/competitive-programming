@@ -158,7 +158,7 @@ public:
     }
     int lower_bound(T value)
     {
-        return lower_bound(0, n - 1, value);
+        return binary_search(0, 0, n - 1, F::Tid, value);
     }
     int lower_bound(int l, int r, T value)
     {
