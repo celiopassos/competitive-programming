@@ -16,7 +16,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct G1
 {
-    inline static T id = 0;
+    inline const static T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
     static T inv(const T& x) { return -x; }
     static bool cmp(const T& x, const T& y) { return x < y; }

@@ -16,8 +16,8 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct F1
 {
-    inline static T Tid = T(0);
-    inline static F1 Fid = F1(0);
+    inline const static T Tid = T(0);
+    inline const static F1 Fid = F1(0);
     T add;
     explicit F1(T add) : add(add) {}
     void apply(T& old, int L, int R) const

@@ -16,7 +16,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct M1
 {
-    inline static T id = INF;
+    inline const static T id = INF;
     static T op(const T& x, const T& y) { return min(x, y); }
 };
 

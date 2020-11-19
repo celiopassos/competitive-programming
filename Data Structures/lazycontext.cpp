@@ -11,8 +11,8 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct F1
 {
-    inline static T Tid = T(0);
-    inline static F1 Fid = F1(0);
+    inline const static T Tid = T(0);
+    inline const static F1 Fid = F1(0);
     T add;
     inline explicit F1(T add) : add(add) {}
     void apply(T& old, int L, int R) const
@@ -41,8 +41,8 @@ struct F1
 template<typename T>
 struct F2
 {
-    inline static T Tid = T(0);
-    inline static F2 Fid = F2(T(LINF));
+    inline const static T Tid = T(0);
+    inline const static F2 Fid = F2(T(LINF));
     T value;
     explicit F2(T value) : value(value) {}
     void apply(T& old, int L, int R) const
@@ -73,8 +73,8 @@ struct F2
 template<typename T>
 struct F3
 {
-    inline static T Tid = T(0);
-    inline static F3 Fid = F3(0, 0);
+    inline const static T Tid = T(0);
+    inline const static F3 Fid = F3(0, 0);
 
     T a, b;
 
