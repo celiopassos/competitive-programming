@@ -16,7 +16,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct M1
 {
-    static constexpr T id = 0;
+    inline static T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
 };
 

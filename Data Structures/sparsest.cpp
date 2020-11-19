@@ -13,13 +13,13 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename T, typename X = T>
+template<typename T>
 struct F1
 {
-    static constexpr T Tid = T(0);
-    static constexpr F1 Fid = F1(0);
-    X add;
-    constexpr explicit F1(X add) : add(add) {}
+    inline static T Tid = T(0);
+    inline static F1 Fid = F1(0);
+    T add;
+    explicit F1(T add) : add(add) {}
     void apply(T& old, int L, int R) const
     {
         old = old + add * (R - L + 1);
