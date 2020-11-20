@@ -16,7 +16,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct G1
 {
-    static constexpr T id = 0;
+    inline const static T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
     static T inv(const T& x) { return -x; }
     static bool cmp(const T& x, const T& y) { return x < y; }
@@ -37,7 +37,7 @@ private:
         return res;
     }
 public:
-    BIT(int n) : n(n), h(31 - __builtin_clz(n + 1)) { ft.assign(n + 1, G::id); }
+    BIT(int n) : n(n), h(31 - __builtin_clz(n)), ft(n + 1, G::id) { }
     BIT(const vector<T>& a) : BIT(size(a))
     {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);

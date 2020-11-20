@@ -12,34 +12,73 @@ mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
 
 const int INF = 0x3f3f3f3f;
 
-int main()
-{ _
-AGAIN:
-    const int n = 10;
+const int L = 1e7, R = 1e9;
 
-    int A[n][n];
-    memset(A, 0, sizeof(A));
+uniform_int_distribution<int> unif(L, R);
 
-    uniform_int_distribution unif(0, n - 1);
+// trees will most likely have O(log(n)) height
+// also, connected graphs will have O(log(n)) diameter
+// number of edges is not exact, specially with small graphs
+// make sure to relabel, catches stupid bugs
+// 0-based
 
-    int m = (1 + unif(rng)) * (1 + unif(rng)) / 3;
+auto tree_generator(int n)
+{
+    vector edges(0, pair(0, 0));
 
-    int MAX = 1e6;
-    for (int ct = 0; ct < m;)
+    for (int u = 1; u < n; ++u)
+        edges.emplace_back(unif(rng) % u, u);
+
+    return edges;
+}
+
+auto graph_generator(int n, int m)
+{
+    vector edges(0, pair(0, 0));
+
+    for (int j = 0; j < m; ++j)
     {
-        if (--MAX == 0) goto AGAIN;
-        int u = unif(rng), v = unif(rng);
-        if (u != v && not (A[u][v]++ || A[v][u]++)) ++ct;
-
+        int u = unif(rng) % n, v = unif(rng) % n;
+        if (u == v) continue;
+        if (u > v) swap(u, v);
+        edges.emplace_back(u, v);
     }
 
-    int shift = unif(rng);
+    sort(all(edges)), edges.erase(unique(all(edges)), end(edges));
 
-    cout << n << " " << m << endl;;
-    for (int u = 0; u < n; ++u)
-        for (int v = u + 1; v < n; ++v)
-            if (A[u][v]) cout << (u + shift) % n + 1 << " " << (v + shift) % n + 1 << endl;
+    return edges;
+}
 
+auto connected_graph_generator(int n, int m)
+{
+    assert(m >= n - 1);
+
+    auto tree = tree_generator(n);
+
+    auto edges = graph_generator(n, m - (n - 1));
+
+    edges.insert(end(edges), all(tree));
+
+    sort(all(edges)), edges.erase(unique(all(edges)), end(edges));
+
+    return edges;
+}
+
+void relabel(int n, auto& edges)
+{
+    vector label(n, 0); iota(all(label), 0);
+
+    shuffle(all(label), rng);
+
+    for (auto& [u, v] : edges)
+    {
+        u = label[u], v = label[v];
+        if (u > v) swap(u, v);
+    }
+}
+
+int main()
+{ _
     exit(0);
 }
 

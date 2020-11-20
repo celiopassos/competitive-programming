@@ -52,14 +52,15 @@ public:
         build(0, -1);
     }
     int operator[](int u) const { return par[u]; }
-    int lca(int u, int v) // centroid lca, not tree lca
+    int getlevel(int u) const { return level[u]; }
+    int lca(int u, int v) const // centroid lca, not tree lca
     {
         if (level[u] < level[v]) swap(u, v);
         while (level[u] > level[v]) u = par[u];
         while (u != v) u = par[u], v = par[v];
         return u;
     }
-    int distance(int u, int v)
+    int distance(int u, int v) const
     {
         int w = lca(u, v);
         return dist[u][level[w]] + dist[v][level[w]];

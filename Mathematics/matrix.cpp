@@ -13,28 +13,31 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-const long double EPS = 1e-9;
+const long double EPS = 1e-6;
 
 // may wanna use T = long double ...
 
 template<typename T> struct Matrix
 {
     int n, m;
-    vector<vector<T>> A;
-    Matrix(int n, int m) : n(n), m(m)
-    {
-        A.assign(n, vector(m, T(0)));
-    }
-    Matrix(vector<vector<T>> B) : n(size(B)), m(size(B[0])), A(B) { }
 
-    vector<T>& operator[](int i) { return A[i]; }
+    vector<T> A;
+    vector<int> idx;
+
+    Matrix(int n, int m) : n(n), m(m), A(n * m, T(0)), idx(n) { iota(all(idx), 0); }
+
+    T* operator[](int i) { return &A[idx[i] * m]; }
+    const T* operator[](int i) const { return &A[idx[i] * m]; }
+
+    void swap_rows(int i, int j) { swap(idx[i], idx[j]); }
 
     template<typename op> Matrix& compose(const Matrix& rhs)
     {
         assert(n == rhs.n && m == rhs.m);
+        auto& lhs = *this;
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < m; ++j)
-                A[i][j] = op(A[i][j], rhs[i][j]);
+                lhs[i][j] = op(lhs[i][j], rhs[i][j]);
         return *this;
     }
     Matrix& operator+=(const Matrix& rhs) { return compose<std::plus<T>>(rhs); }
@@ -42,14 +45,14 @@ template<typename T> struct Matrix
     Matrix& operator*=(const Matrix& rhs) { return *this = (*this * rhs); }
     Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
     Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
-    Matrix operator*(const Matrix& rhs)
+    Matrix operator*(const Matrix& rhs) const
     {
-        assert(m == rhs.n);
+        const auto& lhs = *this;
         Matrix res(n, rhs.m);
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < rhs.m; ++j)
                 for (int k = 0; k < m; ++k)
-                    res[i][j] += A[i][k] * rhs.A[k][j];
+                    res[i][j] += lhs[i][k] * rhs[k][j];
         return res;
     }
     friend Matrix operator*(const T& alpha, Matrix M)
@@ -62,10 +65,11 @@ template<typename T> struct Matrix
     vector<T> operator*(const vector<T>& rhs) const
     {
         assert(m == size(rhs));
+        const auto& lhs = *this;
         vector<T> res(n, T(0));
         for (int i = 0; i < n; ++i)
             for (int j = 0; j < m; ++j)
-                res[i] += A[i][j] * rhs[j];
+                res[i] += lhs[i][j] * rhs[j];
         return res;
     }
     Matrix power(ll p) const
@@ -105,8 +109,8 @@ auto reduce(Matrix<T>& A)
 
         if (sel != row)
         {
-            swap(A[sel], A[row]);
-            if (save) swap((*E)[sel], (*E)[row]);
+            A.swap_rows(sel, row);
+            if (save) E->swap_rows(sel, row);
             det *= T(-1);
         }
 

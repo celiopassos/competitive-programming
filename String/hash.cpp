@@ -53,9 +53,14 @@ public:
         return tuple(hash1.query(i, j), hash2.query(i, j), hash3.query(i, j));
     }
     template<typename... Args>
-    auto concat(Args... args) const
+    auto concat(auto prefix, int i, int j) const
     {
-        return tuple(hash1.concat(args...), hash2.concat(args...), hash3.concat(args...));
+        auto [prefix1, prefix2, prefix3] = prefix;
+        return tuple(
+            hash1.concat(prefix1, i, j),
+            hash2.concat(prefix2, i, j),
+            hash3.concat(prefix3, i, j)
+        );
     }
 };
 
