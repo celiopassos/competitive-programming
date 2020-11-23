@@ -20,11 +20,11 @@ struct M1
     static T op(const T& x, const T& y) { return min(x, y); }
 };
 
-template<typename M, bool top_down = false>
+template<typename T, template<typename> typename Monoid, bool top_down = false>
 class MinimumStack
 {
 private:
-    using T = typename remove_const<decltype(M::id)>::type;
+    using M = Monoid<T>;
     stack<pair<T, T>> st;
 public:
     T top() const { return st.top().first; }
@@ -32,22 +32,22 @@ public:
     void push(T value)
     {
         if (top_down)
-            st.push(pair<T, T>(value, op(value, minimum())));
+            st.push(pair<T, T>(value, M::op(value, minimum())));
         else
-            st.push(pair<T, T>(value, op(minimum(), value)));
+            st.push(pair<T, T>(value, M::op(minimum(), value)));
     }
     void pop() { st.pop(); }
     bool empty() const { return st.empty(); }
     int (size)() const { return size(st); }
 };
 
-template<typename M>
+template<typename T, template<typename> typename Monoid>
 class MinimumQueue
 {
 private:
-    using T = typename remove_const<decltype(M::id)>::type;
-    MinimumStack<M, false> in;
-    MinimumStack<M, true> out;
+    using M = Monoid<T>;
+    MinimumStack<T, Monoid, false> in;
+    MinimumStack<T, Monoid, true> out;
     void move()
     {
         if (out.empty()) while (not in.empty())
@@ -58,7 +58,7 @@ private:
     }
 public:
     T front() { move(); return out.top(); }
-    T minimum() const { return op(out.minimum(), in.minimum()); }
+    T minimum() const { return M::op(out.minimum(), in.minimum()); }
     void push(T value) { in.push(value); }
     void pop() { move(); out.pop(); }
     bool empty() const { return in.empty() && out.empty(); }

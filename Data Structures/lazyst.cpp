@@ -39,12 +39,12 @@ struct F1
     }
 };
 
-template<typename F>
+template<typename T, template<typename> typename Pack>
 class LazyST
 {
 private:
+    using F = Pack<T>;
     const int n;
-    using T = typename remove_const<decltype(F::Tid)>::type;
     vector<T> st;
     vector<F> lazy;
 

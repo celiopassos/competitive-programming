@@ -20,11 +20,11 @@ struct M1
     static T op(const T& x, const T& y) { return x + y; }
 };
 
-template<typename M>
+template<typename T, template<typename> typename Monoid>
 class PersistentST
 {
 private:
-    using T = typename remove_const<decltype(M::id)>::type;
+    using M = Monoid<T>;
     const int n;
     vector<T> st;
     vector<int> left, right, root, last;

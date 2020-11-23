@@ -21,11 +21,11 @@ struct M1
     static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
-template<typename M>
+template<typename T, template<typename> typename Monoid>
 struct SegmentTree
 {
 private:
-    using T = typename remove_const<decltype(M::id)>::type;
+    using M = Monoid<T>;
     const int n;
     vector<T> st;
     int binary_search(int p, T prefix, T value)

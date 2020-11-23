@@ -22,11 +22,11 @@ struct G1
     static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
-template<typename G>
+template<typename T, template<typename> typename Group>
 class BIT
 {
 private:
-    using T = typename remove_const<decltype(G::id)>::type;
+    using G = Group<T>;
     int b(int p) { return p & (-p); }
     const int n, h;
     vector<T> ft;
@@ -68,4 +68,5 @@ int main()
 { _
     exit(0);
 }
+
 
