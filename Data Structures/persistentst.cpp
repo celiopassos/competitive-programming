@@ -16,15 +16,17 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct M1
 {
+    using Type = T;
     inline const static T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
 };
 
-template<typename T, template<typename> typename Monoid>
+template<typename Monoid>
 class PersistentST
 {
 private:
-    using M = Monoid<T>;
+    using M = Monoid;
+    using T = typename Monoid::Type;
     const int n;
     vector<T> st;
     vector<int> left, right, root, last;

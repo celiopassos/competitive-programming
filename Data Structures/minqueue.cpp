@@ -16,15 +16,17 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct M1
 {
+    using Type = T;
     inline const static T id = INF;
     static T op(const T& x, const T& y) { return min(x, y); }
 };
 
-template<typename T, template<typename> typename Monoid, bool top_down = false>
+template<typename Monoid, bool top_down = false>
 class MinimumStack
 {
 private:
-    using M = Monoid<T>;
+    using M = Monoid;
+    using T = typename M::Type;
     stack<pair<T, T>> st;
 public:
     T top() const { return st.top().first; }
@@ -41,13 +43,14 @@ public:
     int (size)() const { return size(st); }
 };
 
-template<typename T, template<typename> typename Monoid>
+template<typename Monoid>
 class MinimumQueue
 {
 private:
-    using M = Monoid<T>;
-    MinimumStack<T, Monoid, false> in;
-    MinimumStack<T, Monoid, true> out;
+    using M = Monoid;
+    using T = typename Monoid::Type;
+    MinimumStack<Monoid, false> in;
+    MinimumStack<Monoid, true> out;
     void move()
     {
         if (out.empty()) while (not in.empty())

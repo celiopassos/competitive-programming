@@ -16,17 +16,19 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct G1
 {
+    using Type = T;
     inline const static T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
     static T inv(const T& x) { return -x; }
     static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
-template<typename T, template<typename> typename Group>
+template<typename Group>
 class BIT
 {
 private:
-    using G = Group<T>;
+    using G = Group;
+    using T = typename G::Type;
     int b(int p) { return p & (-p); }
     const int n, h;
     vector<T> ft;
