@@ -16,16 +16,18 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct M1
 {
+    using Type = T;
     inline const static T id = 0;
     static T op(const T& x, const T& y) { return x + y; }
     static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
-template<typename M>
+template<typename Monoid>
 struct SegmentTree
 {
 private:
-    using T = typename remove_const<decltype(M::id)>::type;
+    using M = Monoid;
+    using T = typename Monoid::Type;
     const int n;
     vector<T> st;
     int binary_search(int p, T prefix, T value)

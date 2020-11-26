@@ -16,6 +16,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct F1
 {
+    using Type = T;
     inline const static T Tid = T(0);
     inline const static F1 Fid = F1(0);
     T add;
@@ -43,8 +44,10 @@ template<typename F>
 class LazyST
 {
 private:
+    using T = typename F::Type;
+
     const int n;
-    using T = typename remove_const<decltype(F::Tid)>::type;
+
     vector<T> st;
     vector<F> lazy;
 
@@ -171,7 +174,6 @@ public:
         for (auto [idx, prefix] = pair(0, F::Tid); idx < size(q); ++idx)
         {
             auto [p, l, r] = q[idx];
-
             if (T x = F::op(prefix, st[p]); F::cmp(x, value)) prefix = x;
             else
             {

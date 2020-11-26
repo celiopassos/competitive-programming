@@ -11,6 +11,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 template<typename T>
 struct F1
 {
+    using Type = T;
     inline const static T Tid = T(0);
     inline const static F1 Fid = F1(0);
     T add;
@@ -41,6 +42,7 @@ struct F1
 template<typename T>
 struct F2
 {
+    using Type = T;
     inline const static T Tid = T(0);
     inline const static F2 Fid = F2(T(LINF));
     T value;
@@ -68,11 +70,12 @@ struct F2
 // F3(a, b) will add a * i + b on index i
 // for every i in the range being updated
 //
-// may work badly with negative indices
+// may work badly with negative indices (possible to fix)
 
 template<typename T>
 struct F3
 {
+    using Type = T;
     inline const static T Tid = T(0);
     inline const static F3 Fid = F3(0, 0);
 
