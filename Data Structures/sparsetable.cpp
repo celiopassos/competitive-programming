@@ -13,6 +13,8 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
+// K >= floor(log(n))
+
 template<typename T, int K>
 class SparseTable
 {
@@ -24,7 +26,7 @@ private:
 public:
     SparseTable(const vector<T>& a, auto op) : n(size(a)), op(op), st(n), log(n + 1)
     {
-        for (int x = 1; x <= n; ++x) log[x] = 31 - __builtin_clz(x);
+        for (int x = 1; x <= n; ++x) log[x] = __builtin_clz(1) - __builtin_clz(x);
         assert(log[n] <= K);
         for (int i = 0; i < n; ++i) st[i][0] = a[i];
         for (int x = 1; x <= log[n]; ++x)
