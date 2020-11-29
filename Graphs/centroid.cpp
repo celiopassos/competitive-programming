@@ -13,6 +13,8 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
+// K >= centroid tree height, or simply floor(log(n))
+
 template<int K>
 class CentroidDecomposition
 {
@@ -21,7 +23,7 @@ private:
     const vector<vector<int>>& E;
 
     vector<int> parent, weight, vis, level;
-    vector<array<int, K>> dist;
+    vector<array<int, K + 1>> dist;
 
     int dfs(int u, int p, int h)
     {
@@ -52,12 +54,11 @@ private:
         parent[centroid] = p, vis[centroid] = 1;
         dist[centroid][level[centroid]] = 0;
 
-        for (auto v : E[centroid]) if (not vis[v])
-            build(v, centroid);
+        for (auto v : E[centroid]) if (not vis[v]) build(v, centroid);
     }
 public:
     CentroidDecomposition(const vector<vector<int>>& E) :
-        n(size(E)), E(E), parent(n, -1), weight(n, 0), vis(n, 0), level(n, 0), dist(n)
+        n(size(E)), E(E), parent(n), weight(n), vis(n), level(n), dist(n)
     {
         build(0, -1);
     }

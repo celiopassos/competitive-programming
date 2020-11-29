@@ -13,7 +13,7 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-// K >= floor(log(diameter))
+// K >= floor(log(height))
 
 template<int K>
 struct LCA
