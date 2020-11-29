@@ -13,32 +13,41 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename T>
-T power(T x, ll p)
+ll modpow(ll x, ll p, ll mod)
 {
-    T res = T(1);
-    while (p)
+    x %= mod, p %= mod - 1 < 0 ? p += mod - 1 : 0;
+    ll res = 1LL;
+    while (p > 0)
     {
-        if (p & 1) res *= x;
-        p >>= 1, x *= x;
+        if (p & 1) res = res * x % mod;
+        x = x * x % mod, p >>= 1;
     }
     return res;
 }
 
-template<int MOD>
+template<int mod, bool safe = false>
 struct Mint
 {
     int x;
-    Mint(ll x = 0) : x(int((x %= MOD) < 0 ? x + MOD : x)) {};
-    Mint inv() const { assert(x != 0); return power(*this, MOD - 2); }
-    Mint& operator+=(const Mint& rhs) { if ((x += rhs.x) >= MOD) x -= MOD; return *this; }
-    Mint& operator-=(const Mint& rhs) { return *this += MOD - rhs.x; }
-    Mint& operator*=(const Mint& rhs) { x = int((1LL * x * rhs.x) % MOD); return *this; }
+    Mint(ll x = 0) : x(int((x %= mod) < 0 ? x + mod : x)) {};
+    Mint inv() const
+    {
+        if (safe) assert(x != 0);
+        return Mint(modpow(x, mod - 2, mod));
+    }
+    Mint& operator+=(const Mint& rhs) { if ((x += rhs.x) >= mod) x -= mod; return *this; }
+    Mint& operator-=(const Mint& rhs) { return *this += mod - rhs.x; }
+    Mint& operator*=(const Mint& rhs) { x = int((1LL * x * rhs.x) % mod); return *this; }
     Mint& operator/=(const Mint& rhs) { return *this *= rhs.inv(); }
     Mint operator+(const Mint& rhs) const { return Mint(*this) += rhs; }
     Mint operator-(const Mint& rhs) const { return Mint(*this) -= rhs; }
     Mint operator*(const Mint& rhs) const { return Mint(*this) *= rhs; }
     Mint operator/(const Mint& rhs) const { return Mint(*this) /= rhs; }
+    Mint power(ll p) const
+    {
+        if (safe) assert(p >= 0LL || x != 0);
+        return Mint(modpow(x, p, mod));
+    }
     bool operator==(const Mint& rhs) const { return x == rhs.x; }
     bool operator<(const Mint& rhs) const { return x < rhs.x; }
     friend ostream& operator<<(ostream& out, const Mint& a) { out << a.x; return out; }
