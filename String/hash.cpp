@@ -13,40 +13,59 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<ll MOD, ll P>
-class StringHash
+mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
+
+const ll L = numeric_limits<char>::max() + 100LL, R = 1000000LL;
+uniform_int_distribution<ll> random_base(L, R);
+
+template<ll mod>
+struct StringHash
 {
-private:
-    vector<ll> power, h;
-public:
-    StringHash(const string& s)
+    inline static const ll base = random_base(rng) | 1;
+    inline static vector<ll> power;
+
+    static void extend(int n)
     {
-        const int n = size(s);
-        power.assign(n, 1LL);
-        h.assign(n, 0LL); h[0] = s[0] + 1;
-        for (int i = 1; i < n; power[i] = (power[i - 1] * P) % MOD, ++i)
-            h[i] = (P * h[i - 1] + s[i] + 1) % MOD;
+        int m = size(power);
+
+        if (m >= n) return;
+
+        power.resize(n, 1LL);
+
+        for (int i = max(m, 1); i < n; ++i)
+            power[i] = power[i - 1] * base % mod;
+    }
+
+    vector<ll> h;
+
+    StringHash(const string& s) : h(size(s))
+    {
+        extend(size(s));
+
+        h[0] = s[0] + 1;
+
+        for (int i = 1; i < size(s); ++i)
+            h[i] = (base * h[i - 1] + s[i] + 1) % mod;
     }
     ll query(int i, int j) const
     {
         if (i == 0) return h[j];
-        return (h[j] + (MOD - (h[i - 1] * power[j - i + 1]) % MOD)) % MOD;
+        return (h[j] + (mod - (h[i - 1] * power[j - i + 1]) % mod)) % mod;
     }
     ll concat(ll prefix, int i, int j) const
     {
-        return (prefix * power[j - i + 1] % MOD + query(i, j)) % MOD;
+        return (prefix * power[j - i + 1] % mod + query(i, j)) % mod;
     }
 };
 
-class BigHash
+struct BigHash
 {
-private:
-    static constexpr ll MOD1 = 998244353, MOD2 = 1e9 + 7, MOD3 = 1e9 + 9;
-    static constexpr ll P1 = 263, P2 = 271, P3 = 353;
-    const StringHash<MOD1, P1> hash1;
-    const StringHash<MOD2, P2> hash2;
-    const StringHash<MOD3, P3> hash3;
-public:
+    static constexpr ll mod1 = 1000000021LL, mod2 = 1000000033LL, mod3 = 1000000087LL;
+
+    const StringHash<mod1> hash1;
+    const StringHash<mod2> hash2;
+    const StringHash<mod3> hash3;
+
     BigHash(const string& s) : hash1(s), hash2(s), hash3(s) {}
     auto query(int i, int j) const
     {
