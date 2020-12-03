@@ -15,7 +15,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 ll modpow(ll x, ll p, ll mod)
 {
-    x %= mod, p %= mod - 1 < 0 ? p += mod - 1 : 0;
+    x %= mod, (p %= mod - 1) < 0 ? p += mod - 1 : 0LL;
     ll res = 1LL;
     while (p > 0)
     {
