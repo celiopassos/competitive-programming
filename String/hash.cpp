@@ -71,7 +71,6 @@ struct BigHash
     {
         return tuple(hash1.query(i, j), hash2.query(i, j), hash3.query(i, j));
     }
-    template<typename... Args>
     auto concat(auto prefix, int i, int j) const
     {
         auto [prefix1, prefix2, prefix3] = prefix;
