@@ -34,4 +34,3 @@ int main()
     auto [lp, pr] = sieve(N);
     exit(0);
 }
-
