@@ -65,18 +65,27 @@ public:
     {
         static deque<int> deq;
         static stack<int> stk;
+
         for (int l = a + n, r = b + n + 1; l < r; l >>= 1, r >>= 1)
         {
             if (l & 1) deq.push_back(l++);
             if (r & 1) stk.push(--r);
         }
+
         while (not empty(stk)) deq.push_back(stk.top()), stk.pop();
+
         for (T prefix = M::id; not empty(deq);)
         {
             int p = deq.front(); deq.pop_front();
+
             if (T x = M::op(prefix, st[p]); M::cmp(x, value)) prefix = x;
-            else { deq.clear(); return binary_search(p, prefix, value); }
+            else
+            {
+                deq.clear();
+                return binary_search(p, prefix, value);
+            }
         }
+
         return b + 1;
     }
 };
