@@ -13,11 +13,20 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-// need to test everything...
+// Tested:
+//
+// [*] Line intersection
+// [ ] Line-Point distance
+// [ ] Line-Point containment
+// [ ] Segment intersection
+// [ ] Segment-Point distance
+// [*] Segment-Point containment
+// [*] Convex hull
+// [*] is_inside
 
 using T = double;
 
-const long double EPS = 1e-6;
+const long double EPS = 1e-4;
 
 bool Tcmp(const T& lhs, const T& rhs) { return lhs + EPS < rhs; }
 bool Tequal(const T& lhs, const T& rhs) { return abs(lhs - rhs) <= EPS; }
@@ -46,9 +55,18 @@ struct Point
     {
         return Tequal(x, rhs.x) && Tequal(y, rhs.y);
     }
+    bool operator!=(const Point& rhs) const { return not (*this == rhs); }
+    friend ostream& operator<<(ostream& out, const Point& pt)
+    {
+        return out << pt.x << " " << pt.y;
+    }
+    friend istream& operator>>(istream& in, Point& pt)
+    {
+        return in >> pt.x >> pt.y;
+    }
 };
 
-auto sq(auto x) { return x * x; }
+T sq(const T& x) { return x * x; }
 
 T sqnorm(const Point& pt) { return pt * pt; }
 T norm(const Point& pt) { return sqrt(sqnorm(pt)); }
@@ -85,7 +103,7 @@ struct Line
     Line(Point p = Point(), Point q = Point()) : p(p), q(q) { }
     bool contains(Point pt) const
     {
-        return Tequal(det(pt - p, q), T(0));
+        return Tequal(det(pt - p, q - p), T(0));
     }
     bool operator==(const Line& rhs) const
     {
@@ -128,9 +146,9 @@ struct Segment
 
         Point x = pt - L.p, y = L.q - L.p;
 
-        T alpha = T(1) / sqnorm(y) * x * y;
+        T alpha = x * y / sqnorm(y);
 
-        return Tcmp(alpha, T(1 + EPS));
+        return not Tcmp(T(1), alpha);
     }
     T dist(Point pt) const
     {
@@ -147,34 +165,37 @@ struct Segment
 
 pair<bool, Point> intersection(const Segment& U, const Segment& V)
 {
-    if (auto res = intersection(U.L, V.L); not res.first) return res;
+    auto [good, p] = intersection(U.L, V.L);
+
+    if (not good) return pair(false, Point());
 
     if (U.L == V.L)
     {
-        for (auto pt : { U.L.p, U.L.q }) if (V.contains(pt)) return pair(true, pt);
-        for (auto pt : { V.L.p, V.L.q }) if (U.contains(pt)) return pair(true, pt);
+        for (auto q : { U.L.p, U.L.q }) if (V.contains(q)) return pair(true, q);
+        for (auto q : { V.L.p, V.L.q }) if (U.contains(q)) return pair(true, q);
         return pair(false, Point());
     }
     else
     {
-        Point pt = intersection(U.L, V.L).second;
-        return pair(U.contains(pt) && V.contains(pt), pt);
+        return pair(U.contains(p) && V.contains(p), p);
     }
 }
 
-// check if p-q-r bends clockwise on q
+// checks if p-q-r bends clockwise on q
 
 bool cw(const Point& p, const Point& q, const Point& r)
 {
     return Tcmp(det(q - p, r - q), T(0));
 }
 
-// check if p-q-r bends counter-clockwise on q
+// checks if p-q-r bends counter-clockwise on q
 
 bool ccw(const Point& p, const Point& q, const Point& r)
 {
     return Tcmp(T(0), det(q - p, r - q));
 }
+
+// O(n log(n))
 
 vector<Point> convex_hull(vector<Point> pts)
 {
@@ -182,55 +203,78 @@ vector<Point> convex_hull(vector<Point> pts)
 
     const int n = size(pts);
 
+    if (n == 1) return pts;
+
     Point p = pts[0], q = pts[n - 1];
 
-    vector<Point> up = { p }, down = { p };
+    vector<Point> up(n), down(n); up[0] = down[0] = p;
+
+    int idx = 1, idy = 1;
 
     for (int i = 1; i < n; ++i)
     {
         if (i == n - 1 || cw(p, pts[i], q))
         {
-            while (size(up) > 1 && not cw(up[size(up) - 2], up[size(up) - 1], pts[i]))
-                up.pop_back();
-            up.push_back(pts[i]);
+            while (idx > 1 && not cw(up[idx - 2], up[idx - 1], pts[i])) --idx;
+            up[idx++] = pts[i];
         }
         if (i == n - 1 || ccw(p, pts[i], q))
         {
-            while (size(down) > 1 && not ccw(down[size(down) - 2], down[size(down) - 1], pts[i]))
-                down.pop_back();
-            down.push_back(pts[i]);
+            while (idy > 1 && not ccw(down[idy - 2], down[idy - 1], pts[i])) --idy;
+            down[idy++] = pts[i];
         }
     }
 
-    up.pop_back(), reverse(all(up)), down.insert(end(down), all(up));
+    up.resize(--idx), down.resize(idx + idy - 1);
+    copy(rbegin(up), prev(rend(up)), begin(down) + idy);
 
     return down;
 }
 
-bool is_inside(const vector<Point>& hull, Point pt)
+// if strictly == false, checks if pt is contained in the convex hull
+// if strictly == true, checks if pt is in the relative interior, i.e.
+//                             if pt is contained but is not a vertex
+//
+// assumes that hull is given in counter-clockwise
+//
+// if you want simply interior instead of relative interior, change it
+// to return false if n < 3, because the interior is then empty
+//
+// O(log(size(hull)))
+
+bool is_inside(const vector<Point>& hull, Point pt, bool strictly)
 {
     const int n = size(hull);
 
     if (n == 0) return false;
-    if (n == 1) return pt == hull[0];
-    if (n == 2) return Segment(hull[0], hull[1]).contains(pt);
+    if (n == 1) return not strictly && pt == hull[0];
+    if (n == 2) return
+        Segment(hull[0], hull[1]).contains(pt) &&
+        (not strictly || (hull[0] != pt && hull[1] != pt));
 
     if (ccw(hull[0], hull[n - 1], pt)) return false;
     if (cw(hull[0], hull[1], pt)) return false;
 
     int split = 1;
 
-    // split = largest i with cw(hull[0], hull[i], pt) == false;
-
     for (int z = n; z > 0; z >>= 1)
         while (split + z < n && not cw(hull[0], hull[split + z], pt)) split += z;
 
-    if (split == n - 1) return true;
+    if (split == n - 1) return not strictly;
 
-    return
-        (not cw(hull[0], hull[split], pt)) &&
-        (not cw(hull[split], hull[split + 1], pt)) &&
-        (not cw(hull[split + 1], hull[0], pt));
+    int P[3] = { 0, split, split + 1 };
+
+    for (int i = 0; i < 3; ++i)
+    {
+        int cur = P[i], nxt = P[(i + 1) % 3];
+
+        if (cw(hull[cur], hull[nxt], pt)) return false;
+
+        if (strictly && (cur + 1 - nxt) % n == 0 &&
+            Segment(hull[cur], hull[nxt]).contains(pt)) return false;
+    }
+
+    return true;
 }
 
 int main()
