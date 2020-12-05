@@ -27,7 +27,7 @@ template<int idx>
 constexpr auto getroot(int e)
 {
     using M = Mint<MODs[idx]>;
-    return power(M(primitive[idx]), preexp[idx] * (1LL << (explog[idx] - e)));
+    return M(primitive[idx]).power(preexp[idx] * (1LL << (explog[idx] - e)));
 }
 
 int logceil(int n)
@@ -60,13 +60,16 @@ void fft(vector<T>& p, T root)
     fft(p, aux, root, 0, size(p));
 }
 
+// rootbuilder should accept an integer e as input
+// and return a (1 << e)-th root of unity
+
 template<typename T>
-vector<T> convolution(vector<T> p, vector<T> q, auto&& rootbuild)
+vector<T> convolution(vector<T> p, vector<T> q, auto rootbuilder)
 {
     const int n = size(p), m = size(q);
-    const int e = logceil(n + m), N = 1 << e;
+    const int e = logceil(n + m - 1), N = 1 << e;
 
-    T root = rootbuild(e);
+    T root = rootbuilder(e);
 
     p.resize(N, T(0)), q.resize(N, T(0));
 
@@ -74,7 +77,7 @@ vector<T> convolution(vector<T> p, vector<T> q, auto&& rootbuild)
     for (int i = 0; i < N; ++i) p[i] *= q[i];
 
     fft(p, T(1) / root);
-    for (int i = 0; i < N; ++i) p[i] /= T(size(p));
+    for (int i = 0; i < N; ++i) p[i] /= T(N);
 
     p.resize(n + m - 1);
 
