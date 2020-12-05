@@ -60,10 +60,6 @@ struct Point
     {
         return out << pt.x << " " << pt.y;
     }
-    friend istream& operator>>(istream& in, Point& pt)
-    {
-        return in >> pt.x >> pt.y;
-    }
 };
 
 T sq(const T& x) { return x * x; }
@@ -231,9 +227,8 @@ vector<Point> convex_hull(vector<Point> pts)
     return down;
 }
 
-// if strictly == false, checks if pt is contained in the convex hull
-// if strictly == true, checks if pt is in the relative interior, i.e.
-//                             if pt is contained but is not a vertex
+// if strictly == false,    checks if pt is contained in the convex hull
+// if strictly == true,     checks if pt is in the relative interior
 //
 // assumes that hull is given in counter-clockwise
 //
