@@ -255,7 +255,8 @@ bool is_inside(const vector<Point>& hull, Point pt, bool strictly)
     for (int z = n; z > 0; z >>= 1)
         while (split + z < n && not cw(hull[0], hull[split + z], pt)) split += z;
 
-    if (split == n - 1) return not strictly;
+    if (split == n - 1)
+        return not strictly && Segment(hull[0], hull[n - 1]).contains(pt);
 
     int P[3] = { 0, split, split + 1 };
 
