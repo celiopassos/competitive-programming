@@ -20,37 +20,28 @@ ll modpow(ll x, ll p, ll mod)
     while (p > 0)
     {
         if (p & 1) res = res * x % mod;
-        x = x * x % mod, p >>= 1;
+        (x *= x) %= mod, p >>= 1;
     }
     return res;
 }
 
-template<int mod, bool safe = false>
+template<int mod>
 struct Mint
 {
     int x;
-    Mint(ll x = 0) : x(int((x %= mod) < 0 ? x + mod : x)) {};
-    Mint inv() const
-    {
-        if (safe) assert(x != 0);
-        return Mint(modpow(x, mod - 2, mod));
-    }
+    Mint(ll x = 0) : x(int((x %= mod) < 0 ? x + mod : x)) {  }
     Mint& operator+=(const Mint& rhs) { if ((x += rhs.x) >= mod) x -= mod; return *this; }
     Mint& operator-=(const Mint& rhs) { return *this += mod - rhs.x; }
     Mint& operator*=(const Mint& rhs) { x = int((1LL * x * rhs.x) % mod); return *this; }
-    Mint& operator/=(const Mint& rhs) { return *this *= rhs.inv(); }
+    Mint& operator/=(const Mint& rhs) { return *this *= Mint(modpow(rhs.x, mod - 2, mod)); }
     Mint operator+(const Mint& rhs) const { return Mint(*this) += rhs; }
     Mint operator-(const Mint& rhs) const { return Mint(*this) -= rhs; }
     Mint operator*(const Mint& rhs) const { return Mint(*this) *= rhs; }
     Mint operator/(const Mint& rhs) const { return Mint(*this) /= rhs; }
-    Mint power(ll p) const
-    {
-        if (safe) assert(p >= 0LL || x != 0);
-        return Mint(modpow(x, p, mod));
-    }
+    Mint power(ll p) const { return Mint(modpow(x, p, mod)); }
     bool operator==(const Mint& rhs) const { return x == rhs.x; }
     bool operator<(const Mint& rhs) const { return x < rhs.x; }
-    friend ostream& operator<<(ostream& out, const Mint& a) { out << a.x; return out; }
+    friend ostream& operator<<(ostream& out, const Mint& a) { return out << a.x; }
     friend istream& operator>>(istream& in, Mint& a)
     {
         ll x; in >> x;
