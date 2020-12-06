@@ -31,7 +31,7 @@ template<typename T> struct Matrix
 
     void swap_rows(int i, int j) { swap(idx[i], idx[j]); }
 
-    template<typename op> Matrix& compose(const Matrix& rhs)
+    template<typename Op> Matrix& compose(const Matrix& rhs, Op&& op)
     {
         assert(n == rhs.n && m == rhs.m);
         auto& lhs = *this;
@@ -40,8 +40,8 @@ template<typename T> struct Matrix
                 lhs[i][j] = op(lhs[i][j], rhs[i][j]);
         return *this;
     }
-    Matrix& operator+=(const Matrix& rhs) { return compose<std::plus<T>>(rhs); }
-    Matrix& operator-=(const Matrix& rhs) { return compose<std::minus<T>>(rhs); }
+    Matrix& operator+=(const Matrix& rhs) { return compose(rhs, std::plus<T>()); }
+    Matrix& operator-=(const Matrix& rhs) { return compose(rhs, std::minus<T>()); }
     Matrix& operator*=(const Matrix& rhs) { return *this = (*this * rhs); }
     Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
     Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
