@@ -26,7 +26,7 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 using T = double;
 
-const long double EPS = 1e-4;
+const long double EPS = 1e-6;
 
 bool Tcmp(const T& lhs, const T& rhs) { return lhs + EPS < rhs; }
 bool Tequal(const T& lhs, const T& rhs) { return abs(lhs - rhs) <= EPS; }
