@@ -13,61 +13,83 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<typename T>
+template<typename Monoid>
 struct HLD
 {
-    vector<int> parent, depth, heavy, head, pos;
+    using M = Monoid;
+    using T = typename M::Type;
+
+    const int n;
     const vector<vector<int>>& E;
-    int cur_pos;
-    HLD(const vector<vector<int>>& E) : E(E)
-    {
-        int n = size(E);
-        parent.assign(n, 0);
-        depth.assign(n, 0);
-        heavy.assign(n, -1);
-        head.assign(n, 0);
-        pos.assign(n, 0);
-        cur_pos = 0;
-        dfs(0, E);
-        decompose(0, 0, E);
-    }
-    int dfs(int v)
-    {
-        int size = 1, max_c_size = 0;
-        for (int c : E[v])
-            if (c != parent[v])
-            {
-                parent[c] = v, depth[c] = depth[v] + 1;
-                int c_size = dfs(c, E);
-                size += c_size;
-                if (c_size > max_c_size)
-                    max_c_size = c_size, heavy[v] = c;
-            }
-        return size;
-    }
-    void decompose(int v, int h)
-    {
-        head[v] = h, pos[v] = cur_pos++;
 
-        if (heavy[v] != -1) decompose(heavy[v], h, E);
+    vector<int> parent, depth, heavy, head, pos;
+    int cur_pos = 0;
 
-        for (int c : E[v])
-            if (c != parent[v] && c != heavy[v])
-                decompose(c, c, E);
-    }
-    T query(int a, int b, auto& st)
+    HLD(const auto& E, int root = 0) : n(size(E)), E(E),
+        parent(n), depth(n), heavy(n, -1), head(n), pos(n)
     {
-        T res = st.Tid;
-        for (; head[a] != head[b]; b = parent[head[b]])
+        parent[root] = root;
+        dfs(root), decompose(root, root);
+    }
+
+    int dfs(int u)
+    {
+        int weight = 1, prv_max = 0;
+
+        for (int v : E[u]) if (v != parent[u])
         {
-            if (depth[head[a]] > depth[head[b]]) swap(a, b);
-            T cur = st.query(pos[head[b]], pos[b]);
-            res = st.combine(res, cur);
+            parent[v] = u, depth[v] = depth[u] + 1;
+            int cur = dfs(v);
+            weight += cur;
+            if (cur > prv_max) prv_max = cur, heavy[u] = v;
         }
+
+        return weight;
+    }
+    void decompose(int u, int h)
+    {
+        head[u] = h, pos[u] = cur_pos++;
+
+        if (heavy[u] != -1) decompose(heavy[u], h);
+        for (int v : E[u]) if (v != parent[u] && v != heavy[u])
+            decompose(v, v);
+    }
+    // pass strev = stfor if Monoid is commutative
+    T query(int a, int b, auto& stfor, auto& strev)
+    {
+        T left = M::id, right = M::id;
+
+        while (head[a] != head[b])
+        {
+            if (depth[head[a]] > depth[head[b]])
+            {
+                left = M::op(left, strev.query(pos[head[a]], pos[a]));
+                a = parent[head[a]];
+            }
+            else
+            {
+                right = M::op(stfor.query(pos[head[b]], pos[b]), right);
+                b = parent[head[b]];
+            }
+        }
+
+        if (depth[a] < depth[b])
+            right = M::op(stfor.query(pos[a], pos[b]), right);
+        else
+            left = M::op(left, strev.query(pos[b], pos[a]));
+
+        return M::op(left, right);
+    }
+    void update(int a, int b, auto& st, const auto& upd)
+    {
+        for (; head[a] != head[b]; a = parent[head[a]])
+        {
+            if (depth[head[b]] > depth[head[a]]) swap(a, b);
+            st.update(pos[head[a]], pos[a], upd);
+        }
+
         if (depth[a] > depth[b]) swap(a, b);
-        T last = st.query(pos[a], pos[b]);
-        res = st.combine(res, last);
-        return res;
+        st.update(pos[a], pos[b], upd);
     }
 };
 
