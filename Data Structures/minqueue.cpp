@@ -17,7 +17,7 @@ template<typename T>
 struct M1
 {
     using Type = T;
-    inline const static T id = INF;
+    inline const static T Id = INF;
     static T op(const T& x, const T& y) { return min(x, y); }
 };
 
@@ -30,7 +30,7 @@ private:
     stack<pair<T, T>> st;
 public:
     T top() const { return st.top().first; }
-    T minimum() const { return st.empty() ? M::id : st.top().second; }
+    T minimum() const { return st.empty() ? M::Id : st.top().second; }
     void push(T value)
     {
         if (top_down)

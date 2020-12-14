@@ -57,7 +57,7 @@ struct HLD
     // pass strev = stfor if Monoid is commutative
     T query(int a, int b, auto& stfor, auto& strev)
     {
-        T left = M::id, right = M::id;
+        T left = M::Id, right = M::Id;
 
         while (head[a] != head[b])
         {

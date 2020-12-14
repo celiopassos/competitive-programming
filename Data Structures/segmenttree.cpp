@@ -17,7 +17,7 @@ template<typename T>
 struct M1
 {
     using Type = T;
-    inline const static T id = 0;
+    inline const static T Id = 0;
     static T op(const T& x, const T& y) { return x + y; }
     static bool cmp(const T& x, const T& y) { return x < y; }
 };
@@ -37,7 +37,7 @@ private:
         return p - n + M::cmp(M::op(prefix, st[p]), value);
     }
 public:
-    SegmentTree(int n) : n(n), st(2 * n, M::id) { }
+    SegmentTree(int n) : n(n), st(2 * n, M::Id) { }
     SegmentTree(const vector<T>& a) : SegmentTree(size(a))
     {
         for (int i = 0; i < n; ++i) st[n + i] = a[i];
@@ -51,7 +51,7 @@ public:
     }
     T query(int l, int r)
     {
-        T resl = M::id, resr = M::id;
+        T resl = M::Id, resr = M::Id;
         for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1)
         {
             if (l & 1) resl = M::op(resl, st[l++]);
@@ -74,7 +74,7 @@ public:
 
         while (not empty(stk)) deq.push_back(stk.top()), stk.pop();
 
-        for (T prefix = M::id; not empty(deq);)
+        for (T prefix = M::Id; not empty(deq);)
         {
             int p = deq.front(); deq.pop_front();
 

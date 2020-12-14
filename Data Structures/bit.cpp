@@ -17,7 +17,7 @@ template<typename T>
 struct G1
 {
     using Type = T;
-    inline const static T id = 0;
+    inline const static T Id = 0;
     static T op(const T& x, const T& y) { return x + y; }
     static T inv(const T& x) { return -x; }
     static bool cmp(const T& x, const T& y) { return x < y; }
@@ -34,12 +34,12 @@ private:
     vector<T> ft;
     T query(int p)
     {
-        T res = G::id;
+        T res = G::Id;
         for (int i = p; i >= 1; i -= b(i)) res = G::op(ft[i], res);
         return res;
     }
 public:
-    BIT(int n) : n(n), h(31 - __builtin_clz(n)), ft(n + 1, G::id) { }
+    BIT(int n) : n(n), h(31 - __builtin_clz(n)), ft(n + 1, G::Id) { }
     BIT(const vector<T>& a) : BIT(size(a))
     {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);
@@ -52,7 +52,7 @@ public:
     }
     int lower_bound(T value) // first r such that G::cmp(query(0, r), value) == false
     {
-        T prefix = G::id;
+        T prefix = G::Id;
         int pos = 0;
         for (int x = h; x >= 0; --x)
         {

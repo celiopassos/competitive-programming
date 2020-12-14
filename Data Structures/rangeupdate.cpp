@@ -13,6 +13,17 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
+template<typename T>
+struct M3 // assignment
+{
+    using Type = T;
+    inline const static T Id = INF;
+    static T op(const T& x, const T& y)
+    {
+        return x == Id ? y : x;
+    }
+};
+
 // updates are applied on the left
 // delete push method if the monoid is commutative
 

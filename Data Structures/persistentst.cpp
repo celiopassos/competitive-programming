@@ -17,7 +17,7 @@ template<typename T>
 struct M1
 {
     using Type = T;
-    inline const static T id = 0;
+    inline const static T Id = 0;
     static T op(const T& x, const T& y) { return x + y; }
 };
 
@@ -33,7 +33,7 @@ private:
     int create(int rt)
     {
         left.push_back(-1), right.push_back(-1);
-        last.push_back(rt), st.push_back(M::id);
+        last.push_back(rt), st.push_back(M::Id);
         return size(st) - 1;
     }
     int copy(int p, int rt)
@@ -60,14 +60,14 @@ private:
             else modify(right[p] = copy(right[p], last[p]), m + 1, r, pos, value);
 
             st[p] = M::op(
-                left[p] != -1 ? st[left[p]] : M::id,
-                right[p] != -1 ? st[right[p]] : M::id
+                left[p] != -1 ? st[left[p]] : M::Id,
+                right[p] != -1 ? st[right[p]] : M::Id
             );
         }
     }
     T query(int p, int l, int r, int ql, int qr)
     {
-        if (p == -1 || r < ql || qr < l) return M::id;
+        if (p == -1 || r < ql || qr < l) return M::Id;
 
         if (ql <= l && r <= qr) return st[p];
 
