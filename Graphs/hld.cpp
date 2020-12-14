@@ -13,6 +13,15 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
+// Build two range queries if the monoid is not commutative:
+//  * stfor should combine like (x, y) -> x ∘ y,
+//  * strev should combine like (x, y) -> y ∘ x.
+//
+// If the path is a = x1, x2, ..., xk = b, will return x1 ∘ x2 ∘ ... ∘ x_k.
+//
+// Unecessary if the monoid is commutative, or if the queries are
+// always of the form v -> root or root -> v (take care of the order).
+
 template<typename Monoid>
 struct HLD
 {
