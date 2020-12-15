@@ -110,9 +110,9 @@ private:
     }
 public:
     SparseST(int L, int R) : L(L), R(R) { create(); }
-    void update(int l, int r)
+    void update(int l, int r, F op)
     {
-        update(0, L, R, l, r);
+        update(0, L, R, l, r, op);
     }
     T query(int l, int r)
     {
