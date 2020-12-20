@@ -8,5 +8,6 @@ do
 done
 
 cp -P bits $1/bits
+cp Makefile $1/Makefile
 
 touch $1/input.txt
