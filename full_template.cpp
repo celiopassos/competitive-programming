@@ -22,13 +22,21 @@ using ll = long long;
 template<typename T>
 using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 
-mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
+const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
+
+mt19937 rng(FIXED_RANDOM);
+
+struct custom_hash
+{
+    int operator()(int x) const
+    {
+        x ^= FIXED_RANDOM;
+        return x ^ (x >> 16);
+    }
+};
 
 template<typename T>
-struct better_queue : public priority_queue<T>
-{
-    void clear() { this->c.clear(); }
-};
+using hash_table = gp_hash_table<int, T, custom_hash>;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
