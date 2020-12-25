@@ -27,13 +27,9 @@ struct StringHash
     static void extend(int n)
     {
         int m = size(power);
-
         if (m >= n) return;
-
         power.resize(n, 1LL);
-
-        for (int i = max(m, 1); i < n; ++i)
-            power[i] = power[i - 1] * base % mod;
+        for (int i = max(m, 1); i < n; ++i) power[i] = power[i - 1] * base % mod;
     }
 
     vector<ll> h;
@@ -41,11 +37,8 @@ struct StringHash
     StringHash(const string& s) : h(size(s))
     {
         extend(size(s));
-
         h[0] = s[0] + 1;
-
-        for (int i = 1; i < size(s); ++i)
-            h[i] = (base * h[i - 1] + s[i] + 1) % mod;
+        for (int i = 1; i < size(s); ++i) h[i] = (base * h[i - 1] + s[i] + 1) % mod;
     }
     ll query(int i, int j) const
     {

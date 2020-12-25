@@ -27,19 +27,20 @@ auto prefix_function(const string& s)
     return p;
 }
 
-vector<vector<int>> compute_automaton(string s)
+template<int K = 26, char offset = 'a'>
+vector<array<int, K>> compute_automaton(string s)
 {
-    s += '#';
+    s += offset + K;
     int n = size(s);
-    vector p = prefix_function(s);
-    vector aut(n, vector(26, 0));
+    vector<int> p = prefix_function(s);
+    vector<array<int, K>> aut(n);
     for (int i = 0; i < n; ++i)
-        for (int c = 0; c < 26; ++c)
+        for (int c = 0; c < K; ++c)
         {
-            if (i > 0 && 'a' + c != s[i])
+            if (i > 0 && offset + c != s[i])
                 aut[i][c] = aut[p[i - 1]][c];
             else
-                aut[i][c] = i + ('a' + c == s[i]);
+                aut[i][c] = i + (offset + c == s[i]);
         }
     return aut;
 }

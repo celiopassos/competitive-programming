@@ -13,7 +13,7 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-template<int K = 26, char d = 'a'>
+template<int K = 26, char offset = 'a'>
 struct AhoCorasick
 {
     struct Node
@@ -22,7 +22,7 @@ struct AhoCorasick
         bool leaf = false;
         int p = -1, link = -1, leaflink = -1;
         char pc;
-        Node(int p = -1, char pc = d - 1) : p(p), pc(pc)
+        Node(int p = -1, char pc = offset - 1) : p(p), pc(pc)
         {
             fill(all(nxt), -1), fill(all(go), -1);
         }
@@ -36,13 +36,13 @@ struct AhoCorasick
         int u = 0;
         for (auto c : s)
         {
-            int v = trie[u].nxt[c - d];
+            int v = trie[u].nxt[c - offset];
             if (v == -1)
             {
                 v = size(trie);
                 trie.emplace_back(u, c);
             }
-            u = trie[u].nxt[c - d] = v;
+            u = trie[u].nxt[c - offset] = v;
         }
         trie[u].leaf = true;
         trie[u].leaflink = u;
@@ -59,7 +59,7 @@ struct AhoCorasick
     }
     int go(int v, char c)
     {
-        int idx = c - d;
+        int idx = c - offset;
         if (trie[v].go[idx] == -1)
         {
             if (trie[v].nxt[idx] != -1) trie[v].go[idx] = trie[v].nxt[idx];
