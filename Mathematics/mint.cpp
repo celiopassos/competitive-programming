@@ -41,6 +41,10 @@ struct Mint
     Mint power(ll p) const { return Mint(modpow(x, p, mod)); }
     bool operator==(const Mint& rhs) const { return x == rhs.x; }
     bool operator<(const Mint& rhs) const { return x < rhs.x; }
+    friend Mint operator+(ll lhs, const Mint& rhs) { return Mint(lhs) + rhs; }
+    friend Mint operator-(ll lhs, const Mint& rhs) { return Mint(lhs) - rhs; }
+    friend Mint operator*(ll lhs, const Mint& rhs) { return Mint(lhs) * rhs; }
+    friend Mint operator/(ll lhs, const Mint& rhs) { return Mint(lhs) / rhs; }
     friend ostream& operator<<(ostream& out, const Mint& a) { return out << a.x; }
     friend istream& operator>>(istream& in, Mint& a)
     {
