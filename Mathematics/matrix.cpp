@@ -45,6 +45,15 @@ template<typename T, int N, int M> struct Matrix
     {
         for (int i = 0; i < min(N, M); ++i) A[i][i] = value;
     }
+    Matrix(initializer_list<initializer_list<T>> lst) : Matrix()
+    {
+        int i = 0, j = 0;
+        for (const auto& v : lst)
+        {
+            for (const auto& x : v) A[i][j++] = x;
+            i++, j = 0;
+        }
+    }
 
     T* operator[](int i) { return A[row[i]]; }
     const T* operator[](int i) const { return A[row[i]]; }
