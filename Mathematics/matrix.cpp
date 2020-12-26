@@ -9,94 +9,168 @@ using namespace std;
 #define size(X) (int)std::size(X)
 
 using ll = long long;
+using ld = long double;
 
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-const long double EPS = 1e-6;
+const ld EPS = 1e-5;
 
-// may wanna use T = long double ...
+// may wanna use T = long double
 
-template<typename T> struct Matrix
+template<typename T>
+T templatepow(T x, ll p)
 {
-    int n, m;
+    assert(p >= 0);
+    T res(1);
+    while (p > 0)
+    {
+        if (p & 1) res = res * x;
+        x = x * x, p >>= 1;
+    }
+    return res;
+}
 
-    vector<T> A;
-    vector<int> idx;
+template<typename T, int N, int M> struct Matrix
+{
+    T A[N][M];
+    int row[N];
 
-    Matrix(int n, int m) : n(n), m(m), A(n * m, T(0)), idx(n) { iota(all(idx), 0); }
+    Matrix()
+    {
+        fill(&A[0][0], &A[0][0] + N * M, T(0));
+        iota(all(row), 0);
+    }
+    Matrix(T value) : Matrix()
+    {
+        for (int i = 0; i < min(N, M); ++i) A[i][i] = value;
+    }
 
-    T* operator[](int i) { return &A[idx[i] * m]; }
-    const T* operator[](int i) const { return &A[idx[i] * m]; }
+    T* operator[](int i) { return A[row[i]]; }
+    const T* operator[](int i) const { return A[row[i]]; }
 
-    void swap_rows(int i, int j) { swap(idx[i], idx[j]); }
+    void swap_rows(int i, int j) { swap(row[i], row[j]); }
 
     template<typename Op> Matrix& compose(const Matrix& rhs, Op&& op)
     {
-        assert(n == rhs.n && m == rhs.m);
         auto& lhs = *this;
-        for (int i = 0; i < n; ++i)
-            for (int j = 0; j < m; ++j)
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < M; ++j)
                 lhs[i][j] = op(lhs[i][j], rhs[i][j]);
         return *this;
     }
     Matrix& operator+=(const Matrix& rhs) { return compose(rhs, std::plus<T>()); }
     Matrix& operator-=(const Matrix& rhs) { return compose(rhs, std::minus<T>()); }
-    Matrix& operator*=(const Matrix& rhs) { return *this = (*this * rhs); }
     Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
     Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
-    Matrix operator*(const Matrix& rhs) const
+    template<int K>
+    Matrix<T, N, K> operator*(const Matrix<T, M, K>& rhs) const
     {
         const auto& lhs = *this;
-        Matrix res(n, rhs.m);
-        for (int i = 0; i < n; ++i)
-            for (int j = 0; j < rhs.m; ++j)
-                for (int k = 0; k < m; ++k)
+        Matrix<T, N, K> res;
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < K; ++j)
+                for (int k = 0; k < M; ++k)
                     res[i][j] += lhs[i][k] * rhs[k][j];
         return res;
     }
-    friend Matrix operator*(const T& alpha, Matrix M)
+    friend Matrix operator*(const T& alpha, Matrix A)
     {
-        for (int i = 0; i < M.n; ++i)
-            for (int j = 0; j < M.m; ++j)
-                M[i][j] *= alpha;
-        return M;
-    }
-    vector<T> operator*(const vector<T>& rhs) const
-    {
-        assert(m == size(rhs));
-        const auto& lhs = *this;
-        vector<T> res(n, T(0));
-        for (int i = 0; i < n; ++i)
-            for (int j = 0; j < m; ++j)
-                res[i] += lhs[i][j] * rhs[j];
-        return res;
-    }
-    Matrix power(ll p) const
-    {
-        assert(n == m);
-        Matrix res(n, n);
-        for (int i = 0; i < n; ++i) res[i][i] = T(1);
-        Matrix M = (*this);
-        while (p > 0)
-        {
-            if (p & 1) res *= M;
-            M *= M, p >>= 1;
-        }
-        return res;
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < M; ++j)
+                A[i][j] *= alpha;
+        return A;
     }
 };
 
-template<typename T, bool save>
-auto reduce(Matrix<T>& A)
+template<typename T, int N> struct Vector : public Matrix<T, N, 1>
 {
-    const int n = A.n, m = A.m;
+    using Base = Matrix<T, N, 1>;
 
+    Vector() : Base() { }
+    Vector(const Base& v) : Base(v) { }
+
+    T& operator[](int i) { return Base::operator[](i)[0]; }
+    const T& operator[](int i) const { return Base::operator[](i)[0]; }
+};
+
+template<typename T, int N, int M> struct Affine
+{
+    Matrix<T, N, M> A;
+    Vector<T, N> b;
+
+    Affine(T value = T(0)) : A(value) { }
+    Affine(const Matrix<T, N, M>& A) : A(A) { }
+
+    Affine operator+=(const Affine& rhs) { A += rhs.A, b += rhs.B; }
+    Affine operator-=(const Affine& rhs) { A -= rhs.A, b -= rhs.B; }
+    Affine operator+(const Affine& rhs) const { return Affine(*this) += rhs; };
+    Affine operator-(const Affine& rhs) const { return Affine(*this) -= rhs; };
+
+    T* operator[](int i) { return A[i]; }
+    const T* operator[](int i) const { return A[i]; }
+
+    template<int K>
+    Affine<T, N, K> operator*(const Affine<T, M, K>& rhs)
+    {
+        Affine<T, N, K> res;
+
+        res.A = A * rhs.A;
+        res.b = A * rhs.b + b;
+
+        return res;
+    }
+    Vector<T, N> operator*(const Vector<T, M>& x) const
+    {
+        return A * x + b;
+    }
+};
+
+template<typename T, int N>
+T determinant(Matrix<T, N, N> A, int n = N)
+{
     T det = T(1);
 
-    auto pivot = save ? optional<vector<int>>(in_place, m, -1) : nullopt;
-    auto E = save ? optional<Matrix<T>>(in_place, n, n) : nullopt;
-    if (save) for (int i = 0; i < n; ++i) (*E)[i][i] = T(1);
+    for (int x = 0; x < n; ++x)
+    {
+        int sel = -1;
+        for (int i = x; i < n; ++i)
+            if (abs(A[i][x]) > EPS)
+            {
+                sel = i;
+                break;
+            }
+
+        if (sel == -1) return T(0);
+        else det *= A[sel][x];
+
+        if (sel != x) A.swap_rows(sel, x), det *= T(-1);
+
+        for (int i = 0; i < n; ++i) if (i != x)
+        {
+            T c = A[i][x] / A[x][x];
+            for (int j = x; j < n; ++j) A[i][j] -= c * A[x][j];
+        }
+    }
+
+    return det;
+}
+
+enum Classification { Unique, Infinite, None };
+
+// returns a solution and a kernel basis (if set to true)
+// uncomment lines and save the matrix E to solve several systems in O(N^2) each
+
+template<typename T, int N, int M>
+auto gauss(Matrix<T, N, M> A, Vector<T, N> b, bool kernel_basis = false, int n = N, int m = M)
+{
+    using DomainType = Vector<T, M>;
+    using CodomainType = Vector<T, N>;
+
+    //Matrix<T, N, N> E(T(1));
+    int pivot[M]; fill(all(pivot), -1);
+
+    Classification cl = Unique;
 
     for (int col = 0, row = 0; col < m && row < n; ++col)
     {
@@ -104,74 +178,56 @@ auto reduce(Matrix<T>& A)
         for (int i = row; i < n; ++i)
             if (abs(A[i][col]) > abs(A[sel][col])) sel = i;
 
-        if (abs(A[sel][col]) <= EPS) { det = T(0); continue; }
-        else det *= A[sel][col];
+        if (abs(A[sel][col]) <= EPS)
+        {
+            cl = Infinite;
+            continue;
+        }
 
         if (sel != row)
         {
-            A.swap_rows(sel, row);
-            if (save) E->swap_rows(sel, row);
-            det *= T(-1);
+            A.swap_rows(sel, row), swap(b[sel], b[row]);
+            //E.swap_rows(sel, row);
         }
 
         for (int i = 0; i < n; ++i) if (i != row)
         {
             T c = A[i][col] / A[row][col];
-            for (int j = col; j < m; ++j)
-                A[i][j] -= c * A[row][j];
-            if (save) for (int j = 0; j < n; ++j)
-                (*E)[i][j] -= c * (*E)[row][j];
+            for (int j = col; j < m; ++j) A[i][j] -= c * A[row][j];
+            //for (int j = 0; j < m; ++j) E[i][j] -= c * E[row][j];
+            b[i] -= c * b[row];
         }
 
-        if (save) (*pivot)[col] = row;
-        ++row;
+        pivot[col] = row++;
     }
 
-    return tuple(det, pivot, E);
-}
-
-template<typename T>
-T determinant(Matrix<T> A)
-{
-    auto [det, pivot, E] = reduce<T, false>(A);
-    return det;
-}
-
-// returns a solution and a kernel basis (if set to true)
-
-template<typename T>
-auto gauss(Matrix<T> A, vector<T> b, bool basis = false)
-{
-    const int n = A.n, m = A.m;
-
-    auto [det, oppivot, opE] = reduce<T, true>(A);
-    auto &pivot = *oppivot, &E = *opE;
-
-    b = E * b;
-
-    auto solve = [&](const vector<T>& b)
+    auto solve = [&](const Vector<T, N>& b)
     {
-        vector<T> x(m, T(0));
+        DomainType x;
         for (int j = 0; j < m; ++j)
             if (pivot[j] != -1) x[j] = b[pivot[j]] / A[pivot[j]][j];
         return x;
     };
 
-    vector<T> x = solve(b), bhat = A * x;
+    DomainType x = solve(b);
+    vector<DomainType> basis;
+
+    CodomainType bhat = A * x;
 
     for (int i = 0; i < n; ++i)
-        if (abs(bhat[i] - b[i]) > EPS) return vector<vector<T>>(0);
+        if (abs(bhat[i] - b[i]) > EPS) return tuple(None, x, basis);
 
-    vector<vector<T>> pack(1, x);
+    DomainType e; 
 
-    if (basis) for (int j = 0; j < m; ++j) if (pivot[j] == -1)
+    if (kernel_basis) for (int j = 0; j < m; ++j) if (pivot[j] == -1)
     {
-        vector<T> e(m, T(0)); e[j] = T(1);
-        auto y = solve(A * e); y[j] += T(-1);
-        pack.push_back(y);
+        e[j] = T(1);
+        DomainType y = solve(A * e);
+        e[j] = T(0), y[j] = T(-1);
+        basis.push_back(y);
     }
 
-    return pack;
+    return tuple(cl, x, basis);
 }
 
 int main()
