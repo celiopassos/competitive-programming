@@ -23,8 +23,8 @@ private:
     int components;
 public:
     DSU(int n, T value, auto merger) : DSU(n, vector<T>(n, value), merger) { }
-    DSU(int n, const vector<T>& aggregate, auto merger) :
-        p(n), rk(n, 0), aggregate(aggregate), merger(merger), components(n)
+    DSU(const vector<T>& agg, auto merger) :
+        p(size(agg)), rk(size(agg), 0), aggregate(agg), merger(merger), components(size(agg))
     {
         iota(all(p), 0);
     }
