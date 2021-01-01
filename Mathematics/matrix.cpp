@@ -31,7 +31,8 @@ T templatepow(T x, ll p)
     return res;
 }
 
-template<typename T, int N, int M> struct Matrix
+template<typename T, int N, int M>
+struct Matrix
 {
     T A[N][M];
     int row[N];
@@ -72,8 +73,7 @@ template<typename T, int N, int M> struct Matrix
     Matrix& operator-=(const Matrix& rhs) { return compose(rhs, std::minus<T>()); }
     Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
     Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
-    template<int K>
-    Matrix<T, N, K> operator*(const Matrix<T, M, K>& rhs) const
+    template<int K> Matrix<T, N, K> operator*(const Matrix<T, M, K>& rhs) const
     {
         const auto& lhs = *this;
         Matrix<T, N, K> res;
@@ -92,7 +92,8 @@ template<typename T, int N, int M> struct Matrix
     }
 };
 
-template<typename T, int N> struct Vector : public Matrix<T, N, 1>
+template<typename T, int N>
+struct Vector : public Matrix<T, N, 1>
 {
     using Base = Matrix<T, N, 1>;
 
@@ -103,7 +104,8 @@ template<typename T, int N> struct Vector : public Matrix<T, N, 1>
     const T& operator[](int i) const { return Base::operator[](i)[0]; }
 };
 
-template<typename T, int N, int M> struct Affine
+template<typename T, int N, int M>
+struct Affine
 {
     Matrix<T, N, M> A;
     Vector<T, N> b;
@@ -120,15 +122,15 @@ template<typename T, int N, int M> struct Affine
     const T* operator[](int i) const { return A[i]; }
 
     template<int K>
-    Affine<T, N, K> operator*(const Affine<T, M, K>& rhs)
-    {
-        Affine<T, N, K> res;
+        Affine<T, N, K> operator*(const Affine<T, M, K>& rhs)
+        {
+            Affine<T, N, K> res;
 
-        res.A = A * rhs.A;
-        res.b = A * rhs.b + b;
+            res.A = A * rhs.A;
+            res.b = A * rhs.b + b;
 
-        return res;
-    }
+            return res;
+        }
     Vector<T, N> operator*(const Vector<T, M>& x) const
     {
         return A * x + b;
