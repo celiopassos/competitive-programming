@@ -15,25 +15,20 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
 ll modpow(ll x, ll p, ll mod)
 {
-    x %= mod, (p %= mod - 1) < 0 ? p += mod - 1 : 0LL;
     ll res = 1LL;
-    while (p > 0)
-    {
-        if (p & 1) res = res * x % mod;
-        (x *= x) %= mod, p >>= 1;
-    }
+    for (; p; p >>= 1, (x *= x) %= mod) if (p & 1) (res *= x) %= mod;
     return res;
 }
 
-template<int mod>
+template<ll mod>
 struct Mint
 {
-    int x;
-    Mint(ll x = 0) : x(int((x %= mod) < 0 ? x + mod : x)) {  }
+    ll x;
+    Mint(ll x = 0) : x((x %= mod) < 0 ? x + mod : x) {  }
     Mint& operator+=(const Mint& rhs) { if ((x += rhs.x) >= mod) x -= mod; return *this; }
     Mint& operator-=(const Mint& rhs) { return *this += mod - rhs.x; }
-    Mint& operator*=(const Mint& rhs) { x = int((1LL * x * rhs.x) % mod); return *this; }
-    Mint& operator/=(const Mint& rhs) { return *this *= Mint(modpow(rhs.x, mod - 2, mod)); }
+    Mint& operator*=(const Mint& rhs) { (x *= rhs.x) %= mod; return *this; }
+    Mint& operator/=(const Mint& rhs) { return *this *= modpow(rhs.x, mod - 2, mod); }
     Mint operator+(const Mint& rhs) const { return Mint(*this) += rhs; }
     Mint operator-(const Mint& rhs) const { return Mint(*this) -= rhs; }
     Mint operator*(const Mint& rhs) const { return Mint(*this) *= rhs; }
