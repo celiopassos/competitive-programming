@@ -13,27 +13,46 @@ using ll = long long;
 const int INF = 0x3f3f3f3f;
 const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 
-auto tarjan(const auto& E)
+// returns a vector scc where scc[u] == scc[v] iff
+// u and v lie in the same strongly connected component
+//
+// these ids are already sorted topologically in reverse order
+// i.e., scc's with 0 out-degree first
+// it is guarenteed that 0 <= scc[u] < n for all u
+
+vector<int> tarjan(const auto& E)
 {
-    int n = size(E);
-    vector low(n, -1), num(n, -1), scc(n, -1), active(n, 0);
-    stack<int> st; int ct = 0;
+    int n = size(E), timer = 0, ct = 0;
+
+    enum State { unvisited, active, visited };
+    vector<State> state(n, unvisited);
+
+    vector<int> low(n, -1), num(n, -1), scc(n, -1);
+
+    stack<int> stk;
+
     function<void(int)> dfs = [&](int u)
     {
-        low[u] = num[u] = ct++;
-        active[u] = 1; st.push(u);
+        low[u] = num[u] = timer++, state[u] = active;
+        stk.push(u);
         for (auto v : E[u])
         {
-            if (num[v] == -1) dfs(v);
-            if (active[v]) low[u] = min(low[u], low[v]);
+            if (state[v] == unvisited) dfs(v);
+            if (state[v] == active) low[u] = min(low[u], low[v]);
         }
-        if (low[u] == num[u]) do
+        if (low[u] == num[u])
         {
-            scc[st.top()] = u;
-            active[st.top()] = 0; st.pop();
-        } while (not st.empty() && num[st.top()] >= num[u]);
+            do
+            {
+                int v = stk.top(); stk.pop();
+                scc[v] = ct, state[v] = visited;
+            } while (not empty(stk) && num[stk.top()] >= num[u]);
+            ++ct;
+        }
     };
+
     for (int u = 0; u < n; ++u) if (num[u] == -1) dfs(u);
+
     return scc;
 }
 
