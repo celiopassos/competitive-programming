@@ -30,10 +30,17 @@ struct Pointwise<T, Ts...>
     Pointwise(T value, Ts... args) : value(value), nxt(args...) { }
     Pointwise(auto init) : value(init), nxt(init) { }
     Pointwise() : value(T()), nxt() { }
-    Pointwise& operator+=(const Pointwise& rhs) { value += rhs.value; if constexpr (not base) nxt += rhs.nxt; return *this; };
-    Pointwise& operator-=(const Pointwise& rhs) { value -= rhs.value; if constexpr (not base) nxt -= rhs.nxt; return *this; };
-    Pointwise& operator*=(const Pointwise& rhs) { value *= rhs.value; if constexpr (not base) nxt *= rhs.nxt; return *this; };
-    Pointwise& operator/=(const Pointwise& rhs) { value /= rhs.value; if constexpr (not base) nxt /= rhs.nxt; return *this; };
+    template<typename Op>
+    void apply(const Pointwise& rhs, Op&& op)
+    {
+        value = op(value, rhs);
+        if constexpr (not base) nxt.apply(rhs.nxt, op);
+    }
+    Pointwise& operator+=(const Pointwise& rhs) { apply(rhs, plus<T>()); return *this; };
+    Pointwise& operator-=(const Pointwise& rhs) { apply(rhs, minus<T>()); return *this; };
+    Pointwise& operator*=(const Pointwise& rhs) { apply(rhs, multiplies<T>()); return *this; };
+    Pointwise& operator/=(const Pointwise& rhs) { apply(rhs, divides<T>()); return *this; };
+    Pointwise& operator%=(const Pointwise& rhs) { apply(rhs, modulus<T>()); return *this; };
     Pointwise operator+(const Pointwise& rhs) const { return Pointwise(*this) += rhs; };
     Pointwise operator-(const Pointwise& rhs) const { return Pointwise(*this) -= rhs; };
     Pointwise operator*(const Pointwise& rhs) const { return Pointwise(*this) *= rhs; };
