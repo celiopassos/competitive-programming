@@ -1,19 +1,6 @@
-#include "bits/stdc++.h"
-
-using namespace std;
-
-#define _ ios_base::sync_with_stdio(0);cin.tie(0);
-#define endl '\n'
-#define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) begin(X), end(X)
-#define size(X) (int)std::size(X)
-
-mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
-
-const int INF = 0x3f3f3f3f;
-
 const int L = 1e7, R = 1e9;
 
+mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
 uniform_int_distribution<int> unif(L, R);
 
 // trees will most likely have O(log(n)) height
@@ -24,17 +11,16 @@ uniform_int_distribution<int> unif(L, R);
 
 auto tree_generator(int n)
 {
-    vector edges(0, pair(0, 0));
+    vector<pair<int, int>> edges;
 
-    for (int u = 1; u < n; ++u)
-        edges.emplace_back(unif(rng) % u, u);
+    for (int u = 1; u < n; ++u) edges.emplace_back(unif(rng) % u, u);
 
     return edges;
 }
 
 auto graph_generator(int n, int m)
 {
-    vector edges(0, pair(0, 0));
+    vector<pair<int, int>> edges;
 
     for (int j = 0; j < m; ++j)
     {
@@ -54,7 +40,6 @@ auto connected_graph_generator(int n, int m)
     assert(m >= n - 1);
 
     auto tree = tree_generator(n);
-
     auto edges = graph_generator(n, m - (n - 1));
 
     edges.insert(end(edges), all(tree));
@@ -66,18 +51,10 @@ auto connected_graph_generator(int n, int m)
 
 void relabel(int n, auto& edges)
 {
-    vector label(n, 0); iota(all(label), 0);
+    vector<int> label(n, 0);
+    iota(all(label), 0);
 
     shuffle(all(label), rng);
 
-    for (auto& [u, v] : edges)
-    {
-        u = label[u], v = label[v];
-        if (u > v) swap(u, v);
-    }
-}
-
-int main()
-{ _
-    exit(0);
+    for (auto& [u, v] : edges) u = label[u], v = label[v];
 }

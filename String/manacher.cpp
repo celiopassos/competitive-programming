@@ -1,18 +1,3 @@
-#include "bits/stdc++.h"
-
-using namespace std;
-
-#define _ ios_base::sync_with_stdio(0);cin.tie(0);
-#define endl '\n'
-#define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) begin(X), end(X)
-#define size(X) (int)std::size(X)
-
-using ll = long long;
-
-const int INF = 0x3f3f3f3f;
-const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-
 auto odd
 {
     int l = 0, r = -1, n = size(s);
@@ -37,9 +22,4 @@ auto even(const string& s) // is this correct?? must test
     for (int i = 0; i < n; ++i)
         d[i] = x[2 * (i + 1)] / 2;
     return d; // d[i] = number of palindromes s[i - k, ..., i, i + 1, ..., i + 1 + k], i.e, i is left middle
-}
-
-int main()
-{ _
-    exit(0);
 }

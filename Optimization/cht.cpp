@@ -1,17 +1,3 @@
-#include "bits/stdc++.h"
-
-using namespace std;
-
-#define _ ios_base::sync_with_stdio(0);cin.tie(0);
-#define endl '\n'
-#define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(X) begin(X), end(X)
-#define size(X) (int)std::size(X)
-
-using ll = long long;
-
-const int INF = 0x3f3f3f3f;
-const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 typedef complex<ftype> point;
 
 ftype dot(point a, point b)
@@ -44,9 +30,4 @@ int get(ftype x)
     point query = {x, 1};
     auto it = lower_bound(vecs.begin(), vecs.end(), query, [](point a, point b){ return cross(a, b) > 0; }); // CHANGE THIS IF ADDING BACKWARDS
     return dot(query, hull[it - vecs.begin()]); // CHANGE THIS IF ADDING BACKWARDS
-}
-
-int main()
-{ _
-    exit(0);
 }
