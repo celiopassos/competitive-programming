@@ -1,7 +1,7 @@
 auto prefix_function(const string& s)
 {
     int n = size(s);
-    vector p(n, 0);
+    vector<int> p(n, 0);
     for (int i = 1; i < n; ++i)
     {
         int j = p[i - 1];

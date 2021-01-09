@@ -30,7 +30,7 @@ vector<int> sort_cyclic_shifts(const string& s)
 {
     const int n = size(s), sigma = 256;
 
-    vector p(n, 0), c(n, 0);
+    vector<int> p(n, 0), c(n, 0);
 
     iota(all(p), 0);
 
