@@ -2,7 +2,7 @@
 //
 // [*] Line intersection
 // [ ] Line-Point distance
-// [ ] Line-Point containment
+// [*] Line-Point containment
 // [ ] Segment intersection
 // [ ] Segment-Point distance
 // [*] Segment-Point containment
@@ -129,7 +129,7 @@ struct Segment
 
         T alpha = x * y / sqnorm(y);
 
-        return not Tcmp(T(1), alpha);
+        return not (Tcmp(T(1), alpha) || Tcmp(alpha, T(0)));
     }
     T dist(Point pt) const
     {
