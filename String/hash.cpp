@@ -3,6 +3,13 @@ mt19937 rng((int) chrono::steady_clock::now().time_since_epoch().count());
 const ll L = numeric_limits<char>::max() + 100LL, R = 1000000LL;
 uniform_int_distribution<ll> random_base(L, R);
 
+ll modpow(ll x, ll p, ll mod)
+{
+    ll res = 1LL;
+    for (; p; p >>= 1, (x *= x) %= mod) if (p & 1) (res *= x) %= mod;
+    return res;
+}
+
 template<ll mod>
 struct StringHash
 {
@@ -33,6 +40,16 @@ struct StringHash
     ll concat(ll prefix, int i, int j) const
     {
         return (prefix * power[j - i + 1] % mod + query(i, j)) % mod;
+    }
+    ll hashpow(ll hash, ll len, ll p)
+    {
+        ll res = 0LL, shift = modpow(base, len, mod);
+        while (p > 0)
+        {
+            if (p & 1) res = (res * shift + hash) % mod;
+            (hash *= (shift + 1)) %= mod, (shift *= shift) %= mod, p >>= 1;
+        }
+        return res;
     }
 };
 

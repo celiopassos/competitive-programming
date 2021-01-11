@@ -107,8 +107,7 @@ struct Affine
     T* operator[](int i) { return A[i]; }
     const T* operator[](int i) const { return A[i]; }
 
-    template<int K>
-        Affine<T, N, K> operator*(const Affine<T, M, K>& rhs)
+    template<int K> Affine<T, N, K> operator*(const Affine<T, M, K>& rhs)
         {
             Affine<T, N, K> res;
 
