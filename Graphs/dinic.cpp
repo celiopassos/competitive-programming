@@ -6,10 +6,10 @@ struct Dinic
         int from, to;
         T cap, flow = 0;
         T free() { return cap - flow; }
-        Edge(int u, int v, T cap) : from(u), to(v), cap(cap) {}
+        Edge(int u, int v, const T& cap) : from(u), to(v), cap(cap) {}
     };
     vector<Edge> edges;
-    const T inf = numeric_limits<T>::max();
+    const T inf = numeric_limits<T>::max(), zero = 0;
     int n, m = 0;
     vector<vector<int>> E;
     vector<int> level, ptr;
@@ -17,13 +17,14 @@ struct Dinic
     {
         E.resize(n), level.resize(n), ptr.resize(n);
     }
-    void add_edge(int u, int v, T cap)
+    int add_edge(int u, int v, const T& cap)
     {
-        if (cap <= 0) return;
+        assert(cap >= 0);
         edges.emplace_back(u, v, cap);
-        edges.emplace_back(v, u, 0);
+        edges.emplace_back(v, u, zero);
         E[u].push_back(m++);
         E[v].push_back(m++);
+        return m - 2;
     }
     bool bfs(int s, int t)
     {
