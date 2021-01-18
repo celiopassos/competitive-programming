@@ -8,10 +8,7 @@ private:
     const int n, m;
     vector<int> h, tin, tour, log;
     vector<array<int, K + 1>> st;
-    const function<int(int, int)> op = [this](int u, int v)
-    {
-        return this->h[u] <= this->h[v] ? u : v;
-    };
+    bool op(int u, int v) const { return h[u] <= h[v] ? u : v; }
     void dfs(int u, int p)
     {
         h[u] = h[p] + 1, tin[u] = size(tour);
