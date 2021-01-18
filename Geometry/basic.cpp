@@ -144,6 +144,28 @@ struct Segment
     }
 };
 
+bool intersect(T a, T b, T c, T d)
+{
+    if (a > b) swap(a, b);
+    if (c > d) swap(c, d);
+    return max(a, c) <= min(b, d);
+}
+
+bool intersect(const Segment& U, const Segment& V)
+{
+    auto [a, b] = U.L;
+    auto [c, d] = V.L;
+
+    // check if segments are on the same line
+    // return true if Ox and Oy projections intersect
+    if (Tequal(0, det(a - c, d - c)) && Tequal(0, det(b - c, d - c)))
+        return intersect(a.x, b.x, c.x, d.x) && intersect(a.y, b.y, c.y, d.y);
+
+    // check if a and b line on the same side of the segment c->d, and vice-versa
+    return sgn(det(b - a, c - a)) != sgn(det(b - a, d - a)) &&
+           sgn(det(d - c, a - c)) != sgn(det(d - c, b - c));
+}
+
 pair<bool, Point> intersection(const Segment& U, const Segment& V)
 {
     auto [good, p] = intersection(U.L, V.L);
