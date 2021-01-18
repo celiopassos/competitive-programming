@@ -16,13 +16,13 @@ vector<int> tarjan(const auto& E)
 
     stack<int> stk;
 
-    function<void(int)> dfs = [&](int u)
+    auto dfs = [&](auto& self, int u) -> void
     {
         low[u] = num[u] = timer++, state[u] = active;
         stk.push(u);
         for (auto v : E[u])
         {
-            if (state[v] == unvisited) dfs(v);
+            if (state[v] == unvisited) self(self, v);
             if (state[v] == active) low[u] = min(low[u], low[v]);
         }
         if (low[u] == num[u])
@@ -36,7 +36,7 @@ vector<int> tarjan(const auto& E)
         }
     };
 
-    for (int u = 0; u < n; ++u) if (num[u] == -1) dfs(u);
+    for (int u = 0; u < n; ++u) if (num[u] == -1) dfs(dfs, u);
 
     return scc;
 }
