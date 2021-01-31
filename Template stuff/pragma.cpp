@@ -1,3 +1,2 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("Ofast,unroll-loops")
 #pragma GCC target("avx,avx2,fma")
-#pragma GCC optimization("unroll-loops")
