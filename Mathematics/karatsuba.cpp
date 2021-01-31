@@ -1,7 +1,6 @@
 template<typename T, int K>
-vector<T> karatsuba(int n, const vector<T>& a, const vector<T>& b)
+void karatsuba(int n, T* a, T* b, T* res, T* tmp)
 {
-    vector<T> res(2 * n - 1, T(0));
     if (n <= K)
     {
         for (int i = 0; i < n; ++i)
@@ -10,37 +9,47 @@ vector<T> karatsuba(int n, const vector<T>& a, const vector<T>& b)
     }
     else
     {
-        int mid = n >> 1;
-        vector<T> alow(begin(a), begin(a) + mid), ahigh(mid + all(a));
-        vector<T> blow(begin(b), begin(b) + mid), bhigh(mid + all(b));
+        int mid = n / 2, N = 2 * n;
 
-        auto r0 = karatsuba<T, K>(mid, alow, blow), r1 = karatsuba<T, K>(mid, ahigh, bhigh);
-
-        for (int i = 0; i < mid; ++i) alow[i] += ahigh[i], blow[i] += bhigh[i];
-
-        auto E = karatsuba<T, K>(mid, alow, blow);
-
+        T *r0 = tmp, *r1 = tmp + n;
+        karatsuba<T, K>(mid, a, b, r0, tmp + N);
+        karatsuba<T, K>(mid, a + mid, b + mid, r1, tmp + N);
+ 
         for (int i = 0; i < n - 1; ++i)
         {
             res[i] += r0[i];
-            res[mid + i] += E[i] - (r0[i] + r1[i]);
+            res[mid + i] -= (r0[i] + r1[i]);
             res[n + i] += r1[i];
         }
-    }
-    return res;
-}
 
+        for (int i = 0; i < mid; ++i)
+        {
+            r0[i] = a[i] + a[mid + i];
+            r1[i] = b[i] + b[mid + i];
+        }
+        karatsuba<T, K>(mid, r0, r1, res + mid, tmp + N);
+
+        fill(tmp, tmp + N, T(0));
+    }
+}
+ 
 int logceil(int n)
 {
     return __builtin_clz(1) - __builtin_clz(n) + !!(n & (n - 1));
 }
-
+ 
 template<typename T, int K = 64>
 vector<T> karatsuba(vector<T> a, vector<T> b)
 {
     const int n = size(a), m = size(b), N = 1 << logceil(max(n, m));
+
     a.resize(N, T(0)), b.resize(N, T(0));
-    auto res = karatsuba<T, K>(N, a, b);
+
+    vector<T> res(2 * N - 1, T(0)), tmp(4 * N, T(0));
+
+    karatsuba<T, K>(N, a.data(), b.data(), res.data(), tmp.data());
+
     res.resize(n + m - 1);
+
     return res;
 }
