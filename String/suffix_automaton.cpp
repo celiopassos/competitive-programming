@@ -5,7 +5,7 @@ struct SuffixAutomaton
     {
         int link, len, minlen, idx;
         int nxt[K];
-        bool terminal = false, clone = false;
+        bool clone = false;
         State(int link = -1, int len = 0) : link(link), len(len) { fill(all(nxt), -1); }
     };
     vector<State> state = { State() };
@@ -48,8 +48,6 @@ struct SuffixAutomaton
     SuffixAutomaton(const string& s)
     {
         for (auto c : s) extend(c);
-        for (int v = last; v != -1; v = state[v].link)
-            state[v].terminal = true;
     }
 
     int go(int u, char c) const
