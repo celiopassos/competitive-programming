@@ -15,12 +15,12 @@ vector<T> dijkstra(int s, const auto& E)
     pq.emplace(dist[s] = 0, s);
     while (not empty(pq))
     {
-        auto [d, u] = pq.top(); pq.pop();
+        auto [d, u] = pq.top();
+        pq.pop();
         if (d > dist[u]) continue;
         for (auto [v, w] : E[u])
         {
-            if (chmin(dist[v], dist[u] + w))
-                pq.emplace(dist[v], v);
+            if (chmin(dist[v], dist[u] + w)) pq.emplace(dist[v], v);
         }
     }
     return dist;
