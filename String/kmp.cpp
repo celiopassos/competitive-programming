@@ -15,7 +15,7 @@ vector<int> prefix_function(const string& s)
 // z-function from prefix function
 vector<int> z_function(const vector<int>& p)
 {
-    int n = size(p):
+    int n = size(p);
     vector<int> z(n, 0);
     for (int i = 0; i < n; ++i)
     {
