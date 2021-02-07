@@ -1,4 +1,4 @@
-auto prefix_function(const string& s)
+vector<int> prefix_function(const string& s)
 {
     int n = size(s);
     vector<int> p(n, 0);
@@ -10,6 +10,26 @@ auto prefix_function(const string& s)
         p[i] = j;
     }
     return p;
+}
+
+// z-function from prefix function
+vector<int> z_function(const vector<int>& p)
+{
+    int n = size(p):
+    vector<int> z(n, 0);
+    for (int i = 0; i < n; ++i)
+    {
+        int j = i - p[i] + 1;
+        if (p[i]) z[j] = p[i];
+    }
+    z[0] = n;
+    for (int i = 1, last = 1; i < n; ++i)
+    {
+        if (i + z[i] > last + z[last]) last = i;
+        z[i] = min(z[i - last], last + z[last] - i);
+    }
+    z[0] = 0;
+    return z;
 }
 
 template<int K = 26, char offset = 'a'>
