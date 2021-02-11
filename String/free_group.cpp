@@ -1,7 +1,7 @@
 const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
 mt19937 rng(FIXED_RANDOM);
 
-uniform_int_distribution<ll> unif(100, 1e6);
+uniform_int_distribution<ll> unif(1e5, 1e6);
 
 ll modpow(ll x, ll p, ll mod)
 {
