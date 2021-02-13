@@ -79,6 +79,11 @@ struct Vector : public Matrix<T, N, 1>
 
     Vector() : Base() { }
     Vector(const Base& v) : Base(v) { }
+    Vector(initializer_list<T> lst) : Base()
+    {
+        int i = 0;
+        for (const auto& x : lst) (*this)[i++] = x;
+    }
 
     T& operator[](int i) { return Base::operator[](i)[0]; }
     const T& operator[](int i) const { return Base::operator[](i)[0]; }
@@ -91,7 +96,7 @@ struct Affine
     Vector<T, N> b;
 
     Affine(T value = T(0)) : A(value) { }
-    Affine(const Matrix<T, N, M>& A) : A(A) { }
+    Affine(const Matrix<T, N, M>& A, const Vector<T, N>& b) : A(A), b(b) { }
 
     Affine operator+=(const Affine& rhs) { A += rhs.A, b += rhs.B; }
     Affine operator-=(const Affine& rhs) { A -= rhs.A, b -= rhs.B; }
@@ -101,14 +106,9 @@ struct Affine
     T* operator[](int i) { return A[i]; }
     const T* operator[](int i) const { return A[i]; }
 
-    template<int K> Affine<T, N, K> operator*(const Affine<T, M, K>& rhs)
+    template<int K> Affine<T, N, K> operator*(const Affine<T, M, K>& rhs) const
     {
-        Affine<T, N, K> res;
-
-        res.A = A * rhs.A;
-        res.b = A * rhs.b + b;
-
-        return res;
+        return Affine<T, N, K>(A * rhs.A, A * rhs.b + b);
     }
     Vector<T, N> operator*(const Vector<T, M>& x) const
     {
