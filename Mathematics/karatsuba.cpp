@@ -39,7 +39,7 @@ int logceil(int n)
 }
  
 template<typename T, int K = 64>
-vector<T> karatsuba(vector<T> a, vector<T> b)
+vector<T> convolution(vector<T> a, vector<T> b)
 {
     const int n = size(a), m = size(b), N = 1 << logceil(max(n, m));
 

@@ -1,19 +1,28 @@
-// Primes for NTT
+// NTT stuff:
+//
 // 998244353 = 1 + 7 * 17 * (2 ^ 23)
 // 469762049 = 1 + 7 * (2 ^ 26)
 // 167772161 = 1 + 5 * (2 ^ 25)
 
-constexpr int MODs[] = { 998244353, 469762049, 167772161 };
-constexpr int preexp[] = { 7 * 17, 7, 5 };
-constexpr int explog[] = { 23, 26, 25 };
-constexpr int primitive[] = { 3, 3, 3 };
+// constexpr int MODs[] = { 998244353, 469762049, 167772161 };
+// constexpr int preexp[] = { 7 * 17, 7, 5 };
+// constexpr int explog[] = { 23, 26, 25 };
+// constexpr int primitive[] = { 3, 3, 3 };
 
-template<int idx>
-constexpr auto getroot(int e)
+template<typename T>
+T getroot(int e)
 {
-    using M = Mint<MODs[idx]>;
-    return M(primitive[idx]).power(preexp[idx] * (1LL << (explog[idx] - e)));
+    static auto PI = acos(T(-1).real());
+    return polar<decltype(PI)>(1, 2 * PI / (1 << e));
 }
+
+// using M998 = Mint<MODs[0]>;
+// 
+// template<>
+// M998 getroot<M998>(int e)
+// {
+//      return M998(primitive[0]).power(preexp[0] * (1LL << (explog[0] - e)));
+// }
 
 int logceil(int n)
 {
@@ -45,16 +54,13 @@ void fft(vector<T>& p, T root)
     fft(p, aux, root, 0, size(p));
 }
 
-// rootbuilder should accept an integer e as input
-// and return a (1 << e)-th root of unity
-
 template<typename T>
-vector<T> convolution(vector<T> p, vector<T> q, auto rootbuilder)
+vector<T> convolution(vector<T> p, vector<T> q)
 {
     const int n = size(p), m = size(q);
     const int e = logceil(n + m - 1), N = 1 << e;
 
-    T root = rootbuilder(e);
+    T root = getroot<T>(e);
 
     p.resize(N, T(0)), q.resize(N, T(0));
 
