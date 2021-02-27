@@ -8,19 +8,20 @@ struct G1
     static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
+int b(int p) { return p & (-p); }
+
 template<typename Group>
 class BIT
 {
 private:
     using G = Group;
     using T = typename G::Type;
-    int b(int p) { return p & (-p); }
     const int n, h;
     vector<T> ft;
     T query(int p)
     {
         T res = G::Id;
-        for (int i = p; i >= 1; i -= b(i)) res = G::op(ft[i], res);
+        for (; p; p -= b(p)) res = G::op(ft[p], res);
         return res;
     }
 public:
@@ -33,7 +34,7 @@ public:
     T query(int l, int r) { return G::op(G::inv(query(l)), query(r + 1)); }
     void update(int p, T value)
     {
-        for (int i = p + 1; i <= n; i += b(i)) ft[i] = G::op(ft[i], value);
+        for (++p; p <= n; p += b(p)) ft[p] = G::op(ft[p], value);
     }
     int lower_bound(T value) // first r such that G::cmp(query(0, r), value) == false
     {

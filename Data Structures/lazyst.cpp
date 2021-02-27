@@ -10,19 +10,9 @@ struct F1
     {
         old = old + add * (R - L + 1);
     }
-    void compose(const F1& op, int L, int R)
-    {
-        add += op.add;
-    }
-    bool operator==(const F1& op) const { return add == op.add; }
-    static T op(const T& x, const T& y)
-    {
-        return x + y;
-    }
-    static bool cmp(const T& x, const T& y)
-    {
-        return x < y;
-    }
+    void compose(const F1& op, int L, int R) { add += op.add; }
+    static T op(const T& x, const T& y) { return x + y; }
+    static bool cmp(const T& x, const T& y) { return x < y; }
 };
 
 template<typename F>
@@ -41,23 +31,18 @@ private:
 
     void push(int p, int l, int r)
     {
-        if (lazy[p] == F::Fid) return; // may wanna remove this...
-
         lazy[p].apply(st[p], l, r);
-
         if (l != r)
         {
             int m = l + (r - l) / 2;
-
             lazy[left(p)].compose(lazy[p], l, m);
             lazy[right(p)].compose(lazy[p], m + 1, r);
         }
-
         lazy[p] = F::Fid;
     }
     void update(int p, int l, int r, int ql, int qr, F op)
     {
-        if (r < ql || qr < l) push(p, l, r);
+        if (r < ql || qr < l) return;
         else if (ql <= l && r <= qr)
         {
             lazy[p].compose(op, l, r);
@@ -66,28 +51,20 @@ private:
         else
         {
             int m = l + (r - l) / 2;
-
             push(p, l, r);
-
             update(left(p), l, m, ql, qr, op);
             update(right(p), m + 1, r, ql, qr, op);
-
             st[p] = F::op(st[left(p)], st[right(p)]);
         }
     }
     T query(int p, int l, int r, int ql, int qr)
     {
         if (r < ql || qr < l) return F::Tid;
-
         push(p, l, r);
-
         if (ql <= l && r <= qr) return st[p];
-
         int m = l + (r - l) / 2;
-
         T resl = query(left(p), l, m, ql, qr);
         T resr = query(right(p), m + 1, r, ql, qr);
-
         return F::op(resl, resr);
     }
     void build(int p, int l, int r, const vector<T>& a)
@@ -96,35 +73,25 @@ private:
         else
         {
             int m = l + (r - l) / 2;
-
             build(left(p), l, m, a), build(right(p), m + 1, r, a);
-
             st[p] = F::op(st[left(p)], st[right(p)]);
         }
     }
     void partition(auto& q, int p, int l, int r, int ql, int qr)
     {
         if (r < ql || qr < l) return;
-
         push(p, l, r);
-
         if (ql <= l && r <= qr) { q.emplace_back(p, l, r); return; }
-
         int m = l + (r - l) / 2;
-
         partition(q, left(p), l, m, ql, qr);
         partition(q, right(p), m + 1, r, ql, qr);
     }
     int binary_search(int p, int l, int r, T prefix, T value)
     {
         push(p, l, r);
-
         if (l == r) { return l + F::cmp(F::op(prefix, st[p]), value); }
-
         int m = l + (r - l) / 2;
-
         push(left(p), l, m);
-
         if (T x = F::op(prefix, st[left(p)]); F::cmp(x, value))
             return binary_search(right(p), m + 1, r, x, value);
         else
@@ -151,11 +118,8 @@ public:
     int lower_bound(int l, int r, T value)
     {
         static vector<tuple<int, int, int>> q;
-
         partition(q, 0, 0, n - 1, l, r);
-
         int res = r + 1;
-
         for (auto [idx, prefix] = pair(0, F::Tid); idx < size(q); ++idx)
         {
             auto [p, l, r] = q[idx];
@@ -166,9 +130,7 @@ public:
                 break;
             }
         }
-
         q.clear();
-
         return res;
     }
 };
