@@ -42,7 +42,7 @@ private:
     }
     void update(int p, int l, int r, int ql, int qr, F op)
     {
-        if (r < ql || qr < l) return;
+        if (r < ql || qr < l) push(p, l, r);
         else if (ql <= l && r <= qr)
         {
             lazy[p].compose(op, l, r);
