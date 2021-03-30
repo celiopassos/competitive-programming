@@ -1,22 +1,18 @@
 typedef complex<ftype> point;
 
-ftype dot(point a, point b)
-{
+ftype dot(point a, point b) {
     return (conj(a) * b).real();
 }
 
-ftype cross(point a, point b)
-{
+ftype cross(point a, point b) {
     return (conj(a) * b).imag();
 }
 
 vector<point> hull, vecs;
 
-void add_line(ftype k, ftype b)
-{
+void add_line(ftype k, ftype b) {
     point nw = {k, b};
-    while (!vecs.empty() && dot(vecs.back(), nw - hull.back()) < 0)
-    {
+    while (!vecs.empty() && dot(vecs.back(), nw - hull.back()) < 0) {
         hull.pop_back();
         vecs.pop_back();
     }
@@ -25,8 +21,7 @@ void add_line(ftype k, ftype b)
     hull.pb(nw);
 }
 
-int get(ftype x)
-{
+int get(ftype x) {
     point query = {x, 1};
     auto it = lower_bound(vecs.begin(), vecs.end(), query, [](point a, point b){ return cross(a, b) > 0; }); // CHANGE THIS IF ADDING BACKWARDS
     return dot(query, hull[it - vecs.begin()]); // CHANGE THIS IF ADDING BACKWARDS

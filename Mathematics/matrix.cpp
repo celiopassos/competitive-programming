@@ -1,10 +1,8 @@
 template<typename T>
-T templatepow(T x, ll p)
-{
+T templatepow(T x, ll p) {
     assert(p >= 0);
     T res(1);
-    while (p > 0)
-    {
+    while (p > 0) {
         if (p & 1) res = res * x;
         x = x * x, p >>= 1;
     }
@@ -12,25 +10,20 @@ T templatepow(T x, ll p)
 }
 
 template<typename T, int N, int M>
-struct Matrix
-{
+struct Matrix {
     T A[N][M];
     int row[N];
 
-    Matrix()
-    {
+    Matrix() {
         fill(&A[0][0], &A[0][0] + N * M, T(0));
         iota(all(row), 0);
     }
-    Matrix(T value) : Matrix()
-    {
+    Matrix(T value) : Matrix() {
         for (int i = 0; i < min(N, M); ++i) A[i][i] = value;
     }
-    Matrix(initializer_list<initializer_list<T>> lst) : Matrix()
-    {
+    Matrix(initializer_list<initializer_list<T>> lst) : Matrix() {
         int i = 0, j = 0;
-        for (const auto& v : lst)
-        {
+        for (const auto& v : lst) {
             for (const auto& x : v) A[i][j++] = x;
             i++, j = 0;
         }
@@ -41,8 +34,7 @@ struct Matrix
 
     void swap_rows(int i, int j) { swap(row[i], row[j]); }
 
-    template<typename Op> Matrix& compose(const Matrix& rhs, Op&& op)
-    {
+    template<typename Op> Matrix& compose(const Matrix& rhs, Op&& op) {
         auto& lhs = *this;
         for (int i = 0; i < N; ++i)
             for (int j = 0; j < M; ++j)
@@ -53,8 +45,7 @@ struct Matrix
     Matrix& operator-=(const Matrix& rhs) { return compose(rhs, std::minus<T>()); }
     Matrix operator+(const Matrix& rhs) const { return Matrix(*this) += rhs; }
     Matrix operator-(const Matrix& rhs) const { return Matrix(*this) -= rhs; }
-    template<int K> Matrix<T, N, K> operator*(const Matrix<T, M, K>& rhs) const
-    {
+    template<int K> Matrix<T, N, K> operator*(const Matrix<T, M, K>& rhs) const {
         const auto& lhs = *this;
         Matrix<T, N, K> res;
         for (int i = 0; i < N; ++i)
@@ -63,8 +54,7 @@ struct Matrix
                     res[i][j] += lhs[i][k] * rhs[k][j];
         return res;
     }
-    friend Matrix operator*(const T& alpha, Matrix A)
-    {
+    friend Matrix operator*(const T& alpha, Matrix A) {
         for (int i = 0; i < N; ++i)
             for (int j = 0; j < M; ++j)
                 A[i][j] *= alpha;
@@ -73,14 +63,12 @@ struct Matrix
 };
 
 template<typename T, int N>
-struct Vector : public Matrix<T, N, 1>
-{
+struct Vector : public Matrix<T, N, 1> {
     using Base = Matrix<T, N, 1>;
 
     Vector() : Base() { }
     Vector(const Base& v) : Base(v) { }
-    Vector(initializer_list<T> lst) : Base()
-    {
+    Vector(initializer_list<T> lst) : Base() {
         int i = 0;
         for (const auto& x : lst) (*this)[i++] = x;
     }
@@ -90,8 +78,7 @@ struct Vector : public Matrix<T, N, 1>
 };
 
 template<typename T, int N, int M>
-struct Affine
-{
+struct Affine {
     Matrix<T, N, M> A;
     Vector<T, N> b;
 
@@ -106,12 +93,10 @@ struct Affine
     T* operator[](int i) { return A[i]; }
     const T* operator[](int i) const { return A[i]; }
 
-    template<int K> Affine<T, N, K> operator*(const Affine<T, M, K>& rhs) const
-    {
+    template<int K> Affine<T, N, K> operator*(const Affine<T, M, K>& rhs) const {
         return Affine<T, N, K>(A * rhs.A, A * rhs.b + b);
     }
-    Vector<T, N> operator*(const Vector<T, M>& x) const
-    {
+    Vector<T, N> operator*(const Vector<T, M>& x) const {
         return A * x + b;
     }
 };

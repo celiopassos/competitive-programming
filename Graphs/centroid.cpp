@@ -1,8 +1,7 @@
 // K >= centroid tree height, or simply floor(log(n))
 
 template<int K>
-class CentroidDecomposition
-{
+class CentroidDecomposition {
 private:
     const int n;
     const vector<vector<int>>& E;
@@ -10,8 +9,7 @@ private:
     vector<int> parent, weight, vis, level;
     vector<array<int, K + 1>> dist;
 
-    int dfs(int u, int p, int h)
-    {
+    int dfs(int u, int p, int h) {
         if (h != -1) dist[u][h] = dist[p][h] + 1;
 
         weight[u] = 1;
@@ -21,16 +19,14 @@ private:
 
         return weight[u];
     }
-    int find_centroid(int u, int p, int cut)
-    {
+    int find_centroid(int u, int p, int cut) {
         for (auto v : E[u])
             if (not vis[v] && v != p && weight[v] > cut)
                 return find_centroid(v, u, cut);
 
         return u;
     }
-    void build(int u, int p)
-    {
+    void build(int u, int p) {
         int total = dfs(u, p, p == -1 ? -1 : level[p]);
         int centroid = find_centroid(u, p, total / 2);
 
@@ -43,20 +39,16 @@ private:
     }
 public:
     CentroidDecomposition(const vector<vector<int>>& E) :
-        n(size(E)), E(E), parent(n), weight(n), vis(n), level(n), dist(n)
-    {
+        n(size(E)), E(E), parent(n), weight(n), vis(n), level(n), dist(n) {
         build(0, -1);
     }
-    int operator[](int u) const
-    {
+    int operator[](int u) const {
         return parent[u];
     }
-    int getlevel(int u) const
-    {
+    int getlevel(int u) const {
         return level[u];
     }
-    int lca(int u, int v) const // centroid lca, not tree lca
-    {
+    int lca(int u, int v) const // centroid lca, not tree lca {
         if (level[u] < level[v]) swap(u, v);
 
         while (level[u] > level[v]) u = parent[u];
@@ -65,8 +57,7 @@ public:
 
         return u;
     }
-    int distance(int u, int v) const
-    {
+    int distance(int u, int v) const {
         int w = lca(u, v);
 
         return dist[u][level[w]] + dist[v][level[w]];

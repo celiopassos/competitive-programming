@@ -1,13 +1,11 @@
-ll modpow(ll x, ll p, ll mod)
-{
+ll modpow(ll x, ll p, ll mod) {
     ll res = 1LL;
     for (; p; p >>= 1, (x *= x) %= mod) if (p & 1) (res *= x) %= mod;
     return res;
 }
 
 template<ll mod>
-struct Mint
-{
+struct Mint {
     ll x;
     Mint(ll x = 0) : x((x %= mod) < 0 ? x + mod : x) { }
     Mint& operator+=(Mint rhs) { if ((x += rhs.x) >= mod) x -= mod; return *this; }
@@ -22,8 +20,7 @@ struct Mint
     friend Mint operator*(Mint lhs, Mint rhs) { return lhs *= rhs; }
     friend Mint operator/(Mint lhs, Mint rhs) { return lhs /= rhs; }
     friend ostream& operator<<(ostream& out, Mint a) { return out << a.x; }
-    friend istream& operator>>(istream& in, Mint& a)
-    {
+    friend istream& operator>>(istream& in, Mint& a) {
         ll x;
         in >> x;
         a = Mint(x);

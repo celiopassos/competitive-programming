@@ -1,8 +1,6 @@
 template<int K = 26, char offset = 'a'>
-struct SuffixAutomaton
-{
-    struct State
-    {
+struct SuffixAutomaton {
+    struct State {
         int link, len, minlen, idx;
         int nxt[K];
         bool clone = false;
@@ -11,8 +9,7 @@ struct SuffixAutomaton
     vector<State> state = { State() };
 
     int last = 0, total_size = 0;
-    void extend(char c)
-    {
+    void extend(char c) {
         int cur = size(state), u = last, len = state[last].len + 1, ch = c - offset;
 
         for (;u != -1 && state[u].nxt[ch] == -1; u = state[u].link)
@@ -20,16 +17,13 @@ struct SuffixAutomaton
 
         last = cur;
 
-        if (u == -1)
-        {
+        if (u == -1) {
             state.emplace_back(0, len);
         }
-        else if (int v = state[u].nxt[ch]; state[u].len + 1 == state[v].len)
-        {
+        else if (int v = state[u].nxt[ch]; state[u].len + 1 == state[v].len) {
             state.emplace_back(v, len);
         }
-        else
-        {
+        else {
             int clone = cur + 1;
             state.emplace_back(clone, len);
             state.push_back(state[v]);
@@ -45,13 +39,11 @@ struct SuffixAutomaton
         state[cur].idx = total_size++;
     }
 
-    SuffixAutomaton(const string& s)
-    {
+    SuffixAutomaton(const string& s) {
         for (auto c : s) extend(c);
     }
 
-    int go(int u, char c) const
-    {
+    int go(int u, char c) const {
         return state[u].nxt[c - offset];
     }
 };

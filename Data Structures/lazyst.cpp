@@ -1,13 +1,11 @@
 template<typename T>
-struct F1
-{
+struct F1 {
     using Type = T;
     inline const static T Tid = T(0);
     inline const static F1 Fid = F1(0);
     T add;
     explicit F1(T add) : add(add) {}
-    void apply(T& old, int L, int R) const
-    {
+    void apply(T& old, int L, int R) const {
         old = old + add * (R - L + 1);
     }
     void compose(const F1& op, int L, int R) { add += op.add; }
@@ -16,8 +14,7 @@ struct F1
 };
 
 template<typename F>
-class LazyST
-{
+class LazyST {
 private:
     using T = typename F::Type;
 
@@ -29,27 +26,22 @@ private:
     int left(int p) const { return 2 * p + 1; }
     int right(int p) const { return 2 * p + 2; }
 
-    void push(int p, int l, int r)
-    {
+    void push(int p, int l, int r) {
         lazy[p].apply(st[p], l, r);
-        if (l != r)
-        {
+        if (l != r) {
             int m = l + (r - l) / 2;
             lazy[left(p)].compose(lazy[p], l, m);
             lazy[right(p)].compose(lazy[p], m + 1, r);
         }
         lazy[p] = F::Fid;
     }
-    void update(int p, int l, int r, int ql, int qr, F op)
-    {
+    void update(int p, int l, int r, int ql, int qr, F op) {
         if (r < ql || qr < l) push(p, l, r);
-        else if (ql <= l && r <= qr)
-        {
+        else if (ql <= l && r <= qr) {
             lazy[p].compose(op, l, r);
             push(p, l, r);
         }
-        else
-        {
+        else {
             int m = l + (r - l) / 2;
             push(p, l, r);
             update(left(p), l, m, ql, qr, op);
@@ -57,8 +49,7 @@ private:
             st[p] = F::op(st[left(p)], st[right(p)]);
         }
     }
-    T query(int p, int l, int r, int ql, int qr)
-    {
+    T query(int p, int l, int r, int ql, int qr) {
         if (r < ql || qr < l) return F::Tid;
         push(p, l, r);
         if (ql <= l && r <= qr) return st[p];
@@ -67,18 +58,15 @@ private:
         T resr = query(right(p), m + 1, r, ql, qr);
         return F::op(resl, resr);
     }
-    void build(int p, int l, int r, const vector<T>& a)
-    {
+    void build(int p, int l, int r, const vector<T>& a) {
         if (l == r) st[p] = a[l];
-        else
-        {
+        else {
             int m = l + (r - l) / 2;
             build(left(p), l, m, a), build(right(p), m + 1, r, a);
             st[p] = F::op(st[left(p)], st[right(p)]);
         }
     }
-    void partition(auto& q, int p, int l, int r, int ql, int qr)
-    {
+    void partition(auto& q, int p, int l, int r, int ql, int qr) {
         if (r < ql || qr < l) return;
         push(p, l, r);
         if (ql <= l && r <= qr) { q.emplace_back(p, l, r); return; }
@@ -86,8 +74,7 @@ private:
         partition(q, left(p), l, m, ql, qr);
         partition(q, right(p), m + 1, r, ql, qr);
     }
-    int binary_search(int p, int l, int r, T prefix, T value)
-    {
+    int binary_search(int p, int l, int r, T prefix, T value) {
         push(p, l, r);
         if (l == r) { return l + F::cmp(F::op(prefix, st[p]), value); }
         int m = l + (r - l) / 2;
@@ -99,33 +86,26 @@ private:
     }
 public:
     LazyST(int n) : n(n), st(4 * n + 1, F::Tid), lazy(4 * n + 1, F::Fid) { }
-    LazyST(const vector<T>& a) : LazyST(size(a))
-    {
+    LazyST(const vector<T>& a) : LazyST(size(a)) {
         build(0, 0, n - 1, a);
     }
-    void update(int l, int r, F op)
-    {
+    void update(int l, int r, F op) {
         update(0, 0, n - 1, l, r, op);
     }
-    T query(int l, int r)
-    {
+    T query(int l, int r) {
         return query(0, 0, n - 1, l, r);
     }
-    int lower_bound(T value)
-    {
+    int lower_bound(T value) {
         return binary_search(0, 0, n - 1, F::Tid, value);
     }
-    int lower_bound(int l, int r, T value)
-    {
+    int lower_bound(int l, int r, T value) {
         static vector<tuple<int, int, int>> q;
         partition(q, 0, 0, n - 1, l, r);
         int res = r + 1;
-        for (auto [idx, prefix] = pair(0, F::Tid); idx < size(q); ++idx)
-        {
+        for (auto [idx, prefix] = pair(0, F::Tid); idx < size(q); ++idx) {
             auto [p, l, r] = q[idx];
             if (T x = F::op(prefix, st[p]); F::cmp(x, value)) prefix = x;
-            else
-            {
+            else {
                 res = binary_search(p, l, r, prefix, value);
                 break;
             }

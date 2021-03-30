@@ -8,8 +8,7 @@
 // always of the form v -> root or root -> v (take care of the order).
 
 template<typename Monoid>
-struct HLD
-{
+struct HLD {
     using M = Monoid;
     using T = typename M::Type;
 
@@ -20,18 +19,15 @@ struct HLD
     int cur_pos = 0;
 
     HLD(const auto& E, int root = 0) : n(size(E)), E(E),
-        parent(n), depth(n), heavy(n, -1), head(n), pos(n)
-    {
+        parent(n), depth(n), heavy(n, -1), head(n), pos(n) {
         parent[root] = root;
         dfs(root), decompose(root, root);
     }
 
-    int dfs(int u)
-    {
+    int dfs(int u) {
         int weight = 1, prv_max = 0;
 
-        for (int v : E[u]) if (v != parent[u])
-        {
+        for (int v : E[u]) if (v != parent[u]) {
             parent[v] = u, depth[v] = depth[u] + 1;
             int cur = dfs(v);
             weight += cur;
@@ -40,8 +36,7 @@ struct HLD
 
         return weight;
     }
-    void decompose(int u, int h)
-    {
+    void decompose(int u, int h) {
         head[u] = h, pos[u] = cur_pos++;
 
         if (heavy[u] != -1) decompose(heavy[u], h);
@@ -49,19 +44,15 @@ struct HLD
             decompose(v, v);
     }
     // pass strev = stfor if Monoid is commutative
-    T query(int a, int b, auto& stfor, auto& strev)
-    {
+    T query(int a, int b, auto& stfor, auto& strev) {
         T left = M::Id, right = M::Id;
 
-        while (head[a] != head[b])
-        {
-            if (depth[head[a]] > depth[head[b]])
-            {
+        while (head[a] != head[b]) {
+            if (depth[head[a]] > depth[head[b]]) {
                 left = M::op(left, strev.query(pos[head[a]], pos[a]));
                 a = parent[head[a]];
             }
-            else
-            {
+            else {
                 right = M::op(stfor.query(pos[head[b]], pos[b]), right);
                 b = parent[head[b]];
             }
@@ -74,10 +65,8 @@ struct HLD
 
         return M::op(left, right);
     }
-    void update(int a, int b, auto& st, const auto& upd)
-    {
-        for (; head[a] != head[b]; a = parent[head[a]])
-        {
+    void update(int a, int b, auto& st, const auto& upd) {
+        for (; head[a] != head[b]; a = parent[head[a]]) {
             if (depth[head[b]] > depth[head[a]]) swap(a, b);
             st.update(pos[head[a]], pos[a], upd);
         }

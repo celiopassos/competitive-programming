@@ -5,8 +5,7 @@
 // i.e., scc's with 0 out-degree first
 // it is guarenteed that 0 <= scc[u] < n for all u
 
-vector<int> tarjan(const auto& E)
-{
+vector<int> tarjan(const auto& E) {
     int n = size(E), timer = 0, ct = 0;
 
     enum State { unvisited, active, visited };
@@ -16,19 +15,15 @@ vector<int> tarjan(const auto& E)
 
     stack<int> stk;
 
-    auto dfs = [&](auto& self, int u) -> void
-    {
+    auto dfs = [&](auto& self, int u) -> void {
         low[u] = num[u] = timer++, state[u] = active;
         stk.push(u);
-        for (auto v : E[u])
-        {
+        for (auto v : E[u]) {
             if (state[v] == unvisited) self(self, v);
             if (state[v] == active) low[u] = min(low[u], low[v]);
         }
-        if (low[u] == num[u])
-        {
-            do
-            {
+        if (low[u] == num[u]) {
+            do {
                 int v = stk.top(); stk.pop();
                 scc[v] = ct, state[v] = visited;
             } while (not empty(stk) && num[stk.top()] >= num[u]);

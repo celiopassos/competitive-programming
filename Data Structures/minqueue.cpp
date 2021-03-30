@@ -1,14 +1,12 @@
 template<typename T>
-struct M1
-{
+struct M1 {
     using Type = T;
     inline const static T Id = INF;
     static T op(const T& x, const T& y) { return min(x, y); }
 };
 
 template<typename Monoid, bool top_down = false>
-class MinimumStack
-{
+class MinimumStack {
 private:
     using M = Monoid;
     using T = typename M::Type;
@@ -16,8 +14,7 @@ private:
 public:
     T top() const { return st.top().first; }
     T minimum() const { return st.empty() ? M::Id : st.top().second; }
-    void push(T value)
-    {
+    void push(T value) {
         if (top_down)
             st.push(pair<T, T>(value, M::op(value, minimum())));
         else
@@ -29,17 +26,14 @@ public:
 };
 
 template<typename Monoid>
-class MinimumQueue
-{
+class MinimumQueue {
 private:
     using M = Monoid;
     using T = typename Monoid::Type;
     MinimumStack<Monoid, false> in;
     MinimumStack<Monoid, true> out;
-    void move()
-    {
-        if (out.empty()) while (not in.empty())
-        {
+    void move() {
+        if (out.empty()) while (not in.empty()) {
             out.push(in.top());
             in.pop();
         }

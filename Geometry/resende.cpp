@@ -16,33 +16,27 @@ const long double EPS = 1e-6;
 bool Tcmp(const T& lhs, const T& rhs) { return lhs + EPS < rhs; }
 bool Tequal(const T& lhs, const T& rhs) { return abs(lhs - rhs) <= EPS; }
 
-struct Point
-{
+struct Point {
     T x, y;
     Point(T x = 0, T y = 0) : x(x), y(y) { }
     Point operator+=(const Point& rhs) { x += rhs.x, y += rhs.y; return *this; }
     Point operator-=(const Point& rhs) { x -= rhs.x, y -= rhs.y; return *this; }
     Point operator+(const Point& rhs) const { return Point(*this) += rhs; }
     Point operator-(const Point& rhs) const { return Point(*this) -= rhs; }
-    friend Point operator*(const T& alpha, const Point& pt)
-    {
+    friend Point operator*(const T& alpha, const Point& pt) {
         return Point(alpha * pt.x, alpha * pt.y);
     }
-    friend T operator*(const Point& lhs, const Point& rhs)
-    {
+    friend T operator*(const Point& lhs, const Point& rhs) {
         return lhs.x * rhs.x + lhs.y * rhs.y;
     }
-    bool operator<(const Point& rhs) const
-    {
+    bool operator<(const Point& rhs) const {
         return pair(x, y) < pair(rhs.x, rhs.y);
     }
-    bool operator==(const Point& rhs) const
-    {
+    bool operator==(const Point& rhs) const {
         return Tequal(x, rhs.x) && Tequal(y, rhs.y);
     }
     bool operator!=(const Point& rhs) const { return not (*this == rhs); }
-    friend ostream& operator<<(ostream& out, const Point& pt)
-    {
+    friend ostream& operator<<(ostream& out, const Point& pt) {
         return out << pt.x << " " << pt.y;
     }
 };
@@ -61,8 +55,7 @@ Point unit(const Point& pt) { return (T(1) / norm(pt)) * pt; }
 
 // counter-clockwise
 
-Point rotate(const Point& pt, double theta)
-{
+Point rotate(const Point& pt, double theta) {
     double c = cos(theta), s = sin(theta);
     return Point(c * pt.x - s * pt.y, s * pt.x + c * pt.y);
 }
@@ -73,26 +66,21 @@ Point rotate90(const Point& pt) { return Point(-pt.y, pt.x); }
 // [ p.x p.y ]
 // [ q.x q.y ]
 
-T det(const Point& p, const Point& q)
-{
+T det(const Point& p, const Point& q) {
     return p.x * q.y - q.x * p.y;
 }
 
-struct Line
-{
+struct Line {
     Point p, q;
     Line(Point p = Point(), Point q = Point()) : p(p), q(q) { }
-    bool contains(Point pt) const
-    {
+    bool contains(Point pt) const {
         return Tequal(det(pt - p, q - p), T(0));
     }
-    bool operator==(const Line& rhs) const
-    {
+    bool operator==(const Line& rhs) const {
         return contains(rhs.p) && contains(rhs.q);
     }
     bool operator!=(const Line& rhs) const { return not (*this == rhs); }
-    T dist(Point pt) const
-    {
+    T dist(Point pt) const {
         Point x = pt - p, y = q - p;
 
         Point proj = (x * y / sqnorm(y)) * y;
@@ -101,8 +89,7 @@ struct Line
     }
 };
 
-pair<bool, Point> intersection(const Line& U, const Line& V)
-{
+pair<bool, Point> intersection(const Line& U, const Line& V) {
     if (U != V && Tequal(det(U.p - U.q, V.p - V.q), T(0)))
         return pair(false, Point());
 
@@ -113,16 +100,13 @@ pair<bool, Point> intersection(const Line& U, const Line& V)
     return pair(true, U.p + alpha * (U.q - U.p));
 }
 
-struct Segment
-{
+struct Segment {
     Line L;
     Segment(Point p = Point(), Point q = Point()) : L(p, q) { }
-    bool operator==(const Segment& rhs) const
-    {
+    bool operator==(const Segment& rhs) const {
         return (L.p == rhs.L.p && L.q == rhs.L.q) || (L.q == rhs.L.p && L.p == rhs.L.q);
     }
-    bool contains(Point pt) const
-    {
+    bool contains(Point pt) const {
         if (not L.contains(pt)) return false;
 
         Point x = pt - L.p, y = L.q - L.p;
@@ -131,8 +115,7 @@ struct Segment
 
         return not (Tcmp(T(1), alpha) || Tcmp(alpha, T(0)));
     }
-    T dist(Point pt) const
-    {
+    T dist(Point pt) const {
         Point x = pt - L.p, y = L.q - L.p;
 
         Point proj = L.p + (x * y / sqnorm(y)) * y;
@@ -144,15 +127,13 @@ struct Segment
     }
 };
 
-bool intersect(T a, T b, T c, T d)
-{
+bool intersect(T a, T b, T c, T d) {
     if (a > b) swap(a, b);
     if (c > d) swap(c, d);
     return max(a, c) <= min(b, d);
 }
 
-bool intersect(const Segment& U, const Segment& V)
-{
+bool intersect(const Segment& U, const Segment& V) {
     auto [a, b] = U.L;
     auto [c, d] = V.L;
 
@@ -166,42 +147,36 @@ bool intersect(const Segment& U, const Segment& V)
            sgn(det(d - c, a - c)) != sgn(det(d - c, b - c));
 }
 
-pair<bool, Point> intersection(const Segment& U, const Segment& V)
-{
+pair<bool, Point> intersection(const Segment& U, const Segment& V) {
     auto [good, p] = intersection(U.L, V.L);
 
     if (not good) return pair(false, Point());
 
-    if (U.L == V.L)
-    {
+    if (U.L == V.L) {
         for (auto q : { U.L.p, U.L.q }) if (V.contains(q)) return pair(true, q);
         for (auto q : { V.L.p, V.L.q }) if (U.contains(q)) return pair(true, q);
         return pair(false, Point());
     }
-    else
-    {
+    else {
         return pair(U.contains(p) && V.contains(p), p);
     }
 }
 
 // checks if p-q-r bends clockwise on q
 
-bool cw(const Point& p, const Point& q, const Point& r)
-{
+bool cw(const Point& p, const Point& q, const Point& r) {
     return Tcmp(det(q - p, r - q), T(0));
 }
 
 // checks if p-q-r bends counter-clockwise on q
 
-bool ccw(const Point& p, const Point& q, const Point& r)
-{
+bool ccw(const Point& p, const Point& q, const Point& r) {
     return Tcmp(T(0), det(q - p, r - q));
 }
 
 // O(n log(n))
 
-vector<Point> convex_hull(vector<Point> pts)
-{
+vector<Point> convex_hull(vector<Point> pts) {
     sort(all(pts)), pts.erase(unique(all(pts)), end(pts));
 
     const int n = size(pts);
@@ -214,15 +189,12 @@ vector<Point> convex_hull(vector<Point> pts)
 
     int idx = 1, idy = 1;
 
-    for (int i = 1; i < n; ++i)
-    {
-        if (i == n - 1 || cw(p, pts[i], q))
-        {
+    for (int i = 1; i < n; ++i) {
+        if (i == n - 1 || cw(p, pts[i], q)) {
             while (idx > 1 && not cw(up[idx - 2], up[idx - 1], pts[i])) --idx;
             up[idx++] = pts[i];
         }
-        if (i == n - 1 || ccw(p, pts[i], q))
-        {
+        if (i == n - 1 || ccw(p, pts[i], q)) {
             while (idy > 1 && not ccw(down[idy - 2], down[idy - 1], pts[i])) --idy;
             down[idy++] = pts[i];
         }
@@ -244,8 +216,7 @@ vector<Point> convex_hull(vector<Point> pts)
 //
 // O(log(size(hull)))
 
-bool is_inside(const vector<Point>& hull, Point pt, bool strictly)
-{
+bool is_inside(const vector<Point>& hull, Point pt, bool strictly) {
     const int n = size(hull);
 
     if (n == 0) return false;
@@ -267,8 +238,7 @@ bool is_inside(const vector<Point>& hull, Point pt, bool strictly)
 
     int P[3] = { 0, split, split + 1 };
 
-    for (int i = 0; i < 3; ++i)
-    {
+    for (int i = 0; i < 3; ++i) {
         int cur = P[i], nxt = P[(i + 1) % 3];
 
         if (cw(hull[cur], hull[nxt], pt)) return false;

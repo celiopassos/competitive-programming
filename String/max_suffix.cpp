@@ -1,9 +1,7 @@
-string max_suffix(string s)
-{
+string max_suffix(string s) {
     s += "#";
     string res; res.push_back(s[0]);
-    for (int i = 1; i < size(s); ++i)
-    {
+    for (int i = 1; i < size(s); ++i) {
         int k = 0;
         while (k < size(res) && s[i + k] == res[k]) ++k;
         if (s[i + k] > res[0])

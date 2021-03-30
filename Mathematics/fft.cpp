@@ -10,8 +10,7 @@
 // constexpr int primitive[] = { 3, 3, 3 };
 
 template<typename T>
-T getroot(int e)
-{
+T getroot(int e) {
     static auto PI = acos(T(-1).real());
     return polar<decltype(PI)>(1, 2 * PI / (1 << e));
 }
@@ -24,14 +23,12 @@ T getroot(int e)
 //      return M998(primitive[0]).power(preexp[0] * (1LL << (explog[0] - e)));
 // }
 
-int logceil(int n)
-{
+int logceil(int n) {
     return __builtin_clz(1) - __builtin_clz(n) + !!(n & (n - 1));
 }
 
 template<typename T>
-void fft(vector<T>& p, vector<T>& aux, T x, int idx, int n)
-{
+void fft(vector<T>& p, vector<T>& aux, T x, int idx, int n) {
     if (n == 1) return;
 
     int k = n >> 1, ldx = idx, rdx = idx + k;
@@ -46,8 +43,7 @@ void fft(vector<T>& p, vector<T>& aux, T x, int idx, int n)
 }
 
 template<typename T>
-void fft(vector<T>& p, T root)
-{
+void fft(vector<T>& p, T root) {
     assert(__builtin_popcount(size(p)) == 1);
     static vector<T> aux;
     aux.resize(max(size(aux), size(p)));
@@ -55,8 +51,7 @@ void fft(vector<T>& p, T root)
 }
 
 template<typename T>
-vector<T> convolution(vector<T> p, vector<T> q)
-{
+vector<T> convolution(vector<T> p, vector<T> q) {
     const int n = size(p), m = size(q);
     const int e = logceil(n + m - 1), N = 1 << e;
 

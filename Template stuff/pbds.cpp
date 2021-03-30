@@ -9,10 +9,8 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
 mt19937 rng(FIXED_RANDOM);
 
-struct custom_hash
-{
-    int operator()(int x) const
-    {
+struct custom_hash {
+    int operator()(int x) const {
         x ^= FIXED_RANDOM;
         return x ^ (x >> 16);
     }

@@ -1,14 +1,11 @@
-template<int N> struct XORBasis
-{
+template<int N> struct XORBasis {
 private:
     using V = bitset<N>;
     array<V, N> basis, alpha;
     int dim = 0;
-    auto reduce(V& x) const
-    {
+    auto reduce(V& x) const {
         V coef;
-        for (int i = N - 1; i >= 0 && x.any(); --i)
-        {
+        for (int i = N - 1; i >= 0 && x.any(); --i) {
             if (x[i] == 0) continue;
             if (basis[i] == 0) return pair(i, coef);
             x ^= basis[i], coef ^= alpha[i];
@@ -16,8 +13,7 @@ private:
         return pair(-1, coef);
     }
 public:
-    bool insert(V x)
-    {
+    bool insert(V x) {
         auto [i, coef] = reduce(x);
         if (i == -1) return false;
         basis[i] = x, dim += 1;
@@ -25,8 +21,7 @@ public:
         alpha[i][dim - 1] = 1;
         return true;
     }
-    auto solve(V x) const
-    {
+    auto solve(V x) const {
         auto [i, coef] = reduce(x);
         return pair(i == -1, coef);
     }

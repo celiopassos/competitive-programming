@@ -9,24 +9,20 @@ const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
 // F1(x) will add x on the range being updated
 
 template<typename T>
-struct F1
-{
+struct F1 {
     using Type = T;
     inline const static T Tid = T(0);
     inline const static F1 Fid = F1(0);
     T add;
     inline explicit F1(T add) : add(add) {}
-    void apply(T& old, int L, int R) const
-    {
+    void apply(T& old, int L, int R) const {
         old = old + add * (R - L + 1);
     }
-    void compose(const F1& op, int L, int R)
-    {
+    void compose(const F1& op, int L, int R) {
         add += op.add;
     }
     bool operator==(const F1& op) const { return add == op.add; }
-    static T op(const T& x, const T& y)
-    {
+    static T op(const T& x, const T& y) {
         return x + y;
     }
 };
@@ -40,26 +36,22 @@ struct F1
 // to change the LINF below to some other value
 
 template<typename T>
-struct F2
-{
+struct F2 {
     using Type = T;
     inline const static T Tid = T(0);
     inline const static F2 Fid = F2(T(LINF));
     T value;
     explicit F2(T value) : value(value) {}
-    void apply(T& old, int L, int R) const
-    {
+    void apply(T& old, int L, int R) const {
         if (*this == Fid) return;
         old = (R - L + 1) * value;
     }
-    void compose(const F2& op, int L, int R)
-    {
+    void compose(const F2& op, int L, int R) {
         if (op == Fid) return;
         value = op.value;
     }
     bool operator==(const F2& op) const { return value == op.value; }
-    static T op(const T& x, const T& y)
-    {
+    static T op(const T& x, const T& y) {
         return x + y;
     }
 };
@@ -73,8 +65,7 @@ struct F2
 // may work badly with negative indices (possible to fix)
 
 template<typename T>
-struct F3
-{
+struct F3 {
     using Type = T;
     inline const static T Tid = T(0);
     inline const static F3 Fid = F3(0, 0);
@@ -85,20 +76,16 @@ struct F3
 
     static T ap(T n) { return n * (n + 1) / 2; }
 
-    void apply(T& old, int L, int R) const
-    {
+    void apply(T& old, int L, int R) const {
         old += a * (ap(R) - ap(L - 1)) + b * (R - (L - 1));
     }
-    void compose(const F3& op, int L, int R)
-    {
+    void compose(const F3& op, int L, int R) {
         a += op.a, b += op.b;
     }
-    bool operator==(const F3& op) const
-    {
+    bool operator==(const F3& op) const {
         return a == op.a && b == op.b;
     }
-    static T op(const T& x, const T& y)
-    {
+    static T op(const T& x, const T& y) {
         return x + y;
     }
 };

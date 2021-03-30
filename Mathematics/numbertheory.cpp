@@ -1,12 +1,10 @@
 template<typename T>
-T safemod(T a, T mod)
-{
+T safemod(T a, T mod) {
     return (a %= mod) < 0 ? a + mod : a;
 }
 
 template<typename T>
-T safeprod(T a, T b, T mod)
-{
+T safeprod(T a, T b, T mod) {
     T res = T(0);
 
     for (a = safemod(a, mod), b = safemod(b, mod); a > 0; a >>= 1, b = (b + b) % mod)
@@ -16,12 +14,10 @@ T safeprod(T a, T b, T mod)
 }
 
 template<typename T>
-auto invgcd(T a, T b)
-{
+auto invgcd(T a, T b) {
     if ((a = safemod(a, b)) == 0) return pair(b, T(0));
     T s = b, t = a, x = 0, y = 1;
-    while (t > 0)
-    {
+    while (t > 0) {
         T q = s / t;
         s -= t * q, x -= y * q;
         swap(s, t), swap(x, y);
@@ -31,20 +27,17 @@ auto invgcd(T a, T b)
 }
 
 template<typename T>
-auto extended_euclidean(T a, T b)
-{
+auto extended_euclidean(T a, T b) {
     auto [g, x] = invgcd(a, b);
     T y = (g - x * a) / b;
     return tuple(x, y, g);
 }
 
 template<typename T>
-auto chinese_remainder(const vector<pair<T, T>>& eq)
-{
+auto chinese_remainder(const vector<pair<T, T>>& eq) {
     T acur = T(0), modcur = T(1);
 
-    for (auto [a, mod] : eq)
-    {
+    for (auto [a, mod] : eq) {
         a = safemod(a, mod);
 
         if (modcur < mod) swap(acur, a), swap(modcur, mod);

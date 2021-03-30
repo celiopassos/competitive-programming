@@ -1,14 +1,12 @@
 // Finds p(x), given that p is the unique polynomial of degree n - 1
 // such that p(i) = y[i], for i = 0, ..., n - 1.
 
-ll interpolate(const vector<ll>& y, ll x, ll mod)
-{
+ll interpolate(const vector<ll>& y, ll x, ll mod) {
     int n = size(y);
 
     vector<ll> inv(n, 1), finv(n, 1);
 
-    for (int i = 2; i < n; ++i)
-    {
+    for (int i = 2; i < n; ++i) {
         inv[i] = -(mod / i) * inv[mod % i] % mod;
         finv[i] = finv[i - 1] * inv[i] % mod;
     }
@@ -22,8 +20,7 @@ ll interpolate(const vector<ll>& y, ll x, ll mod)
 
     ll res = 0LL;
 
-    for (int i = 0, sgn = (n % 2 ? +1 : -1); i < n; ++i, sgn *= -1)
-    {
+    for (int i = 0, sgn = (n % 2 ? +1 : -1); i < n; ++i, sgn *= -1) {
         ll coef = prefix[i] * suffix[i] % mod;
         (coef *= sgn * finv[i] * finv[n - 1 - i] % mod) %= mod;
         (res += y[i] * coef) %= mod;
@@ -32,8 +29,7 @@ ll interpolate(const vector<ll>& y, ll x, ll mod)
     return (res + mod) % mod;
 }
 
-ll modpow(ll x, ll p, ll mod)
-{
+ll modpow(ll x, ll p, ll mod) {
     ll res = 1LL;
     for (; p; p >>= 1, (x *= x) %= mod) if (p & 1) (res *= x) %= mod;
     return res;
