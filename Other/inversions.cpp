@@ -5,10 +5,7 @@ ll merge_sort(vector<T>& v, vector<T>& aux, int l, int r) {
     ll res = merge_sort(v, aux, l, m) + merge_sort(v, aux, m + 1, r);
     int x = l, y = m + 1, z = l;
     while (x <= m && y <= r) {
-        if (v[x] <= v[y])
-            aux[z++] = v[x++];
-        else
-            aux[z++] = v[y++], res += m - x + 1;
+        aux[z++] = v[x] <= v[y] ? v[x++] : (res += m - x + 1, v[y++]);
     }
     while (x <= m) aux[z++] = v[x++];
     while (y <= r) aux[z++] = v[y++];
