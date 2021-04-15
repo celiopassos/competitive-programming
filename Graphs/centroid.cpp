@@ -39,7 +39,7 @@ private:
     }
 public:
     CentroidDecomposition(const vector<vector<int>>& E) :
-        n(size(E)), E(E), parent(n), weight(n), vis(n), level(n), dist(n) {
+        n((int)size(E)), E(E), parent(n), weight(n), vis(n), level(n), dist(n) {
         build(0, -1);
     }
     int operator[](int u) const {

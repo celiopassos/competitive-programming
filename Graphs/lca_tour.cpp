@@ -14,7 +14,7 @@ struct LCA {
             tour.push_back(u);
         }
     }
-    LCA(const auto& E, int root) : E(E), n(size(E)), m(2 * n - 1), h(n), tin(n), log(m + 1, 0), st(m) {
+    LCA(const auto& E, int root) : E(E), n((int)size(E)), m(2 * n - 1), h(n), tin(n), log(m + 1, 0), st(m) {
         dfs(root, root);
         for (int x = 2; x <= m; ++x) log[x] = 1 + log[x >> 1];
         assert(log[m] < K);

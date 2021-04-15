@@ -16,7 +16,7 @@ struct SQRT
         sort(all(bucket[b]), [&](int i, int j){ return arr[i] < arr[j]; });
     }
  
-    SQRT(const vector<T>& arr) : n(size(arr)), blocks((n + K - 1) / K), arr(arr), offset(blocks, 0), bucket(blocks) {
+    SQRT(const vector<T>& arr) : n((int)size(arr)), blocks((n + K - 1) / K), arr(arr), offset(blocks, 0), bucket(blocks) {
         for (int b = 0; b < blocks; ++b) {
             int len = min(K, n - b * K);
             bucket[b].resize(len), iota(all(bucket[b]), b * K);

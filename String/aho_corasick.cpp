@@ -18,7 +18,7 @@ struct AhoCorasick {
         for (auto c : s) {
             int v = trie[u].nxt[c - offset];
             if (v == -1) {
-                v = size(trie);
+                v = (int)size(trie);
                 trie.emplace_back(u, c);
             }
             u = trie[u].nxt[c - offset] = v;

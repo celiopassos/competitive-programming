@@ -6,7 +6,7 @@
 // it is guarenteed that 0 <= scc[u] < n for all u
 
 vector<int> tarjan(const auto& E) {
-    int n = size(E), timer = 0, ct = 0;
+    int n = (int)size(E), timer = 0, ct = 0;
 
     enum State { unvisited, active, visited };
     vector<State> state(n, unvisited);

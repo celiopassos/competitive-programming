@@ -1,6 +1,6 @@
 int radix_sort(vector<int>& p, vector<int>& c, int shift, int k) {
     static vector<int> pn, cn, cnt;
-    const int n = size(p);
+    const int n = (int)size(p);
     pn.resize(n), cn.resize(n), cnt.resize(max(k, n));
     for (int i = 0; i < n; ++i) {
         pn[i] = p[i] - shift;
@@ -24,7 +24,7 @@ int radix_sort(vector<int>& p, vector<int>& c, int shift, int k) {
 }
 
 vector<int> sort_cyclic_shifts(const string& s) {
-    const int n = size(s), sigma = 256;
+    const int n = (int)size(s), sigma = 256;
 
     vector<int> p(n, 0), c(n, 0);
 
@@ -40,7 +40,7 @@ vector<int> sort_cyclic_shifts(const string& s) {
 }
 
 auto suffix_array(string s) {
-    const int n = size(s);
+    const int n = (int)size(s);
 
     vector<int> p = sort_cyclic_shifts(s += char(0));
     p.erase(begin(p));
@@ -52,7 +52,7 @@ auto suffix_array(string s) {
 }
 
 vector<int> lcp_array(const string& s, const vector<int>& p, const vector<int>& pos) {
-    const int n = size(s);
+    const int n = (int)size(s);
     vector lcp(n - 1, 0);
     for (int i = 0, k = 0; i < n; ++i, k = max(0, k - 1)) {
         if (pos[i] == n - 1) { k = 0; continue; }
@@ -77,7 +77,7 @@ public:
     int operator[](int i) const { return p[i]; }
     int getpos(int i) const { return pos[i]; }
     int lcp_query(int i, int j) const {
-        if (i == j) return size(p) - i;
+        if (i == j) return (int)size(p) - i;
         if (pos[i] > pos[j]) swap(i, j);
         return rmq.query(pos[i], pos[j] - 1);
     }

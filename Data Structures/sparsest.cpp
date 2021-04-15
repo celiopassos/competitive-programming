@@ -30,7 +30,7 @@ private:
 
     int create() {
         st.push_back(F::Tid), lazy.push_back(F::Fid), LEFT.push_back(-1), RIGHT.push_back(-1);
-        return size(st) - 1;
+        return (int)size(st) - 1;
     }
 
     int left(int p) { return LEFT[p] == -1 ? (LEFT[p] = create()) : LEFT[p]; }

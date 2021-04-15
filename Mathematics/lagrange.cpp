@@ -2,17 +2,15 @@
 // such that p(i) = y[i], for i = 0, ..., n - 1.
 
 ll interpolate(const vector<ll>& y, ll x, ll mod) {
-    int n = size(y);
+    int n = (int)size(y);
 
     vector<ll> inv(n, 1), finv(n, 1);
-
     for (int i = 2; i < n; ++i) {
         inv[i] = -(mod / i) * inv[mod % i] % mod;
         finv[i] = finv[i - 1] * inv[i] % mod;
     }
 
     vector<ll> prefix(n, 1), suffix(n, 1);
-
     for (int i = 1; i < n; ++i)
         prefix[i] = prefix[i - 1] * (x - (i - 1)) % mod;
     for (int i = n - 2; i >= 0; --i)

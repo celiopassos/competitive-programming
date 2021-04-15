@@ -5,14 +5,14 @@
 
 template<typename T>
 T largest_rectangle(const vector<T>& h, const vector<T>& w) {
-    const int n = size(h);
+    const int n = (int)size(h);
 
     stack<pair<int, T>> stk; stk.emplace(-1, 0);
 
     T res = 0, prefix_sum = 0;
 
     for (int i = 0; i < n; ++i) {
-        while (size(stk) > 1 && h[i] <= h[stk.top().first]) {
+        while ((int)size(stk) > 1 && h[i] <= h[stk.top().first]) {
             int j = stk.top().first; stk.pop();
             res = max(res, h[j] * (prefix_sum - stk.top().second));
         }

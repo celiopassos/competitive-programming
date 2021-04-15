@@ -19,7 +19,7 @@ private:
     vector<T> st;
 public:
     RangeUpdate(int n) : n(n), h(32 - __builtin_clz(n)), st(2 * n, M::Id) { }
-    RangeUpdate(const vector<T>& init) : RangeUpdate(size(init)) {
+    RangeUpdate(const vector<T>& init) : RangeUpdate((int)size(init)) {
         copy(all(init), begin(st) + n);
     }
     T query(int p) const {

@@ -17,5 +17,5 @@ template<typename T>
 ll inversions(vector<T> v) {
     static vector<T> aux;
     aux.resize(max(size(aux), size(v)));
-    return merge_sort(v, aux, 0, size(v) - 1);
+    return merge_sort(v, aux, 0, (int)size(v) - 1);
 }

@@ -2,7 +2,7 @@ template<typename T>
 vector<complex<T>> convex_hull(vector<complex<T>> pts) {
     sort(all(pts), lex_cmp<T>), pts.erase(unique(all(pts)), end(pts));
 
-    int n = size(pts);
+    int n = (int)size(pts);
     if (n == 1) return pts;
 
     vector<complex<T>> up(n), down(n);

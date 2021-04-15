@@ -179,7 +179,7 @@ bool ccw(const Point& p, const Point& q, const Point& r) {
 vector<Point> convex_hull(vector<Point> pts) {
     sort(all(pts)), pts.erase(unique(all(pts)), end(pts));
 
-    const int n = size(pts);
+    const int n = (int)size(pts);
 
     if (n == 1) return pts;
 
@@ -217,7 +217,7 @@ vector<Point> convex_hull(vector<Point> pts) {
 // O(log(size(hull)))
 
 bool is_inside(const vector<Point>& hull, Point pt, bool strictly) {
-    const int n = size(hull);
+    const int n = (int)size(hull);
 
     if (n == 0) return false;
     if (n == 1) return not strictly && pt == hull[0];

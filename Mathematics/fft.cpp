@@ -44,15 +44,15 @@ void fft(vector<T>& p, vector<T>& aux, T x, int idx, int n) {
 
 template<typename T>
 void fft(vector<T>& p, T root) {
-    assert(__builtin_popcount(size(p)) == 1);
+    assert(__builtin_popcountll(size(p)) == 1);
     static vector<T> aux;
     aux.resize(max(size(aux), size(p)));
-    fft(p, aux, root, 0, size(p));
+    fft(p, aux, root, 0, (int)size(p));
 }
 
 template<typename T>
 vector<T> convolution(vector<T> p, vector<T> q) {
-    const int n = size(p), m = size(q);
+    const int n = (int)size(p), m = (int)size(q);
     const int e = logceil(n + m - 1), N = 1 << e;
 
     T root = getroot<T>(e);

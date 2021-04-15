@@ -22,7 +22,7 @@ struct LiChaoTree {
     int create() {
         LEFT.push_back(-1), RIGHT.push_back(-1);
         st.push_back(inf);
-        return size(st) - 1;
+        return (int)size(st) - 1;
     }
     int left(int p) { return LEFT[p] == -1 ? LEFT[p] = create() : LEFT[p]; }
     int right(int p) { return RIGHT[p] == -1 ? RIGHT[p] = create() : RIGHT[p]; }
@@ -55,5 +55,5 @@ struct LiChaoTree {
         }
         return res;
     }
-    int (size)() const { return size(st); }
+    int size() const { return (int)size(st); }
 };

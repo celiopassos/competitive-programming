@@ -2,7 +2,7 @@ bool chmin(auto& x, auto y) { return y < x ? x = y, true : false; }
 
 template<typename T>
 auto dijkstra(int s, const auto& E) {
-    const int n = size(E);
+    const int n = (int)size(E);
 
     int logmax = 0;
     for (int u = 0; u < n; ++u)

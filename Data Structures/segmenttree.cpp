@@ -20,7 +20,7 @@ private:
     }
 public:
     SegmentTree(int n) : n(n), st(2 * n, M::Id) { }
-    SegmentTree(const vector<T>& a) : SegmentTree(size(a)) {
+    SegmentTree(const vector<T>& a) : SegmentTree((int)size(a)) {
         for (int i = 0; i < n; ++i) st[n + i] = a[i];
         for (int i = n - 1; i > 0; --i)
             st[i] = M::op(st[i << 1], st[i << 1 | 1]);

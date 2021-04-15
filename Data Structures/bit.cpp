@@ -23,7 +23,7 @@ private:
     }
 public:
     BIT(int n) : n(n), h(31 - __builtin_clz(n)), ft(n + 1, G::Id) { }
-    BIT(const vector<T>& a) : BIT(size(a)) {
+    BIT(const vector<T>& a) : BIT((int)size(a)) {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);
         for (int i = n; i >= 1; --i) ft[i] = G::op(G::inv(ft[i - b(i)]), ft[i]);
     }

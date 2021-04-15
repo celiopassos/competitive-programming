@@ -16,7 +16,7 @@ int logceil(int n) {
 }
 
 void mo(const auto& queries, auto& eval, auto& remove, auto& insert, int n) {
-    const int q = size(queries), N = 1 << logceil(n);
+    const int q = (int)size(queries), N = 1 << logceil(n);
 
     vector<int> Z(q, 0); iota(all(Z), 0);
 

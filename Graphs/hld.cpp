@@ -18,7 +18,7 @@ struct HLD {
     vector<int> parent, depth, heavy, head, pos;
     int cur_pos = 0;
 
-    HLD(const auto& E, int root = 0) : n(size(E)), E(E),
+    HLD(const auto& E, int root = 0) : n((int)size(E)), E(E),
         parent(n), depth(n), heavy(n, -1), head(n), pos(n) {
         parent[root] = root;
         dfs(root), decompose(root, root);

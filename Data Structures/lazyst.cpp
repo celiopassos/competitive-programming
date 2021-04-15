@@ -86,7 +86,7 @@ private:
     }
 public:
     LazyST(int n) : n(n), st(4 * n + 1, F::Tid), lazy(4 * n + 1, F::Fid) { }
-    LazyST(const vector<T>& a) : LazyST(size(a)) {
+    LazyST(const vector<T>& a) : LazyST((int)size(a)) {
         build(0, 0, n - 1, a);
     }
     void update(int l, int r, F op) {
@@ -102,7 +102,7 @@ public:
         static vector<tuple<int, int, int>> q;
         partition(q, 0, 0, n - 1, l, r);
         int res = r + 1;
-        for (auto [idx, prefix] = pair(0, F::Tid); idx < size(q); ++idx) {
+        for (auto [idx, prefix] = pair(0, F::Tid); idx < (int)size(q); ++idx) {
             auto [p, l, r] = q[idx];
             if (T x = F::op(prefix, st[p]); F::cmp(x, value)) prefix = x;
             else {

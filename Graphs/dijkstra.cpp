@@ -3,7 +3,7 @@ bool chmin(T& x, T y) { return y < x ? (x = y, true) : false; }
 
 template<typename T>
 vector<T> dijkstra(int s, const auto& E) {
-    vector<T> dist(size(E), numeric_limits<T>::max());
+    vector<T> dist((int)size(E), numeric_limits<T>::max());
     priority_queue<pair<T, int>> pq;
     pq.emplace(dist[s] = 0, s);
     while (not empty(pq)) {
