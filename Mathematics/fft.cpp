@@ -30,14 +30,10 @@ int logceil(int n) {
 template<typename T>
 void fft(vector<T>& p, vector<T>& aux, T x, int idx, int n) {
     if (n == 1) return;
-
     int k = n >> 1, ldx = idx, rdx = idx + k;
-
     for (int i = 0, cur = ldx, nxt = rdx; i < n; ++i, swap(cur, nxt))
         aux[cur + (i >> 1)] = p[idx + i];
-
     fft(aux, p, x * x, ldx, k), fft(aux, p, x * x, rdx, k);
-
     for (auto [i, xp] = tuple(0, T(1)); i < n; ++i, xp *= x)
         p[idx + i] = aux[ldx + (i % k)] + xp * aux[rdx + (i % k)];
 }
@@ -51,21 +47,15 @@ void fft(vector<T>& p, T root) {
 }
 
 template<typename T>
-vector<T> convolution(vector<T> p, vector<T> q) {
+vector<T> operator*(vector<T> p, vector<T> q) {
     const int n = (int)size(p), m = (int)size(q);
     const int e = logceil(n + m - 1), N = 1 << e;
-
     T root = getroot<T>(e);
-
     p.resize(N, T(0)), q.resize(N, T(0));
-
     fft(p, root), fft(q, root);
     for (int i = 0; i < N; ++i) p[i] *= q[i];
-
     fft(p, T(1) / root);
     for (int i = 0; i < N; ++i) p[i] /= T(N);
-
     p.resize(n + m - 1);
-
     return p;
 }
