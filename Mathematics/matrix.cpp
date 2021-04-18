@@ -1,39 +1,19 @@
-template<typename T>
-T templatepow(T x, ll p) {
-    assert(p >= 0);
-    T res(1);
-    while (p > 0) {
-        if (p & 1) res = res * x;
-        x = x * x, p >>= 1;
-    }
-    return res;
-}
-
 template<typename T, int N, int M>
-struct Matrix {
-    T A[N][M];
-    int row[N];
-
-    Matrix() {
-        fill(&A[0][0], &A[0][0] + N * M, T(0));
-        iota(all(row), 0);
-    }
-    Matrix(T value) : Matrix() {
-        for (int i = 0; i < min(N, M); ++i) A[i][i] = value;
+struct Matrix : public array<array<T, M>, N> {
+    Matrix(T diag = T()) {
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < M; ++j) {
+                (*this)[i][j] = (i == j ? diag : T());
+            }
+        }
     }
     Matrix(initializer_list<initializer_list<T>> lst) : Matrix() {
         int i = 0, j = 0;
-        for (const auto& v : lst) {
-            for (const auto& x : v) A[i][j++] = x;
+        for (auto& v : lst) {
+            for (auto x : v) (*this)[i][j++] = x;
             i++, j = 0;
         }
     }
-
-    T* operator[](int i) { return A[row[i]]; }
-    const T* operator[](int i) const { return A[row[i]]; }
-
-    void swap_rows(int i, int j) { swap(row[i], row[j]); }
-
     template<typename Op> Matrix& compose(const Matrix& rhs, Op&& op) {
         auto& lhs = *this;
         for (int i = 0; i < N; ++i)
@@ -54,6 +34,14 @@ struct Matrix {
                     res[i][j] += lhs[i][k] * rhs[k][j];
         return res;
     }
+    Matrix power(ll p) {
+        Matrix res(1), A = *this;
+        while (p) {
+            if (p & 1) res = A * res;
+            A *= A, p >>= 1;
+        }
+        return res;
+    }
     friend Matrix operator*(const T& alpha, Matrix A) {
         for (int i = 0; i < N; ++i)
             for (int j = 0; j < M; ++j)
@@ -65,14 +53,12 @@ struct Matrix {
 template<typename T, int N>
 struct Vector : public Matrix<T, N, 1> {
     using Base = Matrix<T, N, 1>;
-
     Vector() : Base() { }
     Vector(const Base& v) : Base(v) { }
     Vector(initializer_list<T> lst) : Base() {
         int i = 0;
         for (const auto& x : lst) (*this)[i++] = x;
     }
-
     T& operator[](int i) { return Base::operator[](i)[0]; }
     const T& operator[](int i) const { return Base::operator[](i)[0]; }
 };

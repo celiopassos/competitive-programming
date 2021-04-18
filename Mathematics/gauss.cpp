@@ -1,96 +1,91 @@
-template<typename T, int N>
-T determinant(Matrix<T, N, N> A, int n = N) {
-    T det = T(1);
+// make necessary changes when T is floating point
 
+template<typename T, int N>
+T determinant(Matrix<T, N, N> A, int n) {
+    T det = T(1);
     for (int x = 0; x < n; ++x) {
         int sel = -1;
-        for (int i = x; i < n; ++i)
-            if (abs(A[i][x]) > EPS) {
+        for (int i = x; i < n; ++i) {
+            if (A[i][x] != T(0)) {
                 sel = i;
                 break;
             }
-
+        }
         if (sel == -1) return T(0);
-        else det *= A[sel][x];
-
-        if (sel != x) A.swap_rows(sel, x), det *= T(-1);
-
+        if (sel != x) {
+            swap(A[sel], A[x]);
+            det *= T(-1);
+        }
+        det *= A[x][x];
         for (int i = 0; i < n; ++i) if (i != x) {
             T c = A[i][x] / A[x][x];
             for (int j = x; j < n; ++j) A[i][j] -= c * A[x][j];
         }
     }
-
     return det;
 }
 
-enum Classification { Unique, Infinite, None };
-
-// returns a solution and a kernel basis (if set to true)
-// uncomment lines and save the matrix E to solve several systems in O(N^2) each
-//
-// may wanna use T = long double
-
-const long double EPS = 1e-5;
-
 template<typename T, int N, int M>
-auto gauss(Matrix<T, N, M> A, Vector<T, N> b, bool kernel_basis = false, int n = N, int m = M) {
+struct GaussianElimination {
     using DomainType = Vector<T, M>;
     using CodomainType = Vector<T, N>;
 
-    //Matrix<T, N, N> E(T(1));
-    int pivot[M]; fill(all(pivot), -1);
+    Matrix<T, N, M> A;
+    Matrix<T, N, N> E;
+    const int n, m;
+    int pivot[M], rank = 0, nullity;
 
-    Classification cl = Unique;
-
-    for (int col = 0, row = 0; col < m && row < n; ++col) {
-        int sel = row;
-        for (int i = row; i < n; ++i)
-            if (abs(A[i][col]) > abs(A[sel][col])) sel = i;
-
-        if (abs(A[sel][col]) <= EPS) {
-            cl = Infinite;
-            continue;
+    // O(min(n, m)nm)
+    GaussianElimination(const Matrix<T, N, M>& A_, int n, int m) : A(A_), E(1), n(n), m(m), nullity(m) {
+        fill(all(pivot), -1);
+        for (int col = 0, row = 0; col < m && row < n; ++col) {
+            int sel = -1;
+            for (int i = row; i < n; ++i) {
+                // for floating points take row with largest absolute value
+                if (A[i][col] != T(0)) {
+                    sel = i;
+                    break;
+                }
+            }
+            if (sel == -1) continue;
+            if (sel != row) {
+                swap(A[sel], A[row]);
+                swap(E[sel], E[row]);
+            }
+            for (int i = 0; i < n; ++i) if (i != row) {
+                T c = A[i][col] / A[row][col];
+                for (int j = col; j < m; ++j) A[i][j] -= c * A[row][j];
+                for (int j = 0; j < m; ++j) E[i][j] -= c * E[row][j];
+            }
+            pivot[col] = row++;
+            ++rank, --nullity;
         }
-
-        if (sel != row) {
-            A.swap_rows(sel, row), swap(b[sel], b[row]);
-            //E.swap_rows(sel, row);
-        }
-
-        for (int i = 0; i < n; ++i) if (i != row) {
-            T c = A[i][col] / A[row][col];
-            for (int j = col; j < m; ++j) A[i][j] -= c * A[row][j];
-            //for (int j = 0; j < m; ++j) E[i][j] -= c * E[row][j];
-            b[i] -= c * b[row];
-        }
-
-        pivot[col] = row++;
     }
-
-    auto solve = [&](const Vector<T, N>& b) {
+    // O(n^2 + m)
+    pair<bool, DomainType> solve(CodomainType b, bool reduced = false) const {
+        if (not reduced) b = E * b;
         DomainType x;
-        for (int j = 0; j < m; ++j)
-            if (pivot[j] != -1) x[j] = b[pivot[j]] / A[pivot[j]][j];
-        return x;
-    };
-
-    DomainType x = solve(b);
-    vector<DomainType> basis;
-
-    CodomainType bhat = A * x;
-
-    for (int i = 0; i < n; ++i)
-        if (abs(bhat[i] - b[i]) > EPS) return tuple(None, x, basis);
-
-    DomainType e; 
-
-    if (kernel_basis) for (int j = 0; j < m; ++j) if (pivot[j] == -1) {
-        e[j] = T(1);
-        DomainType y = solve(A * e);
-        e[j] = T(0), y[j] = T(-1);
-        basis.push_back(y);
+        for (int j = 0; j < m; ++j) {
+            if (pivot[j] != -1) {
+                x[j] = b[pivot[j]] / A[pivot[j]][j];
+                b[pivot[j]] = T(0);
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (b[i] != T(0)) return pair(false, x);
+        }
+        return pair(true, x);
     }
-
-    return tuple(cl, x, basis);
-}
+    // O(nullity * nm)
+    vector<DomainType> kernel_basis() const {
+        vector<DomainType> basis;
+        DomainType e;
+        for (int j = 0; j < m; ++j) if (pivot[j] == -1) {
+            e[j] = T(1);
+            DomainType y = solve(A * e, true).second;
+            e[j] = T(0), y[j] = T(-1);
+            basis.push_back(y);
+        }
+        return basis;
+    }
+};
