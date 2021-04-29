@@ -2,9 +2,9 @@ struct suffixArray{
 	#define F(x) ((x) / 3 + ((x) % 3 == 1 ? 0 : n1))
 	#define G(x) ((x) < n1 ? (x)*3 + 1 : ((x)-n1) * 3 + 2)
 	int n;
-	vector<int> v1, v2, wv, v, sa;
+	vector<int> v1, v2, wv, v, sa, lcp, res;
 	string str;
-	suffixArray(string str, int n): n(n), v1(3*n), v2(3*n), wv(3*n), v(3*n), sa(3*n), str(str){}
+	suffixArray(string str, int n): n(n), v1(3*n), v2(3*n), wv(3*n), v(3*n), sa(3*n), lcp(n), str(str){}
 	
 	int c0(int *r, int a, int b) {
 		return r[a] == r[b] && r[a + 1] == r[b + 1] && r[a + 2] == r[b + 2];
@@ -55,7 +55,7 @@ struct suffixArray{
 	
 	vector<int> getLCP(){
 		int k=0;
-		vector<int> lcp(n,0), rank(n+1,0);
+		vector<int> rank(n+1,0);
 		for(int i=0; i<=n; i++) rank[sa[i]]=i;
 		for(int i=0; i<n; i++, k-=!!k){
 			if(rank[i]==n) {k=0; continue;}
@@ -64,5 +64,31 @@ struct suffixArray{
 			lcp[rank[i]]=k;
 		}
 		return lcp;
+	}
+	
+	void dfs(){
+		int ans = 1;
+		stack<int> s;
+		vector<vector<int>> child(n+1);
+		vi L(n+1), R(n+1);
+		auto report = [&](int i){};
+		s.push(0);
+		lcp[0] = -1;
+		lcp.push_back(-1);
+		for(int i = 1; i <= n; i++){
+			L[i] = R[i] = i-1;
+			while(!s.empty() && lcp[i] < lcp[s.top()]){
+				int id = s.top();
+				s.pop();
+				R[id] = i-1;
+				report(id);
+				L[i] = L[id];
+				if(!s.empty() && lcp[i] <= lcp[s.top()])
+					child[s.top()].push_back(id);
+				else 
+					child[i].push_back(id);
+			}
+			if(lcp[i] > lcp[s.top()]) s.push(i);
+		}
 	}
 };
