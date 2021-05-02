@@ -35,7 +35,7 @@ struct LineContainer : multiset<Line<T>, less<>> {
         while ((y = x) != this->begin() && (--x)->x >= y->x)
             isect(x, this->erase(y));
     }
-    T get(T x) // returns minimum {
+    T get(T x){ // returns minimum
         if (this->empty())
             return lim;
 
