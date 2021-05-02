@@ -20,3 +20,8 @@ istream& operator>>(istream& in, complex<T>& p) {
     p.x(x), p.y(y);
     return in;
 }
+
+template<typename T>
+ostream& operator<<(ostream& out, const complex<T>& p) {
+    return out << p.x() << " " << p.y();
+}

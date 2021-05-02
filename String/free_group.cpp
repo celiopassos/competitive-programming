@@ -51,4 +51,5 @@ struct FreeGroup {
     }
     bool operator<(const FreeGroup& rhs) const { return pair(shift, hash) < pair(rhs.shift, rhs.hash); }
     bool operator==(const FreeGroup& rhs) const { return shift == rhs.shift && hash == rhs.hash; }
+    bool operator!=(const FreeGroup& rhs) const { return not *this == rhs; }
 };
