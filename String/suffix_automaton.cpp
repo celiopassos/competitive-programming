@@ -1,7 +1,7 @@
 template<int K, char offset>
 struct ArrayState {
     using Type = char;
-    int link, len, minlen, idx;
+    int link, len, idx;
     bool clone = false;
     int nxt[K];
     ArrayState(int link = -1, int len = 0) : link(link), len(len) {
@@ -14,7 +14,7 @@ struct ArrayState {
 template<typename T = char>
 struct MapState {
     using Type = T;
-    int link, len, minlen, idx;
+    int link, len, idx;
     bool clone = false;
     map<T, int> nxt;
     MapState(int link = -1, int len = 0) : link(link), len(len) { }
@@ -41,21 +41,11 @@ struct SuffixAutomaton {
                 st.emplace_back(clone, len);
                 st.push_back(st[v]);
                 st[clone].len = st[u].len + 1, st[clone].clone = true;
-                st[v].link = clone, st[v].minlen = st[clone].len + 1;
+                st[v].link = clone;
                 for (int p = u; p != -1 && st[p].go(ch) == v; p = st[p].link) st[p].set(ch, clone);
             }
         }
-        st[last].minlen = st[st[last].link].len + 1;
         st[last].idx = total_size++;
     }
     int go(int u, T ch) { return st[u].go(ch); }
-    // sorts largest to smallest
-    vector<int> topological_sort() const {
-        int m = (int)size(st);
-        vector<int> V(m), cnt(total_size + 1, 0);
-        for (int u = 0; u < m; ++u) cnt[st[u].len] += 1;
-        for (int x = total_size - 1; x >= 0; --x) cnt[x] += cnt[x + 1];
-        for (int u = 0; u < m; ++u) V[--cnt[st[u].len]] = u;
-        return V;
-    }
 };
