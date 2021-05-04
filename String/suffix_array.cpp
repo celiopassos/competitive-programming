@@ -33,7 +33,6 @@ struct SuffixArray {
         p = sort_cyclic_shifts(s);
         for (int i = 0; i < n; ++i) pos[p[i]] = i;
     }
-    // lcp[0] = 0, lcp[i] = longest common prefix of p[i - 1] and p[i] for i > 0
     void build_lcp() {
         lcp.assign(n, 0);
         for (int i = 0, k = 0; i < n - 1; ++i, k = max(0, k - 1)) {
