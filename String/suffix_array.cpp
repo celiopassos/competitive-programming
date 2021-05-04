@@ -1,3 +1,16 @@
+#include "bits/stdc++.h"
+
+using namespace std;
+
+#define endl '\n'
+#define debug(x) cerr << #x << " == " << (x) << '\n';
+#define all(x) begin(x), end(x)
+
+using ll = long long;
+
+const int INF = 0x3f3f3f3f;
+const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
+
 vector<int> sort_cyclic_shifts(const string& s) {
     int n = (int)size(s);
     vector<int> p(n), inv(n), tmp(n), cnt(n);
@@ -35,7 +48,7 @@ struct SuffixArray {
     }
     // lcp[0] = 0, lcp[i] = longest common prefix of p[i - 1] and p[i] for i > 0
     void build_lcp() {
-        lcp.assign(n - 1, 0);
+        lcp.assign(n, 0);
         for (int i = 0, k = 0; i < n - 1; ++i, k = max(0, k - 1)) {
             if (pos[i] == n - 1) {
                 k = 0;
@@ -55,41 +68,67 @@ struct SuffixArray {
     };
     vector<Node> st;
     int create(int len, int idx) {
-        st.push_back({-1 , len, 0, idx});
+        st.push_back({-1 , len, idx});
         return (int)size(st) - 1;
     }
-    void set_link(int u, int p) {
-        st[u].link = p, st[u].minlen = st[p].len + 1;
-    }
     void build_suffix_tree() {
-        stack<int> stk, children;
+        stack<int> stk;
         stk.push(create(0, -1));
-        for (int i = 1; i < n - 1; ++i) {
-            int sufflen = n - 1 - p[i];
-            if (lcp[i] < sufflen) {
-                int u = create(sufflen, p[i]);
-                if (lcp[i] <= lcp[i - 1]) set_link(u, stk.top());
-                else children.push(u);
+        for (int i = 1; i < n; ++i) {
+            int u = -1;
+            if (int sufflen = n - 1 - p[i]; lcp[i] < sufflen) {
+                u = create(sufflen, p[i]);
+                if (lcp[i - 1] >= lcp[i]) st[u].link = stk.top(), u = -1;
             }
             while (st[stk.top()].len > lcp[i]) {
                 int v = stk.top();
                 stk.pop();
-                if (st[stk.top()].len >= lcp[i]) set_link(v, stk.top());
-                else children.push(v);
+                if (lcp[i] > st[stk.top()].len) stk.push(create(lcp[i], p[i]));
+                st[v].link = stk.top();
             }
-            if (lcp[i] > st[stk.top()].len) {
-                stk.push(create(lcp[i], p[i]));
-                while (not empty(children)) {
-                    set_link(children.top(), stk.top());
-                    children.pop();
-                }
-            }
-        }
-        stk.push(create(n - 1 - p.back(), p.back()));
-        while (size(stk) > 1) {
-            int u = stk.top();
-            stk.pop();
-            set_link(u, stk.top());
+            if (lcp[i] > st[stk.top()].len) stk.push(create(lcp[i], p[i]));
+            if (u != -1) st[u].link = stk.top();
         }
     }
 };
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+ 
+    string s;
+    cin >> s;
+ 
+    SuffixArray sa(s);
+    sa.build_lcp();
+    sa.build_suffix_tree();
+ 
+    const auto& st = sa.st;
+    int m = (int)size(st);
+ 
+    vector<int> V(m - 1);
+    iota(all(V), 1);
+    sort(all(V), [&](int u, int v){ return st[u].len > st[v].len; });
+ 
+    vector<set<int>> S(m);
+    for (int u = 1; u < m; ++u) S[u].insert(st[u].idx);
+ 
+    int k = 1;
+    for (auto u : V) {
+        int p = st[u].link;
+        assert(p != -1);
+
+        if (size(S[p]) < size(S[u])) swap(S[p], S[u]);
+        for (auto i : S[u]) {
+            auto [iter, check] = S[p].insert(i);
+            if (not check) continue;
+ 
+            if (iter != begin(S[p])) k = max(k, 1 + st[p].len / (i - *prev(iter)));
+            if (next(iter) != end(S[p])) k = max(k, 1 + st[p].len / (*next(iter) - i));
+        }
+    }
+ 
+    cout << k << endl;
+ 
+    exit(0);
+}
