@@ -1,16 +1,3 @@
-#include "bits/stdc++.h"
-
-using namespace std;
-
-#define endl '\n'
-#define debug(x) cerr << #x << " == " << (x) << '\n';
-#define all(x) begin(x), end(x)
-
-using ll = long long;
-
-const int INF = 0x3f3f3f3f;
-const ll LINF = 0x3f3f3f3f3f3f3f3fLL;
-
 vector<int> sort_cyclic_shifts(const string& s) {
     int n = (int)size(s);
     vector<int> p(n), inv(n), tmp(n), cnt(n);
@@ -75,60 +62,20 @@ struct SuffixArray {
         stack<int> stk;
         stk.push(create(0, -1));
         for (int i = 1; i < n; ++i) {
-            int u = -1;
+            int V[2] = { -1, -1 };
             if (int sufflen = n - 1 - p[i]; lcp[i] < sufflen) {
-                u = create(sufflen, p[i]);
-                if (lcp[i - 1] >= lcp[i]) st[u].link = stk.top(), u = -1;
+                int v = create(sufflen, p[i]);
+                if (lcp[i - 1] >= lcp[i]) st[v].link = stk.top();
+                else V[0] = v;
             }
             while (st[stk.top()].len > lcp[i]) {
                 int v = stk.top();
                 stk.pop();
-                if (lcp[i] > st[stk.top()].len) stk.push(create(lcp[i], p[i]));
-                st[v].link = stk.top();
+                if (lcp[i] <= st[stk.top()].len) st[v].link = stk.top();
+                else V[1] = v;
             }
             if (lcp[i] > st[stk.top()].len) stk.push(create(lcp[i], p[i]));
-            if (u != -1) st[u].link = stk.top();
+            for (auto v : V) if (v != -1) st[v].link = stk.top();
         }
     }
 };
-
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
- 
-    string s;
-    cin >> s;
- 
-    SuffixArray sa(s);
-    sa.build_lcp();
-    sa.build_suffix_tree();
- 
-    const auto& st = sa.st;
-    int m = (int)size(st);
- 
-    vector<int> V(m - 1);
-    iota(all(V), 1);
-    sort(all(V), [&](int u, int v){ return st[u].len > st[v].len; });
- 
-    vector<set<int>> S(m);
-    for (int u = 1; u < m; ++u) S[u].insert(st[u].idx);
- 
-    int k = 1;
-    for (auto u : V) {
-        int p = st[u].link;
-        assert(p != -1);
-
-        if (size(S[p]) < size(S[u])) swap(S[p], S[u]);
-        for (auto i : S[u]) {
-            auto [iter, check] = S[p].insert(i);
-            if (not check) continue;
- 
-            if (iter != begin(S[p])) k = max(k, 1 + st[p].len / (i - *prev(iter)));
-            if (next(iter) != end(S[p])) k = max(k, 1 + st[p].len / (*next(iter) - i));
-        }
-    }
- 
-    cout << k << endl;
- 
-    exit(0);
-}
