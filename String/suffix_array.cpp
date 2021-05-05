@@ -61,21 +61,17 @@ struct SuffixArray {
         stack<int> stk;
         stk.push(create(0, -1));
         for (int i = 1; i < n; ++i) {
-            int l = p[i], V[2] = { -1, -1 };
-            if (int sufflen = n - 1 - p[i]; lcp[i] < sufflen) {
-                int v = create(sufflen, p[i]);
-                if (lcp[i - 1] >= lcp[i]) st[v].link = stk.top();
-                else V[0] = v;
+            for (auto len : { n - 1 - p[i], lcp[i] }) {
+                int l = p[i];
+                while (st[stk.top()].len > len) {
+                    int v = stk.top();
+                    stk.pop();
+                    l = st[v].idx;
+                    if (len > st[stk.top()].len) stk.push(create(len, l));
+                    st[v].link = stk.top();
+                }
+                if (len > st[stk.top()].len) stk.push(create(len, l));
             }
-            while (st[stk.top()].len > lcp[i]) {
-                int v = stk.top();
-                stk.pop();
-                l = st[v].idx;
-                if (lcp[i] <= st[stk.top()].len) st[v].link = stk.top();
-                else V[1] = v;
-            }
-            if (lcp[i] > st[stk.top()].len) stk.push(create(lcp[i], l));
-            for (auto v : V) if (v != -1) st[v].link = stk.top();
         }
     }
 };
