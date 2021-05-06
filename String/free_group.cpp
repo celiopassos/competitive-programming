@@ -1,6 +1,5 @@
 const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
 mt19937 rng(FIXED_RANDOM);
-uniform_int_distribution<ll> unif;
 
 ll modpow(ll x, ll p, ll mod) {
     ll res = 1;
@@ -13,7 +12,7 @@ ll modpow(ll x, ll p, ll mod) {
 
 template<ll mod>
 struct FreeGroup {
-    inline static const ll base = max<ll>(1e6, unif(rng) % mod), inv_base = modpow(base, mod - 2, mod);
+    inline static const ll base = uniform_int_distribution<ll>(2, mod - 1)(rng), inv_base = modpow(base, mod - 2, mod);
 
     ll shift, inv_shift, hash;
     FreeGroup(ll shift, ll inv_shift, ll hash) : shift(shift), inv_shift(inv_shift), hash(hash) { }
@@ -30,9 +29,10 @@ struct FreeGroup {
         hash = (rhs.shift * hash + rhs.hash) % mod;
         return *this;
     }
-    FreeGroup operator-=(const FreeGroup& rhs) { return *this += (-rhs); }
+    FreeGroup& operator-=(const FreeGroup& rhs) { return *this += (-rhs); }
     FreeGroup operator+(const FreeGroup& rhs) const { return FreeGroup(*this) += rhs; }
     FreeGroup operator-(const FreeGroup& rhs) const { return FreeGroup(*this) -= rhs; }
+    FreeGroup operator+() const { return *this; }
     FreeGroup operator-() const {
         return FreeGroup(inv_shift, shift, (mod - inv_shift * hash % mod) % mod);
     }

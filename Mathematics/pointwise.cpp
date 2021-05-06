@@ -1,40 +1,45 @@
-template<typename...>
-struct Pointwise {
-    Pointwise() { }
-    Pointwise(auto init) { (void)init; }
-    auto get() { return tuple<>(); }
-};
+const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
+mt19937 rng(FIXED_RANDOM);
 
-template<typename T, typename... Ts>
-struct Pointwise<T, Ts...> {
-    static constexpr bool base = (sizeof...(Ts) == 0);
-    T value;
-    Pointwise<Ts...> nxt;
-    Pointwise(T value, Ts... args) : value(value), nxt(args...) { }
-    Pointwise(auto init) : value(init), nxt(init) { }
-    Pointwise() : value(T()), nxt() { }
-    template<typename Op>
-    void apply(const Pointwise& rhs, Op&& op) {
-        value = op(value, rhs);
-        if constexpr (not base) nxt.apply(rhs.nxt, op);
+template<typename T, int K>
+struct Pointwise : public array<T, K> {
+    using P = Pointwise;
+    Pointwise(T value = 0) { fill(all(*this), value); }
+    P& operator+=(const P& rhs) {
+        for (int j = 0; j < K; ++j) (*this)[j] += rhs[j];
+        return *this;
     }
-    Pointwise& operator+=(const Pointwise& rhs) { apply(rhs, plus<T>()); return *this; };
-    Pointwise& operator-=(const Pointwise& rhs) { apply(rhs, minus<T>()); return *this; };
-    Pointwise& operator*=(const Pointwise& rhs) { apply(rhs, multiplies<T>()); return *this; };
-    Pointwise& operator/=(const Pointwise& rhs) { apply(rhs, divides<T>()); return *this; };
-    Pointwise& operator%=(const Pointwise& rhs) { apply(rhs, modulus<T>()); return *this; };
-    Pointwise operator+(const Pointwise& rhs) const { return Pointwise(*this) += rhs; };
-    Pointwise operator-(const Pointwise& rhs) const { return Pointwise(*this) -= rhs; };
-    Pointwise operator*(const Pointwise& rhs) const { return Pointwise(*this) *= rhs; };
-    Pointwise operator/(const Pointwise& rhs) const { return Pointwise(*this) /= rhs; };
-    bool operator<(const Pointwise& rhs) const {
-        if constexpr (base) return value < rhs.value;
-        else if (value == rhs.value) return nxt < rhs.nxt;
-        else return value < rhs.value;
+    P& operator-=(const P& rhs) {
+        for (int j = 0; j < K; ++j) (*this)[j] -= rhs[j];
+        return *this;
     }
-    bool operator==(const Pointwise& rhs) const {
-        if constexpr (base) return value == rhs.value;
-        else return value == rhs.value && nxt == rhs.nxt;
+    P& operator*=(const P& rhs) {
+        for (int j = 0; j < K; ++j) (*this)[j] *= rhs[j];
+        return *this;
     }
-    auto get() { return tuple_cat(tuple<T&>(value), nxt.get()); }
+    P& operator/=(const P& rhs) {
+        for (int j = 0; j < K; ++j) (*this)[j] /= rhs[j];
+        return *this;
+    }
+    friend P operator+(P lhs, const P& rhs) { return lhs += rhs; }
+    friend P operator-(P lhs, const P& rhs) { return lhs -= rhs; }
+    friend P operator*(P lhs, const P& rhs) { return lhs *= rhs; }
+    friend P operator/(P lhs, const P& rhs) { return lhs /= rhs; }
+    P operator+() const { return *this; }
+    P operator-() const { return P(T(0)) -= *this; }
+    P power(ll p) const {
+        P res;
+        for (int j = 0; j < K; ++j) res[j] = (*this)[j].power(p);
+        return res;
+    }
+    // X 'indeterminate' for polynomial hashing
+    // probability of collision when comparing two instances = (degree of difference / mod)^K
+    inline static const Pointwise X = [](){
+        uniform_int_distribution<ll> unif(1, numeric_limits<ll>::max());
+        Pointwise X;
+        for (int j = 0; j < K; ++j) X[j] = T(unif(rng));
+        return X;
+    }();
+    P& operator>>=(ll p) { return *this *= X.power(p); }
+    P operator>>(ll p) const { return *this * X.power(p); }
 };
