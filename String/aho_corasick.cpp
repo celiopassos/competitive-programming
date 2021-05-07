@@ -42,7 +42,7 @@ struct AhoCorasick {
         }
         return trie[v].go[idx];
     }
-    int getleaf(int v) // inclusive {
+    int getleaf(int v){ // inclusive
         if (trie[v].leaflink == -1) {
             if (v == 0 || trie[v].leaf) trie[v].leaflink = v;
             else trie[v].leaflink = getleaf(getlink(v));
