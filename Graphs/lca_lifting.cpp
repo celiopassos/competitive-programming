@@ -22,7 +22,7 @@ struct LCA {
     int lca(int u, int v) const {
         if (is_ancestor(u, v)) return u;
         if (is_ancestor(v, u)) return v;
-        for (int i = K; i >= 0; --i) {
+        for (int i = K - 1; i >= 0; --i) {
             if (!is_ancestor(up[u][i], v)) u = up[u][i];
         }
         return up[u][0];
