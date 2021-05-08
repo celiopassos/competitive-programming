@@ -2,9 +2,9 @@ template<ll mod>
 struct Mint {
     ll x;
     Mint(ll x = 0) : x((x %= mod) < 0 ? x + mod : x) { }
-    Mint& operator+=(Mint rhs) { return (x += rhs.x >= mod ? x -= mod : 0, *this); }
-    Mint& operator-=(Mint rhs) { return (x -= rhs.x < 0 ? x += mod : 0, *this); }
-    Mint& operator*=(Mint rhs) { return ((x *= rhs.x) %= mod, *this); }
+    Mint& operator+=(Mint rhs) { return (x += rhs.x) >= mod ? x -= mod : 0, *this; }
+    Mint& operator-=(Mint rhs) { return (x -= rhs.x) < mod ? x += mod : 0, *this; }
+    Mint& operator*=(Mint rhs) { return (x *= rhs.x) %= mod, *this; }
     Mint& operator/=(Mint rhs) { return *this *= rhs.power(-1); }
     Mint power(ll p) const {
         p %= mod - 1;
