@@ -1,7 +1,7 @@
 // finds point x with dot(L.first, x) = L.second and dot(K.first, x) = K.second
 // assumes that L and K are not parallel (division by 0 otherwise)
 template<typename T>
-complex<T> intersection(pair<complex<T>, T> L, pair<complex<T>, T> K) {
+complex<T> intersection(Line<T> L, Line<T> K) {
     auto [a, t] = L;
     auto [b, s] = K;
     T div = cross(a, b);
