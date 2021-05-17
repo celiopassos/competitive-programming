@@ -1,11 +1,11 @@
 // finds point x with dot(L.first, x) = L.second and dot(K.first, x) = K.second
 // assumes that L and K are not parallel (division by 0 otherwise)
-template<typename T>
-complex<T> intersection(Line<T> L, Line<T> K) {
+template<typename T, typename F = double>
+complex<F> intersection(Line<T> L, Line<T> K) {
     auto [a, t] = L;
     auto [b, s] = K;
-    T div = cross(a, b);
-    T x = cross(complex(t, s), complex<T>(a.y(), b.y())) / div;
-    T y = -cross(complex(t, s), complex<T>(a.x(), b.x())) / div;
-    return complex(x, y);
+    F div = (F)cross(a, b);
+    F x = (F)cross(complex(t, s), complex(a.y(), b.y())) / div;
+    F y = -(F)cross(complex(t, s), complex(a.x(), b.x())) / div;
+    return complex<F>(x, y);
 }
