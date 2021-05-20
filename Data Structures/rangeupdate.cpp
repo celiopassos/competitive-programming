@@ -1,5 +1,6 @@
+// assignment
 template<typename T>
-struct M3 // assignment {
+struct M3 { 
     using Type = T;
     inline const static T Id = INF;
     static T op(const T& x, const T& y) {
@@ -12,12 +13,10 @@ struct M3 // assignment {
 
 template<typename Monoid>
 struct RangeUpdate {
-private:
     using M = Monoid;
     using T = typename Monoid::Type;
-    const int n, h;
+    int n, h;
     vector<T> st;
-public:
     RangeUpdate(int n) : n(n), h(32 - __builtin_clz(n)), st(2 * n, M::Id) { }
     RangeUpdate(const vector<T>& init) : RangeUpdate((int)size(init)) {
         copy(all(init), begin(st) + n);

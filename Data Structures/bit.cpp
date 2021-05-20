@@ -10,18 +10,16 @@ struct G1 {
 int b(int p) { return p & (-p); }
 
 template<typename Group>
-class BIT {
-private:
+struct BIT {
     using G = Group;
     using T = typename G::Type;
-    const int n, h;
+    int n, h;
     vector<T> ft;
     T query(int p) {
         T res = G::Id;
         for (; p; p -= b(p)) res = G::op(ft[p], res);
         return res;
     }
-public:
     BIT(int n) : n(n), h(31 - __builtin_clz(n)), ft(n + 1, G::Id) { }
     BIT(const vector<T>& a) : BIT((int)size(a)) {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);
@@ -31,7 +29,8 @@ public:
     void update(int p, T value) {
         for (++p; p <= n; p += b(p)) ft[p] = G::op(ft[p], value);
     }
-    int lower_bound(T value) // first r such that G::cmp(query(0, r), value) == false {
+    // first r such that G::cmp(query(0, r), value) == false
+    int lower_bound(T value) {
         T prefix = G::Id;
         int pos = 0;
         for (int x = h; x >= 0; --x) {

@@ -6,8 +6,7 @@ struct M1 {
 };
 
 template<typename Monoid>
-class PersistentST {
-private:
+struct PersistentST {
     using M = Monoid;
     using T = typename Monoid::Type;
     struct Node {
@@ -15,7 +14,7 @@ private:
         int left = -1, right = -1, root;
         Node (int root) : root(root) {}
     };
-    const int n;
+    int n;
     deque<Node> st;
     int num_nodes;
 
@@ -67,7 +66,6 @@ private:
             st[p].value = M::op(get(st[p].left), get(st[p].right));
         }
     }
-public:
     PersistentST(int n) : n(n), num_nodes(0) { create(); }
     int build(const vector<T>& a) {
         assert(size(a) == n);

@@ -18,11 +18,10 @@ struct F1 {
 };
 
 template<typename F>
-class SparseST {
-private:
+struct SparseST {
     using T = typename F::Type;
 
-    const int L, R;
+    int L, R;
 
     vector<T> st;
     vector<F> lazy;
@@ -81,7 +80,6 @@ private:
 
         return F::combine(resl, resr);
     }
-public:
     SparseST(int L, int R) : L(L), R(R) { create(); }
     void update(int l, int r, F op) {
         update(0, L, R, l, r, op);

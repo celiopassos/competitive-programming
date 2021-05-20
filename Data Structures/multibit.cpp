@@ -9,8 +9,7 @@ struct BIT {
 };
 
 template <typename T, int N, int... Ns>
-class BIT<T, N, Ns...> {
-private:
+struct BIT<T, N, Ns...> {
     using B = BIT<T>;
     array<BIT<T, Ns...>, N> ft;
     template<typename... Args>
@@ -20,7 +19,6 @@ private:
             res = B::combine(res, ft[i].query(args...));
         return res;
     }
-public:
     template<typename... Args>
     void modify(int p, Args... args) {
         for (int i = p; i <= N; i = i | (i + 1))

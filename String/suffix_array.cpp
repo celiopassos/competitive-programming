@@ -27,7 +27,7 @@ vector<int> sort_cyclic_shifts(const string& s) {
 
 struct SuffixArray {
     const string s;
-    const int n;
+    int n;
     vector<int> p, pos, lcp;
     SuffixArray(const string& s_) : s(s_ + char(0)), n((int)size(s)), pos(n, 0) {
         p = sort_cyclic_shifts(s);

@@ -1,5 +1,4 @@
 template<int N> struct XORBasis {
-private:
     using V = bitset<N>;
     array<V, N> basis, alpha;
     int dim = 0;
@@ -12,7 +11,6 @@ private:
         }
         return pair(-1, coef);
     }
-public:
     bool insert(V x) {
         auto [i, coef] = reduce(x);
         if (i == -1) return false;
@@ -25,5 +23,4 @@ public:
         auto [i, coef] = reduce(x);
         return pair(i == -1, coef);
     }
-    int dimension() const { return dim; }
 };

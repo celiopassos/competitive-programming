@@ -2,7 +2,7 @@
 template<int K>
 struct LCA {
     const vector<vector<int>>& E;
-    const int n;
+    int n;
     vector<int> L, R;
     vector<array<int, K>> up;
     int timer = 0;

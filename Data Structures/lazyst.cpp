@@ -14,11 +14,10 @@ struct F1 {
 };
 
 template<typename F>
-class LazyST {
-private:
+struct LazyST {
     using T = typename F::Type;
 
-    const int n;
+    int n;
 
     vector<T> st;
     vector<F> lazy;
@@ -84,7 +83,6 @@ private:
         else
             return binary_search(left(p), l, m, prefix, value);
     }
-public:
     LazyST(int n) : n(n), st(4 * n + 1, F::Tid), lazy(4 * n + 1, F::Fid) { }
     LazyST(const vector<T>& a) : LazyST((int)size(a)) {
         build(0, 0, n - 1, a);

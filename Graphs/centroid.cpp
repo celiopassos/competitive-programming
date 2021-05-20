@@ -1,9 +1,8 @@
 // K >= centroid tree height, or simply floor(log(n))
 
 template<int K>
-class CentroidDecomposition {
-private:
-    const int n;
+struct CentroidDecomposition {
+    int n;
     const vector<vector<int>>& E;
 
     vector<int> parent, weight, vis, level;
@@ -30,7 +29,6 @@ private:
         dist[centroid][level[centroid]] = 0;
         for (auto v : E[centroid]) if (not vis[v]) build(v, centroid);
     }
-public:
     CentroidDecomposition(const vector<vector<int>>& E) :
         n((int)size(E)), E(E), parent(n), weight(n), vis(n), level(n), dist(n) {
         build(0, -1);
@@ -41,7 +39,8 @@ public:
     int getlevel(int u) const {
         return level[u];
     }
-    int lca(int u, int v) const{ // centroid lca, not tree lca
+    // centroid lca, not tree lca
+    int lca(int u, int v) const {
         if (level[u] < level[v]) swap(u, v);
         while (level[u] > level[v]) u = parent[u];
         while (u != v) u = parent[u], v = parent[v];

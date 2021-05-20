@@ -42,7 +42,8 @@ struct LiChaoTree {
             else p = right(p), l = m + 1;
         }
     }
-    auto query(Domain x) // returns minimum {
+    // returns minimum
+    auto query(Domain x) {
         auto res = inf(x);
         Domain l = L, r = R;
         int p = 0;

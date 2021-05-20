@@ -8,17 +8,15 @@ struct M1 {
 
 template<typename Monoid>
 struct SegmentTree {
-private:
     using M = Monoid;
     using T = typename Monoid::Type;
-    const int n;
+    int n;
     vector<T> st;
     int binary_search(int p, T prefix, T value) {
         while (p < n) if (T x = M::op(prefix, st[p <<= 1]); M::cmp(x, value))
             prefix = x, p |= 1;
         return p - n + M::cmp(M::op(prefix, st[p]), value);
     }
-public:
     SegmentTree(int n) : n(n), st(2 * n, M::Id) { }
     SegmentTree(const vector<T>& a) : SegmentTree((int)size(a)) {
         for (int i = 0; i < n; ++i) st[n + i] = a[i];
