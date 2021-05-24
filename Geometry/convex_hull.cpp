@@ -1,30 +1,17 @@
+// counter-clockwise order
 template<typename T>
 vector<complex<T>> convex_hull(vector<complex<T>> pts) {
     sort(all(pts), lex_cmp<T>), pts.erase(unique(all(pts)), end(pts));
-
-    int n = (int)size(pts);
-    if (n == 1) return pts;
-
-    vector<complex<T>> up(n), down(n);
-    int k = 1, j = 1;
-
-    auto p = pts[0], q = pts[n - 1];
-    up[0] = p, down[0] = p;
-
-    for (int i = 1; i < n; ++i) {
-        if (i == n - 1 || cw(p, pts[i], q)) {
-            while (k > 1 && not cw(up[k - 2], up[k - 1], pts[i])) --k;
-            up[k++] = pts[i];
-        }
-        if (i == n - 1 || ccw(p, pts[i], q)) {
-            while (j > 1 && not ccw(down[j - 2], down[j - 1], pts[i])) --j;
-            down[j++] = pts[i];
-        }
+    if (size(pts) <= 1) return pts;
+    vector<complex<T>> upper(size(pts)), lower(size(pts));
+    int k = 0, l = 0;
+    for (auto p : pts) {
+        while (k > 1 && not cw(upper[k - 2], upper[k - 1], p)) --k;
+        while (l > 1 && not ccw(lower[l - 2], lower[l - 1], p)) --l;
+        upper[k++] = lower[l++] = p;
     }
-
-    reverse(begin(up), begin(up) + k);
-    copy(begin(up), begin(up) + k - 1, begin(down) + j - 1);
-    down.resize(k + j - 2);
-
-    return down;
+    upper.resize(k - 1), lower.resize(l);
+    reverse(all(upper));
+    lower.insert(end(lower), all(upper) - 1);
+    return lower;
 }
