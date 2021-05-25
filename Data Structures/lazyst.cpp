@@ -1,106 +1,86 @@
-template<typename T>
-struct F1 {
-    using Type = T;
-    inline const static T Tid = T(0);
-    inline const static F1 Fid = F1(0);
-    T add;
-    explicit F1(T add) : add(add) {}
-    void apply(T& old, int L, int R) const {
-        old = old + add * (R - L + 1);
-    }
-    void compose(const F1& op, int L, int R) { add += op.add; }
-    static T op(const T& x, const T& y) { return x + y; }
-    static bool cmp(const T& x, const T& y) { return x < y; }
-};
-
 template<typename F>
 struct LazyST {
     using T = typename F::Type;
 
     int n;
 
-    vector<T> st;
+    vector<typename F::Node> st;
     vector<F> lazy;
 
     int left(int p) const { return 2 * p + 1; }
     int right(int p) const { return 2 * p + 2; }
 
-    void push(int p, int l, int r) {
-        lazy[p].apply(st[p], l, r);
-        if (l != r) {
-            int m = l + (r - l) / 2;
-            lazy[left(p)].compose(lazy[p], l, m);
-            lazy[right(p)].compose(lazy[p], m + 1, r);
+    void push(int p) {
+        lazy[p].apply(st[p]);
+        if (st[p].l != st[p].r) {
+            lazy[left(p)].compose(lazy[p]);
+            lazy[right(p)].compose(lazy[p]);
         }
-        lazy[p] = F::Fid;
+        lazy[p] = F();
     }
-    void update(int p, int l, int r, int ql, int qr, F op) {
-        if (r < ql || qr < l) push(p, l, r);
-        else if (ql <= l && r <= qr) {
-            lazy[p].compose(op, l, r);
-            push(p, l, r);
+    void update(int p, int ql, int qr, F op) {
+        if (st[p].r < ql || qr < st[p].l) push(p);
+        else if (ql <= st[p].l && st[p].r <= qr) {
+            lazy[p].compose(op);
+            push(p);
         }
         else {
-            int m = l + (r - l) / 2;
-            push(p, l, r);
-            update(left(p), l, m, ql, qr, op);
-            update(right(p), m + 1, r, ql, qr, op);
-            st[p] = F::op(st[left(p)], st[right(p)]);
+            push(p);
+            update(left(p), ql, qr, op);
+            update(right(p), ql, qr, op);
+            st[p].value = F::op(st[left(p)].value, st[right(p)].value);
         }
     }
-    T query(int p, int l, int r, int ql, int qr) {
-        if (r < ql || qr < l) return F::Tid;
-        push(p, l, r);
-        if (ql <= l && r <= qr) return st[p];
-        int m = l + (r - l) / 2;
-        T resl = query(left(p), l, m, ql, qr);
-        T resr = query(right(p), m + 1, r, ql, qr);
-        return F::op(resl, resr);
+    T query(int p, int ql, int qr) {
+        if (st[p].r < ql || qr < st[p].l) return F::Id;
+        push(p);
+        if (ql <= st[p].l && st[p].r <= qr) return st[p].value;
+        return F::op(query(left(p), ql, qr), query(right(p), ql, qr));
     }
     void build(int p, int l, int r, const vector<T>& a) {
-        if (l == r) st[p] = a[l];
+        st[p].l = l, st[p].r = r;
+        if (l == r) st[p].value = a[l];
         else {
             int m = l + (r - l) / 2;
             build(left(p), l, m, a), build(right(p), m + 1, r, a);
-            st[p] = F::op(st[left(p)], st[right(p)]);
+            st[p].value = F::op(st[left(p)].value, st[right(p)].value);
         }
     }
-    void partition(auto& q, int p, int l, int r, int ql, int qr) {
-        if (r < ql || qr < l) return;
-        push(p, l, r);
-        if (ql <= l && r <= qr) { q.emplace_back(p, l, r); return; }
-        int m = l + (r - l) / 2;
-        partition(q, left(p), l, m, ql, qr);
-        partition(q, right(p), m + 1, r, ql, qr);
+    void partition(auto& q, int p, int ql, int qr) {
+        if (st[p].r < ql || qr < st[p].l) return;
+        push(p);
+        if (ql <= st[p].l && st[p].r <= qr) return (void)q.push(p);
+        partition(q, left(p), ql, qr);
+        partition(q, right(p), ql, qr);
     }
-    int binary_search(int p, int l, int r, T prefix, T value) {
-        push(p, l, r);
-        if (l == r) { return l + F::cmp(F::op(prefix, st[p]), value); }
-        int m = l + (r - l) / 2;
-        push(left(p), l, m);
-        if (T x = F::op(prefix, st[left(p)]); F::cmp(x, value))
-            return binary_search(right(p), m + 1, r, x, value);
+    int binary_search(int p, T prefix, T value) {
+        push(p);
+        if (st[p].l == st[p].r) return st[p].l + F::cmp(F::op(prefix, st[p].value), value);
+        push(left(p));
+        if (T x = F::op(prefix, st[left(p)].value); F::cmp(x, value))
+            return binary_search(right(p), x, value);
         else
-            return binary_search(left(p), l, m, prefix, value);
+            return binary_search(left(p), prefix, value);
     }
-    LazyST(int n) : n(n), st(4 * n + 1, F::Tid), lazy(4 * n + 1, F::Fid) { }
+
+    LazyST(int n) : n(n), st(4 * n + 1), lazy(4 * n + 1, F()) { }
     LazyST(const vector<T>& a) : LazyST((int)size(a)) {
         build(0, 0, n - 1, a);
     }
     void update(int l, int r, F op) {
-        update(0, 0, n - 1, l, r, op);
+        update(0, l, r, op);
     }
     T query(int l, int r) {
-        return query(0, 0, n - 1, l, r);
+        return query(0, l, r);
     }
     int lower_bound(T value) {
-        return binary_search(0, 0, n - 1, F::Tid, value);
+        return binary_search(0, F::Id, value);
     }
     int lower_bound(int l, int r, T value) {
-        static vector<tuple<int, int, int>> q;
-        partition(q, 0, 0, n - 1, l, r);
+        static vector<int> q;
+        partition(q, 0, l, r);
         int res = r + 1;
-        for (auto [idx, prefix] = pair(0, F::Tid); idx < (int)size(q); ++idx) {
+        for (auto [idx, prefix] = pair(0, F::Id); idx < (int)size(q); ++idx) {
             auto [p, l, r] = q[idx];
             if (T x = F::op(prefix, st[p]); F::cmp(x, value)) prefix = x;
             else {
