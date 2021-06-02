@@ -49,6 +49,12 @@ struct SuffixArray {
         if (pos[i] > pos[j]) swap(i, j);
         return rmq.query(pos[i], pos[j] - 1);
     }
+    // substring comparison
+    template<typename RMQ> bool cmp(array<int, 2> S, array<int, 2> T, const RMQ& rmq) const {
+        int lenS = S[1] - S[0] + 1, lenT = T[1] - T[0] + 1;
+        int L = lcp_query(S[0], T[0], rmq);
+        return L < min(lenS, lenT) ? s[S[0] + L] < s[T[0] + L] : lenS < lenT;
+    }
     struct Node {
         int link, len, idx;
     };
@@ -61,7 +67,7 @@ struct SuffixArray {
         stack<int> stk;
         stk.push(create(0, -1));
         for (int i = 1; i < n; ++i) {
-            for (auto len : { n - 1 - p[i], lcp[i] }) {
+            for (auto len : {n - 1 - p[i], lcp[i]}) {
                 int l = p[i];
                 while (st[stk.top()].len > len) {
                     int v = stk.top();
