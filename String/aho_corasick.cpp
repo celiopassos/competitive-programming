@@ -6,7 +6,7 @@ struct AhoCorasick {
         int p = -1, link = -1, leaflink = -1;
         char pc;
         Node(int p = -1, char pc = offset - 1) : p(p), pc(pc) {
-            fill(all(nxt), -1), fill(all(go), -1);
+            fill(begin(nxt), end(nxt), -1), fill(begin(go), end(go), -1);
         }
     };
     vector<Node> trie;

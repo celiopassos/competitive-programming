@@ -23,7 +23,7 @@ struct Dinic {
         return m - 2;
     }
     bool bfs(int s, int t) {
-        fill(all(level), 0); level[s] = 1;
+        fill(begin(level), end(level), 0); level[s] = 1;
         static queue<int> q; q.push(s);
         while (not q.empty()) {
             int u = q.front(); q.pop();
@@ -52,7 +52,7 @@ struct Dinic {
         for (auto& edge : edges) edge.flow = 0;
         T f = 0;
         while (bfs(s, t)) {
-            fill(all(ptr), 0);
+            fill(begin(ptr), end(ptr), 0);
             while (T pushed = push(s, t, inf)) f += pushed;
         }
         return f;

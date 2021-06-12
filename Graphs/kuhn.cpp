@@ -22,7 +22,7 @@ struct Kuhn {
     int maximum_matching() {
         while (true) {
             bool converged = true;
-            fill(all(vis), false);
+            fill(begin(vis), end(vis), false);
             for (int u = 0; u < N; ++u) {
                 if (not vis[u] && matchA[u] == -1 && augment(u)) {
                     converged = false;

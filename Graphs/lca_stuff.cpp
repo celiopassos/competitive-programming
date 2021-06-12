@@ -12,10 +12,10 @@ int query(int u, int v, int root, const LCA& lca) {
 template<typename LCA>
 int build_virtual_tree(vector<int>& V, vector<vector<int>>& F, const LCA& lca) {
     auto cmp = [&](int u, int v) { return lca.R[u] < lca.R[v]; };
-    sort(all(V), cmp);
+    sort(begin(V), end(V), cmp);
     int k = (int)size(V);
     for (int j = 0; j + 1 < k; ++j) V.push_back(lca.lca(V[j], V[j + 1]));
-    sort(all(V), cmp), V.erase(unique(all(V)), end(V));
+    sort(begin(V), end(V), cmp), V.erase(unique(begin(V), end(V)), end(V));
     stack<int> stk;
     for (auto u : V) {
         while (not empty(stk) && is_ancestor(u, stk.top())) {

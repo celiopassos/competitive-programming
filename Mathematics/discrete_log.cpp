@@ -17,11 +17,11 @@ ll discrete_log(ll a, ll b, ll mod) {
         (cur *= a) %= mod;
     }
 
-    sort(all(values));
+    sort(begin(values), end(values));
 
     for (ll p = 1, cur = 1; p <= n; ++p) {
         (cur *= apow) %= mod;
-        auto iter = lower_bound(all(values), pair(cur, 0LL));
+        auto iter = lower_bound(begin(values), end(values), pair(cur, 0LL));
         if (iter != end(values) && iter->first == cur) {
             ll ans = n * p - iter->second;
             return ans;

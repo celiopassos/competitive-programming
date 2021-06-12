@@ -48,7 +48,7 @@ struct MCMF {
         return true;
     }
     bool spfa(int s, int t, bool fix = false) {
-        fill(all(dist), infcost), fill(all(parent), 0), fill(all(vis), 0);
+        fill(begin(dist), end(dist), infcost), fill(begin(parent), end(parent), 0), fill(begin(vis), end(vis), 0);
         static queue<int> q; q.push(s); dist[s] = 0;
         while (not q.empty()) {
             int v = q.front(); q.pop(); vis[v] = 1;
@@ -65,7 +65,7 @@ struct MCMF {
         else return vis[t];
     }
     bool dijkstra(int s, int t) {
-        fill(all(dist), infcost), fill(all(parent), 0), fill(all(vis), 0);
+        fill(begin(dist), end(dist), infcost), fill(begin(parent), end(parent), 0), fill(begin(vis), end(vis), 0);
         struct Q {
             Cost key; int v;
             Q(Cost key, int v) : key(key), v(v) {}
@@ -90,7 +90,7 @@ struct MCMF {
     }
     pair<Cap, Cost> flow(int s, int t) {
         for (auto& edge : edges) edge.flow = 0;
-        fill(all(pi), 0);
+        fill(begin(pi), end(pi), 0);
         if (negative) spfa(s, t, true);
         Cap flow = 0;
         Cost cost = 0;

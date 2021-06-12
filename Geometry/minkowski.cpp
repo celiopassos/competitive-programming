@@ -3,8 +3,8 @@ template<typename T>
 vector<complex<T>> operator+(vector<complex<T>> P, vector<complex<T>> Q) {
     if (empty(P)) return Q;
     if (empty(Q)) return P;
-    rotate(begin(P), min_element(all(P), lex_cmp<T>), end(P));
-    rotate(begin(Q), min_element(all(Q), lex_cmp<T>), end(Q));
+    rotate(begin(P), min_element(begin(P), end(P), lex_cmp<T>), end(P));
+    rotate(begin(Q), min_element(begin(Q), end(Q), lex_cmp<T>), end(Q));
     P.insert(end(P), {P[0], P[1]});
     Q.insert(end(Q), {Q[0], Q[1]});
     vector<complex<T>> res;

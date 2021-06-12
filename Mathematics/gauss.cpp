@@ -37,7 +37,7 @@ struct GaussianElimination {
 
     // O(min(n, m)nm)
     GaussianElimination(const Matrix<T, N, M>& A_, int n, int m) : A(A_), E(1), n(n), m(m), nullity(m) {
-        fill(all(pivot), -1);
+        fill(begin(pivot), end(pivot), -1);
         for (int col = 0, row = 0; col < m && row < n; ++col) {
             int sel = -1;
             for (int i = row; i < n; ++i) {

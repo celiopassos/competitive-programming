@@ -20,7 +20,7 @@ struct Recovery {
             res.push_back(last->value);
             last = last->prev;
         }
-        reverse(all(res));
+        reverse(begin(res), end(res));
         return res;
     }
 };

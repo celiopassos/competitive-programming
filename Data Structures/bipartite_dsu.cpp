@@ -1,7 +1,7 @@
 struct DSU {
     vector<int> p, rk, color, bipartite;
     DSU(int n) : p(n), rk(n), color(n), bipartite(n, 1) {
-        iota(all(p), 0);
+        iota(begin(p), end(p), 0);
     };
     int find(int u) {
         if (u == p[u]) return u;

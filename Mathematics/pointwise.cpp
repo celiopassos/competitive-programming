@@ -4,7 +4,7 @@ mt19937 rng(FIXED_RANDOM);
 template<typename T, int K>
 struct Pointwise : public array<T, K> {
     using P = Pointwise;
-    Pointwise(T value = 0) { fill(all(*this), value); }
+    Pointwise(T value = 0) { fill(begin(*this), end(*this), value); }
     P& operator+=(const P& rhs) {
         for (int j = 0; j < K; ++j) (*this)[j] += rhs[j];
         return *this;

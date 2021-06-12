@@ -18,7 +18,7 @@ int logceil(int n) {
 void mo(const auto& queries, auto& eval, auto& remove, auto& insert, int n) {
     const int q = (int)size(queries), N = 1 << logceil(n);
 
-    vector<int> Z(q, 0); iota(all(Z), 0);
+    vector<int> Z(q, 0); iota(begin(Z), end(Z), 0);
 
     vector<ll> h(q, 0LL);
 
@@ -27,7 +27,7 @@ void mo(const auto& queries, auto& eval, auto& remove, auto& insert, int n) {
         h[z] = hilbert(l, r, N);
     }
 
-    sort(all(Z), [&h](int z, int w) { return h[z] < h[w]; });
+    sort(begin(Z), end(Z), [&h](int z, int w) { return h[z] < h[w]; });
 
     int lcur = 0, rcur = 0; insert(0);
 

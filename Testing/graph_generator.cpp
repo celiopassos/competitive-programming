@@ -23,7 +23,7 @@ auto graph_generator(int n, int m) {
         if (u > v) swap(u, v);
         edges.emplace_back(u, v);
     }
-    sort(all(edges)), edges.erase(unique(all(edges)), end(edges));
+    sort(begin(edges), end(edges)), edges.erase(unique(begin(edges), end(edges)), end(edges));
     return edges;
 }
 
@@ -33,15 +33,15 @@ auto connected_graph_generator(int n, int m) {
     auto tree = tree_generator(n);
     auto edges = graph_generator(n, m - (n - 1));
 
-    edges.insert(end(edges), all(tree));
-    sort(all(edges)), edges.erase(unique(all(edges)), end(edges));
+    edges.insert(end(edges), begin(tree), end(tree));
+    sort(begin(edges), end(edges)), edges.erase(unique(begin(edges), end(edges)), end(edges));
 
     return edges;
 }
 
 void relabel(int n, auto& edges) {
     vector<int> label(n, 0);
-    iota(all(label), 0);
-    shuffle(all(label), rng);
+    iota(begin(label), end(label), 0);
+    shuffle(begin(label), end(label), rng);
     for (auto& [u, v] : edges) u = label[u], v = label[v];
 }

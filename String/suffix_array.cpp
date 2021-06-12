@@ -1,19 +1,19 @@
 vector<int> sort_cyclic_shifts(const string& s) {
     int n = (int)size(s);
     vector<int> p(n), inv(n), tmp(n), cnt(n);
-    iota(all(p), 0);
-    sort(all(p), [&s](int i, int j){ return s[i] < s[j]; });
+    iota(begin(p), end(p), 0);
+    sort(begin(p), end(p), [&s](int i, int j){ return s[i] < s[j]; });
     inv[p[0]] = 0;
     for (int i = 1; i < n; ++i) {
         inv[p[i]] = inv[p[i - 1]] + (s[p[i]] != s[p[i - 1]] ? 1 : 0);
     }
     for (int shift = 1; shift < n; shift *= 2) {
-        fill(all(cnt), 0);
+        fill(begin(cnt), end(cnt), 0);
         for (int i = 0; i < n; ++i) {
             tmp[n - 1 - i] = (p[i] + n - shift) % n;
             cnt[inv[p[i]]] += 1;
         }
-        partial_sum(all(cnt), begin(cnt));
+        partial_sum(begin(cnt), end(cnt), begin(cnt));
         for (auto i : tmp) p[--cnt[inv[i]]] = i;
         auto key = [&](int i) { return pair(inv[i], inv[(i + shift) % n]); };
         tmp[p[0]] = 0;

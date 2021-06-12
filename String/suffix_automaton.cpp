@@ -5,7 +5,7 @@ struct ArrayState {
     bool clone = false;
     int nxt[K];
     ArrayState(int link = -1, int len = 0) : link(link), len(len) {
-        fill(all(nxt), -1);
+        fill(begin(nxt), end(nxt), -1);
     }
     void set(char ch, int u) { nxt[ch - offset] = u; }
     int go(char ch) { return nxt[ch - offset]; }
