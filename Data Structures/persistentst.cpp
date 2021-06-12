@@ -1,8 +1,9 @@
 template<typename T>
 struct M1 {
     using Type = T;
-    inline const static T Id = 0;
-    static T op(const T& x, const T& y) { return x + y; }
+    inline const static Type Id = Type();
+    static Type op(Type x, Type y) { return x + y; }
+    static bool cmp(Type x, Type y) { return x < y; }
 };
 
 template<typename Monoid>

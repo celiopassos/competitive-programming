@@ -1,9 +1,9 @@
 template<typename T>
 struct M1 {
     using Type = T;
-    inline const static T Id = 0;
-    static T op(const T& x, const T& y) { return x + y; }
-    static bool cmp(const T& x, const T& y) { return x < y; }
+    inline const static Type Id = Type();
+    static Type op(Type x, Type y) { return x + y; }
+    static bool cmp(Type x, Type y) { return x < y; }
 };
 
 template<typename Monoid>
@@ -37,27 +37,25 @@ struct SegmentTree {
     }
     int lower_bound(T value) { return lower_bound(0, n - 1, value); }
     // first x in [a, b] with M::cmp(query(a, x), value) == false
+    // returns b + 1 if no such x exists
     int lower_bound(int a, int b, T value) {
-        static deque<int> deq;
-        static stack<int> stk;
-
+        static vector<int> left, right;
         for (int l = a + n, r = b + n + 1; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) deq.push_back(l++);
-            if (r & 1) stk.push(--r);
+            if (l & 1) left.push_back(l++);
+            if (r & 1) right.push_back(--r);
         }
-
-        while (not empty(stk)) deq.push_back(stk.top()), stk.pop();
-
-        for (T prefix = M::Id; not empty(deq);) {
-            int p = deq.front(); deq.pop_front();
-
+        left.insert(end(left), rbegin(right), rend(left));
+        right.clear();
+        T prefix M::Id;
+        for (size_t i = 0; i < size(left); ++i) {
+            int p = st[i];
             if (T x = M::op(prefix, st[p]); M::cmp(x, value)) prefix = x;
             else {
-                deq.clear();
+                left.clear();
                 return binary_search(p, prefix, value);
             }
         }
-
+        left.clear();
         return b + 1;
     }
 };
