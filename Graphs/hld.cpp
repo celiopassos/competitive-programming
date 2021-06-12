@@ -1,77 +1,58 @@
-// Build two range queries if the monoid is not commutative:
-//  * stfor should combine like (x, y) -> x ∘ y,
-//  * strev should combine like (x, y) -> y ∘ x.
-//
-// If the path is a = x1, x2, ..., xk = b, will return x1 ∘ x2 ∘ ... ∘ x_k.
-//
-// Unecessary if the monoid is commutative, or if the queries are
-// always of the form v -> root or root -> v (take care of the order).
-
-template<typename Monoid>
 struct HLD {
-    using M = Monoid;
-    using T = typename M::Type;
-
-    const int n;
-    const vector<vector<int>>& E;
-
-    vector<int> parent, depth, heavy, head, pos;
-    int cur_pos = 0;
-
-    HLD(const auto& E, int root = 0) : n((int)size(E)), E(E),
-        parent(n), depth(n), heavy(n, -1), head(n), pos(n) {
-        parent[root] = root;
-        dfs(root), decompose(root, root);
+    int n;
+    vector<vector<int>> E;
+    vector<int> p, h, head, L, R;
+    HLD(const vector<vector<int>>& E, int root) : n((int)size(E)), E(E), p(n, -1), h(n), head(n), L(n), R(n) {
+        dfs_sz(root);
+        head[root] = root;
+        dfs_hld(root);
     }
-
-    int dfs(int u) {
-        int weight = 1, prv_max = 0;
-
-        for (int v : E[u]) if (v != parent[u]) {
-            parent[v] = u, depth[v] = depth[u] + 1;
-            int cur = dfs(v);
-            weight += cur;
-            if (cur > prv_max) prv_max = cur, heavy[u] = v;
+    int dfs_sz(int u) {
+        int sz = 1, mx = 0;
+        for (auto& v : E[u]) {
+            if (v == p[u]) continue;
+            p[v] = u, h[v] = h[u] + 1;
+            int x = dfs_sz(v);
+            sz += x;
+            if (x > mx) {
+                mx = x;
+                swap(v, E[u][0]);
+            }
         }
-
-        return weight;
+        return sz;
     }
-    void decompose(int u, int h) {
-        head[u] = h, pos[u] = cur_pos++;
-
-        if (heavy[u] != -1) decompose(heavy[u], h);
-        for (int v : E[u]) if (v != parent[u] && v != heavy[u])
-            decompose(v, v);
+    int timer = 0;
+    void dfs_hld(int u) {
+        L[u] = timer++;
+        for (auto v : E[u]) {
+            if (v == p[u]) continue;
+            head[v] = (v == E[u][0] ? head[u] : v);
+            dfs_hld(v);
+        }
+        R[u] = timer - 1;
     }
-    // pass strev = stfor if Monoid is commutative
-    T query(int a, int b, auto& stfor, auto& strev) {
-        T left = M::Id, right = M::Id;
-
-        while (head[a] != head[b]) {
-            if (depth[head[a]] > depth[head[b]]) {
-                left = M::op(left, strev.query(pos[head[a]], pos[a]));
-                a = parent[head[a]];
+    // boolean is true if path should be 'reversed' (for uncommutative operations)
+    vector<tuple<bool, int, int>> get_path(int u, int v) const {
+        vector<tuple<bool, int, int>> left, right;
+        while (head[u] != head[v]) {
+            if (h[head[u]] > h[head[v]]) {
+                left.emplace_back(true, L[head[u]], L[u]);
+                u = p[head[u]];
             }
             else {
-                right = M::op(stfor.query(pos[head[b]], pos[b]), right);
-                b = parent[head[b]];
+                right.emplace_back(false, L[head[v]], L[v]);
+                v = p[head[v]];
             }
         }
-
-        if (depth[a] < depth[b])
-            right = M::op(stfor.query(pos[a], pos[b]), right);
-        else
-            left = M::op(left, strev.query(pos[b], pos[a]));
-
-        return M::op(left, right);
+        h[u] > h[v] ? left.emplace_back(true, L[v], L[u]) : right.emplace_back(false, L[u], L[v]);
+        left.insert(end(left), rbegin(right), rend(right));
+        return left;
     }
-    void update(int a, int b, auto& st, const auto& upd) {
-        for (; head[a] != head[b]; a = parent[head[a]]) {
-            if (depth[head[b]] > depth[head[a]]) swap(a, b);
-            st.update(pos[head[a]], pos[a], upd);
+    int lca(int u, int v) const {
+        while (head[u] != head[v]) {
+            if (h[head[u]] < h[head[v]]) swap(u, v);
+            u = p[head[u]];
         }
-
-        if (depth[a] > depth[b]) swap(a, b);
-        st.update(pos[a], pos[b], upd);
+        return h[u] < h[v] ? u : v;
     }
 };
