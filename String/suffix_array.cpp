@@ -32,6 +32,8 @@ struct SuffixArray {
     SuffixArray(const string& s_) : s(s_ + char(0)), n((int)size(s)), pos(n, 0) {
         p = sort_cyclic_shifts(s);
         for (int i = 0; i < n; ++i) pos[p[i]] = i;
+        build_lcp();
+        build_suffix_tree();
     }
     void build_lcp() {
         lcp.assign(n, 0);
