@@ -1,15 +1,11 @@
 template<typename F>
 struct LazyST {
     using T = typename F::Type;
-
     int n;
-
     vector<typename F::Node> st;
     vector<F> lazy;
-
     int left(int p) const { return 2 * p + 1; }
     int right(int p) const { return 2 * p + 2; }
-
     void push(int p) {
         lazy[p].apply(st[p]);
         if (st[p].l != st[p].r) {
@@ -38,12 +34,18 @@ struct LazyST {
         return F::op(query(left(p), ql, qr), query(right(p), ql, qr));
     }
     void build(int p, int l, int r, const vector<T>& a) {
-        st[p].l = l, st[p].r = r;
         if (l == r) st[p].value = a[l];
         else {
             int m = l + (r - l) / 2;
             build(left(p), l, m, a), build(right(p), m + 1, r, a);
             st[p].value = F::op(st[left(p)].value, st[right(p)].value);
+        }
+    }
+    void build(int p, int l, int r) {
+        st[p].l = l, st[p].r = r;
+        if (l < r) {
+            int m = l + (r - l) / 2;
+            build(left(p), l, m), build(right(p), m + 1, r);
         }
     }
     void partition(auto& q, int p, int ql, int qr) {
@@ -62,8 +64,9 @@ struct LazyST {
         else
             return binary_search(left(p), prefix, value);
     }
-
-    LazyST(int n) : n(n), st(4 * n + 1), lazy(4 * n + 1, F()) { }
+    LazyST(int n) : n(n), st(4 * n + 1), lazy(4 * n + 1, F()) {
+        build(0, 0, n - 1);
+    }
     LazyST(const vector<T>& a) : LazyST((int)size(a)) {
         build(0, 0, n - 1, a);
     }
