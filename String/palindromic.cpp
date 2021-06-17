@@ -2,7 +2,6 @@ class PalindromicTree {
 private:
     const int alphabet = 26, N = 3e5;
     const vector<int> row = vector(alphabet, 0);
-
     int n = 1, sz = 2, last = 0;
     vector<int> s = vector(n, -1);
     vector<vector<int>> E = vector(sz, row);

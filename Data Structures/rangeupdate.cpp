@@ -6,7 +6,6 @@ struct M3 {
     static Type op(Type x, Type y) { return x == Id ? y : x; }
     static bool cmp(Type x, Type y) { return x < y; }
 };
-
 // updates are applied on the left
 // delete push method if the monoid is commutative
 template<typename Monoid>

@@ -1,13 +1,11 @@
 template<typename T>
 int sgn(T x) { return x >= 0 ? x > 0 ? +1 : 0 : -1; }
-
 template<typename T>
 bool intersects(T a, T b, T c, T d) {
     if (a > b) swap(a, b);
     if (c > d) swap(c, d);
     return max(a, c) <= min(b, d);
 }
-
 template<typename T>
 bool intersects(Segment<T> U, Segment<T> V) {
     auto [a, b] = U;

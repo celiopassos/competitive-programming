@@ -9,7 +9,6 @@ vector<int> prefix_function(const string& s) {
     }
     return p;
 }
-
 // z-function from prefix function
 vector<int> z_function(const vector<int>& p) {
     int n = (int)size(p);
@@ -26,7 +25,6 @@ vector<int> z_function(const vector<int>& p) {
     z[0] = 0;
     return z;
 }
-
 template<int K = 26, char offset = 'a'>
 vector<array<int, K>> compute_automaton(string s) {
     s += offset + K;

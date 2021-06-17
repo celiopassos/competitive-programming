@@ -4,17 +4,12 @@
 // these ids are already sorted topologically in reverse order
 // i.e., scc's with 0 out-degree first
 // it is guarenteed that 0 <= scc[u] < n for all u
-
 vector<int> tarjan(const auto& E) {
     int n = (int)size(E), timer = 0, ct = 0;
-
     enum State { unvisited, active, visited };
     vector<State> state(n, unvisited);
-
     vector<int> low(n, -1), num(n, -1), scc(n, -1);
-
     stack<int> stk;
-
     auto dfs = [&](auto& self, int u) -> void {
         low[u] = num[u] = timer++, state[u] = active;
         stk.push(u);
@@ -30,8 +25,6 @@ vector<int> tarjan(const auto& E) {
             ++ct;
         }
     };
-
     for (int u = 0; u < n; ++u) if (num[u] == -1) dfs(dfs, u);
-
     return scc;
 }

@@ -2,7 +2,6 @@
 // dp[i][j] = min(dp[i][k] + dp[k+1][j]) + C(i, j)
 // necessary condition: C(i, j - 1) <= C(i, j) <= C(i + 1, j)
 // complexity: O(n^2)
-
 void knuth(){
 	for(int i = 0; i < n; i++)opt[i][i] = i;
 	for(int d = 1; d < n; d++){

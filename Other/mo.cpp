@@ -10,34 +10,25 @@ ll hilbert(int x, int y, int N) {
     }
     return d;
 }
-
 int logceil(int n) {
     return __builtin_clz(1) - __builtin_clz(n) + !!(n & -n);
 }
-
 void mo(const auto& queries, auto& eval, auto& remove, auto& insert, int n) {
     const int q = (int)size(queries), N = 1 << logceil(n);
-
     vector<int> Z(q, 0); iota(begin(Z), end(Z), 0);
-
     vector<ll> h(q, 0LL);
-
     for (int z = 0; z < q; ++z) {
         auto [l, r] = queries[z];
         h[z] = hilbert(l, r, N);
     }
-
     sort(begin(Z), end(Z), [&h](int z, int w) { return h[z] < h[w]; });
-
     int lcur = 0, rcur = 0; insert(0);
-
     auto update = [&](int l, int r) {
         while (l < lcur) insert(--lcur);
         while (rcur < r) insert(++rcur);
         while (lcur < l) remove(lcur++);
         while (r < rcur) remove(rcur--);
     };
-
     for (auto z : Z) {
         auto [l, r] = queries[z];
         update(l, r), eval(z);

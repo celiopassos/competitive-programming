@@ -1,5 +1,4 @@
 // make necessary changes when T is floating point
-
 template<typename T, int N>
 T determinant(Matrix<T, N, N> A, int n) {
     T det = T(1);
@@ -24,17 +23,14 @@ T determinant(Matrix<T, N, N> A, int n) {
     }
     return det;
 }
-
 template<typename T, int N, int M>
 struct GaussianElimination {
     using DomainType = Vector<T, M>;
     using CodomainType = Vector<T, N>;
-
     Matrix<T, N, M> A;
     Matrix<T, N, N> E;
     const int n, m;
     int pivot[M], rank = 0, nullity;
-
     // O(min(n, m)nm)
     GaussianElimination(const Matrix<T, N, M>& A_, int n, int m) : A(A_), E(1), n(n), m(m), nullity(m) {
         fill(begin(pivot), end(pivot), -1);

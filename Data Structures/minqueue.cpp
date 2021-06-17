@@ -4,7 +4,6 @@ struct M1 {
     inline const static T Id = INF;
     static T op(const T& x, const T& y) { return min(x, y); }
 };
-
 template<typename Monoid, bool top_down>
 struct MinimumStack {
     using M = Monoid;
@@ -19,7 +18,6 @@ struct MinimumStack {
     bool empty() const { return st.empty(); }
     size_t size() const { return size(st); }
 };
-
 template<typename Monoid>
 struct MinimumQueue {
     using M = Monoid;

@@ -13,7 +13,6 @@ T one_coeff(vector<T> p, vector<T> q, ll n) {
     }
     return p[0] / q[0];
 }
-
 // given the linear recurrence u[i+d] = c[0]u[i] + ... + c[d-1]u[i+d-1]
 // and the initial values u[0], ..., u[d-1], finds u[n]
 // O(convolution(d) * log(n))

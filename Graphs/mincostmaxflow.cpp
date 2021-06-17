@@ -1,11 +1,9 @@
 template<typename T>
 bool chmin(T& x, T y) { return y < x ? (x = y, true) : false; }
-
 template<typename T>
 struct better_queue : public priority_queue<T> {
     void clear() { this->c.clear(); }
 };
-
 template<typename Cap, typename Cost>
 struct MCMF {
     struct Edge {
@@ -21,13 +19,11 @@ struct MCMF {
     const Cost infcost = numeric_limits<Cost>::max();
     vector<Edge> edges;
     vector<vector<int>> E;
-
     MCMF(int n) : n(n) {
         E.resize(n);
         pi.resize(n), dist.resize(n);
         vis.resize(n), parent.resize(n);
     }
-
     int m = 0;
     bool negative = false;
     void add_edge(int u, int v, Cap cap, Cost cost) {
@@ -37,10 +33,8 @@ struct MCMF {
         E[v].push_back(m++);
         if (cost < 0) negative = true;
     }
-
     vector<Cost> pi, dist;
     vector<int> parent, vis;
-
     bool fix_potentials(int t) {
         if (not vis[t]) return false;
         for (int u = 0; u < n; ++u)

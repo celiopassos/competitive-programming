@@ -1,6 +1,5 @@
 int k = 1;
 map<vector<int>, int> mp;
-
 int centroid(int n, int u, int prev, auto &g, auto &res){
 	bool isCentroid = true;
 	int w = 1;
@@ -15,7 +14,6 @@ int centroid(int n, int u, int prev, auto &g, auto &res){
 	if(isCentroid) res.push_back(u);
 	return w;
 }
-
 int dfs(int u, int prev, auto &g){
 	vector<int> vet;
 	for(auto v: g[u])
@@ -25,7 +23,6 @@ int dfs(int u, int prev, auto &g){
 	if(!mp[vet]) mp[vet] = k++;
 	return mp[vet];
 }
-
 bool isIsomorphic(auto &tree1, auto &tree2){
 	int m1 = tree1.size(), m2 = tree2.size();
 	if(m1 != m2) return 0;

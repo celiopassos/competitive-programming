@@ -6,7 +6,6 @@ int query(int u, int v, int root, const LCA& lca) {
     else if (w[0] == w[2]) return w[1];
     else return w[0];
 }
-
 // builds virtual tree on F given the vertex set V and returns its root
 // V is modified to contain the new vertices and is sorted by R[u]
 template<typename LCA>

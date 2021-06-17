@@ -21,7 +21,6 @@ struct MapState {
     void set(T ch, int u) { nxt[ch] = u; }
     int go(T ch) { return nxt.count(ch) ? nxt[ch] : -1; }
 };
-
 template<typename State = ArrayState<26, 'a'>>
 struct SuffixAutomaton {
     using T = typename State::Type;

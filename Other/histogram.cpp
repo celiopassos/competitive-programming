@@ -2,15 +2,11 @@
 //
 // assumes last height and width are 0
 // so make sure to push_back(0) !!!
-
 template<typename T>
 T largest_rectangle(const vector<T>& h, const vector<T>& w) {
     const int n = (int)size(h);
-
     stack<pair<int, T>> stk; stk.emplace(-1, 0);
-
     T res = 0, prefix_sum = 0;
-
     for (int i = 0; i < n; ++i) {
         while ((int)size(stk) > 1 && h[i] <= h[stk.top().first]) {
             int j = stk.top().first; stk.pop();
@@ -18,6 +14,5 @@ T largest_rectangle(const vector<T>& h, const vector<T>& w) {
         }
         stk.emplace(i, prefix_sum += w[i]);
     }
-
     return res;
 }

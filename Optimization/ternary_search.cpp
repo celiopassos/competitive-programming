@@ -1,5 +1,4 @@
 // T domain, Y image
-
 template<typename T, typename Y, typename F, typename... Args>
 pair<Y, T> ternary_search_float(T l, T r, int it, F& f, Args... args) {
     for (int i = 0; i < it; ++i) {
@@ -8,7 +7,6 @@ pair<Y, T> ternary_search_float(T l, T r, int it, F& f, Args... args) {
     }
     return pair(f(l, args...), l);
 }
-
 template<typename T, typename Y, typename F, typename... Args>
 pair<Y, T> ternary_search_int(T l, T r, F& f, Args... args) {
     while (l < r) {

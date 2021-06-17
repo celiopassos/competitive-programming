@@ -1,24 +1,19 @@
 // May define any kind of function,
 // as long as intersections are unique.
 // Should default to constant = infinity
-
 // E.g., linear function:
-
 template<typename T>
 struct Linear {
     T a = 0, b = numeric_limits<T>::max();
     T operator()(T x) const { return a * x + b; }
 };
-
 template<typename Func, typename Domain>
 struct LiChaoTree {
     Domain L, R;
     Func inf = Func();
     vector<Func> st;
     vector<int> LEFT, RIGHT;
-
     LiChaoTree(Domain L, Domain R) : L(L), R(R) { create(); }
-
     int create() {
         LEFT.push_back(-1), RIGHT.push_back(-1);
         st.push_back(inf);
@@ -26,7 +21,6 @@ struct LiChaoTree {
     }
     int left(int p) { return LEFT[p] == -1 ? LEFT[p] = create() : LEFT[p]; }
     int right(int p) { return RIGHT[p] == -1 ? RIGHT[p] = create() : RIGHT[p]; }
-
     bool is_inf(const Func& f) const {
         return f(L) == inf(L) && f(R - 1) == inf(R - 1);
     }

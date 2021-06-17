@@ -2,9 +2,7 @@
 struct SAT {
     const int n;
     vector<vector<int>> E;
-
     SAT(int n) : n(n), E(2 * n) {}
-
     int neg(int u) const { return (u + n) % (2 * n); }
     void add_clause(int u, int v) {
         E[neg(u)].push_back(v);

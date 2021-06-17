@@ -6,9 +6,7 @@ struct G1 {
     static T inv(const T& x) { return -x; }
     static bool cmp(const T& x, const T& y) { return x < y; }
 };
-
 int b(int p) { return p & (-p); }
-
 template<typename Group>
 struct BIT {
     using G = Group;

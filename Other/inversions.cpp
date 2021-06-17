@@ -12,7 +12,6 @@ ll merge_sort(vector<T>& v, vector<T>& aux, int l, int r) {
     while (l <= r) v[--z] = aux[r--];
     return res;
 }
-
 template<typename T>
 ll inversions(vector<T> v) {
     static vector<T> aux;

@@ -5,7 +5,6 @@ struct M1 {
     static Type op(Type x, Type y) { return x + y; }
     static bool cmp(Type x, Type y) { return x < y; }
 };
-
 template<typename Monoid>
 struct PersistentST {
     using M = Monoid;
@@ -18,14 +17,12 @@ struct PersistentST {
     int n;
     deque<Node> st;
     int num_nodes;
-
     int create(int rt = -1) {
         if (rt == -1) rt = num_nodes;
         st.emplace_back(rt);
         return num_nodes++;
     }
     inline T get(int p) { return p == -1 ? M::Id : st[p].value; }
-
     // p must be a reference!
     void modify(int rt, int &p, int l, int r, int pos, T value) {
         if (p == -1) p = create(rt);

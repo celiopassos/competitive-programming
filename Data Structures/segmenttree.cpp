@@ -5,7 +5,6 @@ struct M1 {
     static Type op(Type x, Type y) { return x + y; }
     static bool cmp(Type x, Type y) { return x < y; }
 };
-
 template<typename Monoid>
 struct SegmentTree {
     using M = Monoid;

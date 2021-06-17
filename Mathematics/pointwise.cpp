@@ -1,6 +1,5 @@
 const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
 mt19937 rng(FIXED_RANDOM);
-
 template<typename T, int K>
 struct Pointwise : public array<T, K> {
     using P = Pointwise;

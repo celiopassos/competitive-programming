@@ -17,7 +17,6 @@ ll interpolate(const vector<ll>& y, ll x, ll mod) {
     }
     return (res + mod) % mod;
 }
-
 // N = maximum degree + 1
 // T = modular int class
 template<typename T, int N>
@@ -40,4 +39,3 @@ struct Interpolator {
         return res;
     }
 };
-

@@ -1,5 +1,4 @@
 // K > floor(log(n))
-
 template<int K, typename T, typename Op>
 struct SparseTable {
     int n;
@@ -20,11 +19,9 @@ struct SparseTable {
         return op(st[l][x], st[r - (1 << x) + 1][x]);
     }
 };
-
 template<typename T>
 struct MinFunctor {
     T operator()(T x, T y) const { return min(x, y); }
 };
-
 template<int K, typename T>
 using RMQ = SparseTable<K, T, MinFunctor<T>>;

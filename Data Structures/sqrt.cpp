@@ -3,7 +3,6 @@
 // * Range query
 // * Order of key on ranges
 // * Compatibility with lazy context
-
 template<typename T, int K = 400>
 struct SQRT
 {
@@ -26,16 +25,12 @@ struct SQRT
     // O(n/K + K)
     void update(int l, int r, T add) {
         int s = l / K, e = r / K;
-
         for (int b = s + 1; b <= e - 1; ++b) offset[b] += add;
         for (int i = l; i <= min(r, s * K + K - 1); ++i) arr[i] += add;
-
         auto cmp = [&](int i, int j){ return arr[i] < arr[j]; };
         auto pred = [&](int i) { return l <= i && i <= r; };
-
         auto mids = stable_partition(begin(bucket[s]), end(bucket[s]), pred);
         inplace_merge(begin(bucket[s]), mids, end(bucket[s]), cmp);
-
         if (s != e) {
             for (int i = e * K; i <= r; ++i) arr[i] += add;
             auto mide = stable_partition(begin(bucket[e]), end(bucket[e]), pred);

@@ -4,12 +4,10 @@ struct Line {
     bool operator<(const Line& L) const { return a > L.a; }
     bool operator<(const T& t) const { return x < t; }
 };
-
 template<typename T>
 struct LineContainer : multiset<Line<T>, less<>> {
     const T lim = T(LINF);
     using iterator = typename LineContainer::iterator;
-
     inline T div(T a, T b) {
         return (a * b < 0 && a % b) ? (a / b - 1) : (a / b);
     }
@@ -28,17 +26,14 @@ struct LineContainer : multiset<Line<T>, less<>> {
         auto z = this->insert({a, b, 0}), y = z++, x = y;
         while (isect(y, z))
             z = this->erase(z);
-
         if (x != this->begin() && isect(--x, y))
             isect(x, y = this->erase(y));
-
         while ((y = x) != this->begin() && (--x)->x >= y->x)
             isect(x, this->erase(y));
     }
     T get(T x){ // returns minimum
         if (this->empty())
             return lim;
-
         auto f = this->lower_bound(x);
         return (f->a) * x + (f->b);
     }

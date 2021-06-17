@@ -3,7 +3,6 @@ T getroot(int N) {
     static auto PI = acos(T(-1).real());
     return polar<decltype(PI)>(1, 2 * PI / N);
 }
-
 template<typename T>
 void fft(vector<T>& p, vector<T>& aux, T rt, int idx, int n) {
     if (n == 1) return;
@@ -14,7 +13,6 @@ void fft(vector<T>& p, vector<T>& aux, T rt, int idx, int n) {
     for (auto [i, xp] = pair(0, T(1)); i < n; ++i, xp *= rt)
         p[idx + i] = aux[ldx + (i % k)] + xp * aux[rdx + (i % k)];
 }
-
 // inplace fft, resizes if necessary
 template<typename T>
 void fft(vector<T>& p, bool inverse = false) {
@@ -31,7 +29,6 @@ void fft(vector<T>& p, bool inverse = false) {
     }
     else fft(p, aux, root, 0, N);
 }
-
 template<typename T>
 vector<T> operator*(vector<T> p, vector<T> q) {
     int n = (int)size(p), m = (int)size(q), N = n + m - 1;

@@ -1,13 +1,10 @@
 // K >= centroid tree height, or simply floor(log(n))
-
 template<int K>
 struct CentroidDecomposition {
     int n;
     const vector<vector<int>>& E;
-
     vector<int> parent, weight, vis, level;
     vector<array<int, K + 1>> dist;
-
     int dfs(int u, int p, int h) {
         if (h != -1) dist[u][h] = dist[p][h] + 1;
         weight[u] = 1;

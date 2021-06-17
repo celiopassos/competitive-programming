@@ -7,7 +7,6 @@ struct BIT {
     void modify(T value) { this->value = value; }
     int query() { return value; }
 };
-
 template <typename T, int N, int... Ns>
 struct BIT<T, N, Ns...> {
     using B = BIT<T>;

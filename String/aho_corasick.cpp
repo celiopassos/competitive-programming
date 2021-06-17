@@ -10,9 +10,7 @@ struct AhoCorasick {
         }
     };
     vector<Node> trie;
-
     AhoCorasick() : trie(1) { }
-
     int add(const string& s) {
         int u = 0;
         for (auto c : s) {

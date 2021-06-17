@@ -1,6 +1,5 @@
 template<typename T>
 bool chmin(T& x, T y) { return y < x ? (x = y, true) : false; }
-
 template<typename T>
 vector<T> dijkstra(int s, const auto& E) {
     vector<T> dist((int)size(E), numeric_limits<T>::max());

@@ -1,28 +1,21 @@
-const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
-mt19937 rng(FIXED_RANDOM);
-
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 ll modpow(ll x, ll p, ll mod) {
     ll res = 1;
     for (; p; p >>= 1, (x *= x) %= mod) if (p & 1) (res *= x) %= mod;
     return res;
 }
-
 // Beware that FreeGroup() is the identity, NOT FreeGroup(0)!
 // Not commutative (of course), so pay attention when querying substrings via prefix sums.
-
 template<ll mod>
 struct FreeGroup {
     inline static const ll base = uniform_int_distribution<ll>(2, mod - 1)(rng), inv_base = modpow(base, mod - 2, mod);
-
     ll shift, inv_shift, hash;
     FreeGroup(ll shift, ll inv_shift, ll hash) : shift(shift), inv_shift(inv_shift), hash(hash) { }
-
     FreeGroup() : shift(1), inv_shift(1), hash(0) { }
     FreeGroup(ll c) : shift(base), inv_shift(inv_base), hash(c + 1) { }
     FreeGroup(const string& s) : FreeGroup() {
         for (auto c : s) *this += FreeGroup(c);
     }
-
     FreeGroup& operator+=(const FreeGroup& rhs) {
         shift = shift * rhs.shift % mod;
         inv_shift = inv_shift * rhs.inv_shift % mod;

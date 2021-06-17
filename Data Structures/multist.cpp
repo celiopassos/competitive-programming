@@ -1,6 +1,5 @@
 // Only useful if the elements don't form a group.
 // Otherwise, use BIT.
-
 template<typename T, int... Args>
 struct SegmentTree {
     using ST = SegmentTree<T>;
@@ -13,7 +12,6 @@ struct SegmentTree {
     void modify(T value) { this->value = value; }
     T query() { return value; }
 };
-
 template<typename T, int N, int... Ns>
 struct SegmentTree<T, N, Ns...> {
     using ST = SegmentTree<T>;
