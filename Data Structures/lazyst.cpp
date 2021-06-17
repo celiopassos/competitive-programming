@@ -83,11 +83,12 @@ struct LazyST {
         static vector<int> q;
         partition(q, 0, l, r);
         int res = r + 1;
-        for (auto [idx, prefix] = pair(0, F::Id); idx < (int)size(q); ++idx) {
-            auto [p, l, r] = q[idx];
-            if (T x = F::op(prefix, st[p]); F::cmp(x, value)) prefix = x;
+        T prefix = F::Id;
+        for (auto p : q) {
+            T x = F::op(prefix, st[p].value);
+            if (F::cmp(x, value)) prefix = x;
             else {
-                res = binary_search(p, l, r, prefix, value);
+                res = binary_search(p, prefix, value);
                 break;
             }
         }
