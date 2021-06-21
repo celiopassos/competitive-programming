@@ -1,6 +1,5 @@
 // needs to build with an array of pairs where the second element is the index
 // adds a * (i - s) + b to the element in position i
-
 template<typename T>
 struct RangeAddLinear {
     using Type = pair<T, ll>;
@@ -8,7 +7,6 @@ struct RangeAddLinear {
     static Type op(Type x, Type y) {
         return {x.first + y.first, x.second + y.second};
     }
-    static bool cmp(Type x, Type y) { return x < y; }
     struct Node {
         Type value = Id;
         int l, r;
