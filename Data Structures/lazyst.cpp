@@ -50,19 +50,22 @@ struct LazyST {
     }
     void partition(auto& q, int p, int ql, int qr) {
         if (st[p].r < ql || qr < st[p].l) return;
-        push(p);
         if (ql <= st[p].l && st[p].r <= qr) return (void)q.push(p);
         partition(q, left(p), ql, qr);
         partition(q, right(p), ql, qr);
     }
-    int binary_search(int p, T prefix, T value) {
-        push(p);
-        if (st[p].l == st[p].r) return st[p].l + F::cmp(F::op(prefix, st[p].value), value);
+    template<typename S, typename Cmp>
+    int binary_search(int p, T prefix, S value, Cmp&& cmp) {
+        if (st[p].l == st[p].r) return st[p].l + cmp(F::op(prefix, st[p].value), value);
         push(left(p));
-        if (T x = F::op(prefix, st[left(p)].value); F::cmp(x, value))
-            return binary_search(right(p), x, value);
-        else
-            return binary_search(left(p), prefix, value);
+        T x = F::op(prefix, st[left(p)].value);
+        if (cmp(x, value)) {
+            push(right(p));
+            return binary_search(right(p), x, value, cmp);
+        }
+        else {
+            return binary_search(left(p), prefix, value, cmp);
+        }
     }
     LazyST(int n) : n(n), st(4 * n + 1), lazy(4 * n + 1, F()) {
         build(0, 0, n - 1);
@@ -77,18 +80,20 @@ struct LazyST {
         return query(0, l, r);
     }
     int lower_bound(T value) {
-        return binary_search(0, F::Id, value);
+        return binary_search(0, F::Id, value, less<T>());
     }
-    int lower_bound(int l, int r, T value) {
+    template<typename S, typename Cmp>
+    int lower_bound(int l, int r, S value, Cmp&& cmp) {
         static vector<int> q;
         partition(q, 0, l, r);
         int res = r + 1;
         T prefix = F::Id;
         for (auto p : q) {
+            push(p);
             T x = F::op(prefix, st[p].value);
-            if (F::cmp(x, value)) prefix = x;
+            if (cmp(x, value)) prefix = x;
             else {
-                res = binary_search(p, prefix, value);
+                res = binary_search(p, prefix, value, cmp);
                 break;
             }
         }

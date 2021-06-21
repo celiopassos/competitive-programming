@@ -27,16 +27,20 @@ struct BIT {
     void update(int p, T value) {
         for (++p; p <= n; p += b(p)) ft[p] = G::op(ft[p], value);
     }
-    // first r such that G::cmp(query(0, r), value) == false
-    int lower_bound(T value) {
+    // first r such that cmp(query(0, r), value) == false
+    template<typename S, typename Cmp>
+    int lower_bound(S value, Cmp&& cmp) {
         T prefix = G::Id;
         int pos = 0;
         for (int x = h; x >= 0; --x) {
-            if (pos + (1 << x) <= n && G::cmp(G::op(prefix, ft[pos + (1 << x)]), value) == true) {
+            if (pos + (1 << x) <= n && cmp(G::op(prefix, ft[pos + (1 << x)]), value) == true) {
                 pos += 1 << x;
                 prefix = G::op(prefix, ft[pos]);
             }
         }
         return pos;
+    }
+    int lower_bound(T value) {
+        return lower_bound(value, less<T>());
     }
 };
