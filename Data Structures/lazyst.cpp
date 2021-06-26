@@ -82,6 +82,9 @@ struct LazyST {
     int lower_bound(T value) {
         return binary_search(0, F::Id, value, less<T>());
     }
+    int lower_bound(int l, int r, T value) {
+        return lower_bound(l, r, value, less<T>());
+    }
     template<typename S, typename Cmp>
     int lower_bound(int l, int r, S value, Cmp&& cmp) {
         static vector<int> q;
