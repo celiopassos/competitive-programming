@@ -9,6 +9,8 @@ struct RangeAdd {
     };
     T add;
     RangeAdd(T add = 0) : add(add) {}
+    bool can_break(const Node& p) const { return false; }
+    bool can_apply(const Node& p) const { return true; }
     void apply(Node& p) const {
         p.value = p.value + add * (p.r - p.l + 1);
     }

@@ -10,6 +10,8 @@ struct RangeAssign {
     inline static const T inf = numeric_limits<T>::max();
     T assign;
     RangeAssign(T assign = inf) : assign(assign) {}
+    bool can_break(const Node& p) const { return false; }
+    bool can_apply(const Node& p) const { return true; }
     void apply(Node& p) const {
         if (assign != inf) p.value = assign * (p.r - p.l + 1);
     }
