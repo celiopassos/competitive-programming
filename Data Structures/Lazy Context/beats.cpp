@@ -17,13 +17,13 @@ struct Beats {
         Type res;
         res.sum = x.sum + y.sum;
         res.low[0] = min(x.low[0], y.low[0]);
-        res.low[1] = min(x.low[x.low[0] == res.low[0]], y.low[y.low[0] == res.low[0]]);
         res.high[0] = max(x.high[0], y.high[0]);
-        res.high[1] = max(x.high[x.high[0] == res.high[0]], y.high[y.high[0] == res.high[0]]);
-        if (x.low[0] == res.low[0]) res.cntlow += x.cntlow;
-        if (y.low[0] == res.low[0]) res.cntlow += y.cntlow;
-        if (x.high[0] == res.high[0]) res.cnthigh += x.cnthigh;
-        if (y.high[0] == res.high[0]) res.cnthigh += y.cnthigh;
+        int lx = x.low[0] == res.low[0] ? (res.cntlow += x.cntlow, 1) : 0;
+        int ly = y.low[0] == res.low[0] ? (res.cntlow += y.cntlow, 1) : 0;
+        res.low[1] = min(x.low[lx], y.low[ly]);
+        int hx = x.high[0] == res.high[0] ? (res.cnthigh += x.cnthigh, 1) : 0;
+        int hy = y.high[0] == res.high[0] ? (res.cnthigh += y.cnthigh, 1) : 0;
+        res.high[1] = max(x.high[hx], y.high[hy]);
         return res;
     }
     struct Node {
@@ -40,7 +40,7 @@ struct Beats {
         return true;
     }
     bool can_apply(const Node& p) const {
-        auto& v = p.value;
+        const auto& v = p.value;
         if (cl(v.low[0]) == cl(v.high[0])) return true;
         return cl(v.low[0]) != cl(v.low[1]) && cl(v.high[0]) != cl(v.high[1]);
     }
