@@ -39,7 +39,7 @@ struct SegmentTree {
         return p - n + cmp(M::op(prefix, st[p]), value);
     }
     int lower_bound(T value) {
-        return lower_bound(0, n - 1, value);
+        return lower_bound(0, n - 1, value, less<T>());
     }
     int lower_bound(int a, int b, T value) {
         return lower_bound(a, b, value, less<T>());
