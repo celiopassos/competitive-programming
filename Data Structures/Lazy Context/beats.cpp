@@ -5,12 +5,7 @@ struct Beats {
         T sum, low[2], high[2];
         int cntlow, cnthigh;
         Type() : sum(0), low{rinf, rinf}, high{linf, linf}, cntlow(0), cnthigh(0) {}
-        Type(T x) {
-            sum = x;
-            low[0] = x, low[1] = rinf;
-            high[0] = x, high[1] = linf;
-            cntlow = cnthigh = 1;
-        }
+        Type(T x) : sum(x), low{x, rinf}, high{x, linf}, cntlow(1), cnthigh(1) {}
     };
     inline static const Type Id = Type();
     static Type op(const Type& x, const Type& y) {
@@ -20,9 +15,9 @@ struct Beats {
         res.high[0] = max(x.high[0], y.high[0]);
         int lx = x.low[0] == res.low[0] ? (res.cntlow += x.cntlow, 1) : 0;
         int ly = y.low[0] == res.low[0] ? (res.cntlow += y.cntlow, 1) : 0;
-        res.low[1] = min(x.low[lx], y.low[ly]);
         int hx = x.high[0] == res.high[0] ? (res.cnthigh += x.cnthigh, 1) : 0;
         int hy = y.high[0] == res.high[0] ? (res.cnthigh += y.cnthigh, 1) : 0;
+        res.low[1] = min(x.low[lx], y.low[ly]);
         res.high[1] = max(x.high[hx], y.high[hy]);
         return res;
     }
@@ -40,15 +35,13 @@ struct Beats {
         return true;
     }
     bool can_apply(const Node& p) const {
-        const auto& v = p.value;
-        if (cl(v.low[0]) == cl(v.high[0])) return true;
-        return cl(v.low[0]) != cl(v.low[1]) && cl(v.high[0]) != cl(v.high[1]);
+        const auto& low = p.value.low, high = p.value.high;
+        return cl(low[0]) == cl(high[0]) || (cl(low[0]) != cl(low[1]) && cl(high[0]) != cl(high[1]));
     }
     void apply(Node& p) const {
         int len = p.r - p.l + 1;
         auto& [sum, low, high, cntlow, cnthigh] = p.value;
-        if (cl(low[0]) == cl(high[0])) {
-            T x = cl(high[0]);
+        if (T x = cl(high[0]); cl(low[0]) == x) {
             p.value = Type(x);
             sum = x * len;
             cntlow = cnthigh = len;
