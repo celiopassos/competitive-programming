@@ -15,14 +15,13 @@ struct Clamp {
 };
 template<typename T>
 struct OffsetClamp : Clamp<T> {
-    using Clamp<T>::linf;
-    using Clamp<T>::rinf;
     T add;
-    OffsetClamp(T low = linf, T high = rinf, T add = 0) : Clamp<T>(low, high), add(add) {}
+    OffsetClamp(T low = Clamp<T>::linf, T high = Clamp<T>::rinf, T add = 0) : Clamp<T>(low, high), add(add) {}
+    OffsetClamp(Clamp<T> cl, T add = 0) : Clamp<T>(cl.low, cl.high), add(add) {}
     // composition, rhs is applied first, *this is applied after
     OffsetClamp operator*(OffsetClamp rhs) const {
         auto cl = Clamp<T>::operator*(Clamp<T>(rhs.low + add, rhs.high + add));
-        return OffsetClamp(cl.low, cl.high, add + rhs.add);
+        return OffsetClamp(cl, add + rhs.add);
     }
     T operator()(T x) const {
         return Clamp<T>::operator()(x + add);
