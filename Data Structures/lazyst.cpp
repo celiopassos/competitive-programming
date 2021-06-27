@@ -43,9 +43,9 @@ struct LazyST {
             st[p].value = F::op(st[left(p)].value, st[right(p)].value);
         }
     }
-    void partition(auto& q, int p, int ql, int qr) {
+    void partition(vector<int>& q, int p, int ql, int qr) {
         if (st[p].r < ql || qr < st[p].l) return;
-        if (ql <= st[p].l && st[p].r <= qr) return (void)q.push(p);
+        if (ql <= st[p].l && st[p].r <= qr) return (void)q.push_back(p);
         partition(q, left(p), ql, qr);
         partition(q, right(p), ql, qr);
     }
