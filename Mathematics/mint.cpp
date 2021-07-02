@@ -1,7 +1,8 @@
 template<ll mod>
 struct Mint {
     ll x;
-    Mint(ll x = 0) : x((x %= mod) < 0 ? x + mod : x) { }
+    Mint() : x(0) {}
+    Mint(ll x) : x((x %= mod) < 0 ? x + mod : x) { }
     Mint& operator+=(Mint rhs) { return (x += rhs.x) >= mod ? x -= mod : 0, *this; }
     Mint& operator-=(Mint rhs) { return (x -= rhs.x) < 0 ? x += mod : 0, *this; }
     Mint& operator*=(Mint rhs) { return (x *= rhs.x) %= mod, *this; }
@@ -13,6 +14,7 @@ struct Mint {
         for (Mint y = *this; p; p >>= 1, y *= y) if (p & 1) res *= y;
         return res;
     }
+    Mint operator-() const { return Mint() - *this; }
     bool operator==(Mint rhs) const { return x == rhs.x; }
     bool operator<(Mint rhs) const { return x < rhs.x; }
     friend Mint operator+(Mint lhs, Mint rhs) { return lhs += rhs; }
