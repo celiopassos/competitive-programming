@@ -1,13 +1,13 @@
 template<typename T>
 struct Dinic {
+    inline static const T inf = numeric_limits<T>::max();
     struct Edge {
         int from, to;
         T cap, flow = 0;
-        T free() { return cap - flow; }
+        T free() const { return cap - flow; }
         Edge(int u, int v, T cap) : from(u), to(v), cap(cap) {}
     };
     vector<Edge> edges;
-    const T inf = numeric_limits<T>::max();
     int n, m = 0;
     vector<vector<int>> E;
     vector<int> level, ptr;
@@ -21,26 +21,26 @@ struct Dinic {
         return m - 2;
     }
     bool bfs(int s, int t) {
-        fill(begin(level), end(level), 0);
-        level[s] = 1;
+        fill(begin(level), end(level), -1);
+        level[s] = 0;
         static queue<int> q;
         q.push(s);
         while (not q.empty()) {
             int u = q.front();
             q.pop();
-            for (auto idx : E[u]) {
-                int v = edges[idx].to;
-                if (level[v] != 0 || edges[idx].free() <= 0) continue;
+            for (auto j : E[u]) {
+                int v = edges[j].to;
+                if (level[v] != -1 || edges[j].free() <= 0) continue;
                 level[v] = level[u] + 1;
                 q.push(v);
             }
         }
-        return level[t] != 0;
+        return level[t] != -1;
     }
     T push(int u, int t, T pushed) {
         if (u == t || pushed == 0) return pushed;
-        for (int& idx = ptr[u]; idx < (int)size(E[u]); ++idx) {
-            auto &edge = edges[E[u][idx]], &back = edges[E[u][idx] ^ 1];
+        for (int& i = ptr[u]; i < (int)size(E[u]); ++i) {
+            auto &edge = edges[E[u][i]], &back = edges[E[u][i] ^ 1];
             if (level[edge.to] != level[u] + 1 || edge.free() <= 0) continue;
             T pushing = push(edge.to, t, min(pushed, edge.free()));
             if (pushing == 0) continue;
@@ -57,5 +57,8 @@ struct Dinic {
             while (T pushed = push(s, t, inf)) f += pushed;
         }
         return f;
+    }
+    bool cut(int j) const {
+        return edges[j].free() == 0 && level[edges[j].from] != -1 && level[edges[j].to] == -1;
     }
 };
