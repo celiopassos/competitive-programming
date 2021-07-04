@@ -1,46 +1,57 @@
-// K >= centroid tree height, or simply floor(log(n))
+// K > centroid tree height, or simply log(n)
 template<int K>
 struct CentroidDecomposition {
-    int n;
     const vector<vector<int>>& E;
-    vector<int> parent, weight, vis, level;
-    vector<array<int, K + 1>> dist;
-    int dfs(int u, int p, int h) {
-        if (h != -1) dist[u][h] = dist[p][h] + 1;
-        weight[u] = 1;
-        for (auto v : E[u]) if (not vis[v] && v != p)
-            weight[u] += dfs(v, u, h);
-        return weight[u];
+    int n, root;
+    vector<int> sz, p, subtree, dead, level;
+    vector<array<int, K>> dist;
+    int timer;
+    void dfs(int u, int p, int k) {
+        sz[u] = 1;
+        for (auto v : E[u]) {
+            if (v == p || dead[v]) continue;
+            dist[v][k] = dist[u][k] + 1;
+            dfs(v, u, k);
+            sz[u] += sz[v];
+        }
     }
-    int find_centroid(int u, int p, int cut) {
-        for (auto v : E[u])
-            if (not vis[v] && v != p && weight[v] > cut)
-                return find_centroid(v, u, cut);
+    int find_centroid(int u, int p, int need) const {
+        for (auto v : E[u]) {
+            if (v == p || dead[v]) continue;
+            if (sz[v] > need) return find_centroid(v, u, need);
+        }
         return u;
     }
-    void build(int u, int p) {
-        int total = dfs(u, p, p == -1 ? -1 : level[p]);
-        int centroid = find_centroid(u, p, total / 2);
-        if (p != -1) level[centroid] = level[p] + 1;
-        parent[centroid] = p, vis[centroid] = 1;
-        dist[centroid][level[centroid]] = 0;
-        for (auto v : E[centroid]) if (not vis[v]) build(v, centroid);
-    }
-    CentroidDecomposition(const vector<vector<int>>& E) :
-        n((int)size(E)), E(E), parent(n), weight(n), vis(n), level(n), dist(n) {
-        build(0, -1);
+    CentroidDecomposition(const vector<vector<int>>& E_) :
+        E(E_), n((int)size(E)), sz(n), p(n, -1), subtree(n), dead(n), level(n), dist(n) {
+        queue<int> q;
+        dfs(0, -1, 0);
+        root = find_centroid(0, -1, n / 2);
+        q.push(root);
+        dist[root][0] = 0;
+        while (not empty(q)) {
+            int rt = q.front();
+            q.pop();
+            dead[rt] = true;
+            int k = level[rt];
+            dfs(rt, -1, level[rt]);
+            for (auto v : E[rt]) {
+                if (dead[v]) continue;
+                int u = find_centroid(v, -1, sz[v] / 2);
+                p[u] = rt;
+                level[u] = k + 1;
+                subtree[u] = v;
+                q.push(u);
+            }
+        }
     }
     int operator[](int u) const {
-        return parent[u];
+        return p[u];
     }
-    int getlevel(int u) const {
-        return level[u];
-    }
-    // centroid lca, not tree lca
     int lca(int u, int v) const {
         if (level[u] < level[v]) swap(u, v);
-        while (level[u] > level[v]) u = parent[u];
-        while (u != v) u = parent[u], v = parent[v];
+        while (level[u] > level[v]) u = p[u];
+        while (u != v) u = p[u], v = p[v];
         return u;
     }
     int distance(int u, int v) const {
