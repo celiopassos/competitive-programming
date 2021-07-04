@@ -5,24 +5,26 @@ struct G1 {
     static T op(const T& x, const T& y) { return x + y; }
     static T inv(const T& x) { return -x; }
 };
-int b(int p) { return p & (-p); }
 template<typename Group>
 struct BIT {
     using G = Group;
     using T = typename G::Type;
     int n, h;
     vector<T> ft;
+    static int b(int p) { return p & (-p); }
     T query(int p) {
         T res = G::Id;
-        for (; p; p -= b(p)) res = G::op(ft[p], res);
+        for (++p; p >= 1; p -= b(p)) res = G::op(ft[p], res);
         return res;
     }
-    BIT(int n) : n(n), h(31 - __builtin_clz(n)), ft(n + 1, G::Id) { }
+    BIT(int n) : n(n), h(__lg(n)), ft(n + 1, G::Id) { }
     BIT(const vector<T>& a) : BIT((int)size(a)) {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);
         for (int i = n; i >= 1; --i) ft[i] = G::op(G::inv(ft[i - b(i)]), ft[i]);
     }
-    T query(int l, int r) { return G::op(G::inv(query(l)), query(r + 1)); }
+    T query(int l, int r) {
+        return G::op(G::inv(query(l - 1)), query(r));
+    }
     void update(int p, T value) {
         for (++p; p <= n; p += b(p)) ft[p] = G::op(ft[p], value);
     }
