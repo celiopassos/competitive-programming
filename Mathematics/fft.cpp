@@ -1,8 +1,11 @@
 template<typename T>
-T getroot(int N) {
-    static auto PI = acos(T(-1).real());
-    return polar<decltype(PI)>(1, 2 * PI / N);
+complex<T> getroot(int N) {
+    static const double PI = acos(-1);
+    return polar<T>(1, 2 * PI / N);
 }
+//Mint<998244353> getroot(int N) {
+//     return Mint<998244353>(3).power(7 * 17 * (1LL << 23) / N);
+//}
 template<typename T>
 void fft(vector<T>& p, vector<T>& aux, T rt, int idx, int n) {
     if (n == 1) return;
@@ -21,7 +24,7 @@ void fft(vector<T>& p, bool inverse = false) {
     p.resize(N);
     static vector<T> aux;
     aux.resize(max(size(aux), size(p)));
-    T root = getroot<T>(N);
+    T root = getroot(N);
     if (inverse) {
         fft(p, aux, T(1) / root, 0, N);
         T inv = T(1) / T(N);
