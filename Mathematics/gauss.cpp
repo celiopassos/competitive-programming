@@ -29,7 +29,7 @@ struct GaussianElimination {
     using CodomainType = Vector<T, N>;
     Matrix<T, N, M> A;
     Matrix<T, N, N> E;
-    const int n, m;
+    int n, m;
     int pivot[M], rank = 0, nullity;
     // O(min(n, m)nm)
     GaussianElimination(const Matrix<T, N, M>& A_, int n, int m) : A(A_), E(1), n(n), m(m), nullity(m) {
@@ -83,5 +83,22 @@ struct GaussianElimination {
             basis.push_back(y);
         }
         return basis;
+    }
+    // O(n^3)
+    // assumes n == m (of course)
+    Matrix<T, N, M> inverse() const {
+        assert(n == m);
+        assert(rank == n);
+        Matrix<T, N, M> res;
+        CodomainType e;
+        for (int i = 0; i < n; ++i) {
+            e[i] = 1;
+            DomainType x = solve(e).second;
+            for (int j = 0; j < n; ++j) {
+                res[j][i] = x[j];
+            }
+            e[i] = 0;
+        }
+        return res;
     }
 };

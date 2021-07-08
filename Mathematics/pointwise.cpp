@@ -1,9 +1,10 @@
-const int FIXED_RANDOM = (int)chrono::steady_clock::now().time_since_epoch().count();
-mt19937 rng(FIXED_RANDOM);
+mt19937 rng((int)chrono::steady_clock::now().time_since_epoch().count());
 template<typename T, int K>
 struct Pointwise : public array<T, K> {
     using P = Pointwise;
-    Pointwise(T value = 0) { fill(begin(*this), end(*this), value); }
+    Pointwise(T value = 0) {
+        fill(begin(*this), end(*this), value);
+    }
     P& operator+=(const P& rhs) {
         for (int j = 0; j < K; ++j) (*this)[j] += rhs[j];
         return *this;
@@ -38,7 +39,7 @@ struct Pointwise : public array<T, K> {
         Pointwise X;
         for (int j = 0; j < K; ++j) X[j] = T(unif(rng));
         return X;
-    }();
-    P& operator>>=(ll p) { return *this *= X.power(p); }
-    P operator>>(ll p) const { return *this * X.power(p); }
+    }(), Xinv = P(1) / X;
+    P& operator<<=(ll p) { return *this *= X.power(p); }
+    P operator<<(ll p) const { return *this * X.power(p); }
 };

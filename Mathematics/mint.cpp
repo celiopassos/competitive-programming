@@ -16,6 +16,7 @@ struct Mint {
     }
     Mint operator-() const { return Mint() - *this; }
     bool operator==(Mint rhs) const { return x == rhs.x; }
+    bool operator!=(Mint rhs) const { return x != rhs.x; }
     bool operator<(Mint rhs) const { return x < rhs.x; }
     friend Mint operator+(Mint lhs, Mint rhs) { return lhs += rhs; }
     friend Mint operator-(Mint lhs, Mint rhs) { return lhs -= rhs; }
