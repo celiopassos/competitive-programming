@@ -6,37 +6,42 @@ complex<T> getroot(int N) {
 //Mint<998244353> getroot(int N) {
 //     return Mint<998244353>(3).power(7 * 17 * (1LL << 23) / N);
 //}
+// inplace fft (resizes if necessary)
 template<typename T>
-void fft(vector<T>& p, vector<T>& aux, T rt, int idx, int n) {
-    if (n == 1) return;
-    int k = n >> 1, ldx = idx, rdx = idx + k;
-    for (int i = 0, cur = ldx, nxt = rdx; i < n; ++i, swap(cur, nxt))
-        aux[cur + (i >> 1)] = p[idx + i];
-    fft(aux, p, rt * rt, ldx, k), fft(aux, p, rt * rt, rdx, k);
-    for (auto [i, xp] = pair(0, T(1)); i < n; ++i, xp *= rt)
-        p[idx + i] = aux[ldx + (i % k)] + xp * aux[rdx + (i % k)];
-}
-// inplace fft, resizes if necessary
-template<typename T>
-void fft(vector<T>& p, bool inverse = false) {
-    int N = 1;
-    while ((int)size(p) > N) N <<= 1;
+void fft(vector<T>& p, bool inverse) {
+    int N = 1, logN = 0;
+    while ((int)size(p) > N) N <<= 1, ++logN;
     p.resize(N);
-    static vector<T> aux;
-    aux.resize(max(size(aux), size(p)));
-    T root = getroot(N);
+    for (int i = 0; i < N; ++i) {
+        int rev = 0;
+        for (int k = 0; k < logN; ++k) {
+            rev |= (i >> k & 1) << (logN - 1 - k);
+        }
+        if (i < rev) swap(p[i], p[rev]);
+    }
+    vector<T> q(N);
+    for (int k = 1; k <= logN; ++k) {
+        int len = 1 << k, hlen = len / 2;
+        T rt = getroot(len);
+        if (inverse) rt = 1 / rt;
+        for (int l = 0; l < N; l += len) {
+            T x = 1;
+            for (int i = 0; i < len; ++i, x *= rt) {
+                q[l + i] = p[l + i % hlen] + x * p[l + hlen + i % hlen];
+            }
+        }
+        swap(p, q);
+    }
     if (inverse) {
-        fft(p, aux, T(1) / root, 0, N);
-        T inv = T(1) / T(N);
+        T inv = 1 / T(N);
         for (int i = 0; i < N; ++i) p[i] *= inv;
     }
-    else fft(p, aux, root, 0, N);
 }
 template<typename T>
 vector<T> operator*(vector<T> p, vector<T> q) {
-    int n = (int)size(p), m = (int)size(q), N = n + m - 1;
+    size_t N = size(p) + size(q) - 1;
     p.resize(N), q.resize(N);
-    fft(p), fft(q);
+    fft(p, false), fft(q, false);
     for (size_t i = 0; i < size(p); ++i) p[i] *= q[i];
     fft(p, true);
     p.resize(N);
