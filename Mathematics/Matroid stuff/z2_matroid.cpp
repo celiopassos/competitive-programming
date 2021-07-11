@@ -1,13 +1,12 @@
-// needs XORBasis
+// needs Z2GaussianElimination
 template<int N>
 struct Z2Matroid {
     vector<bitset<N>> matrix;
-    int M;
-    XORBasis<N> basis;
     vector<int> idx;
-    Z2Matroid(const vector<bitset<N>> matrix) : matrix(matrix), M((int)size(matrix)), idx(M) {}
+    Z2GaussianElimination<N> basis;
+    Z2Matroid(const vector<bitset<N>> matrix) : matrix(matrix), idx(size(matrix)) {}
     void build(const vector<int>& I) {
-        basis = XORBasis<N>();
+        basis = Z2GaussianElimination<N>();
         int rk = 0;
         for (auto u : I) {
             assert(basis.insert(matrix[u]));

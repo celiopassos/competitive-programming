@@ -3,7 +3,6 @@ struct M1 {
     using Type = T;
     inline const static Type Id = Type();
     static Type op(Type x, Type y) { return x + y; }
-    static bool cmp(Type x, Type y) { return x < y; }
 };
 template<typename Monoid>
 struct PersistentST {

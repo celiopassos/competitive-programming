@@ -22,7 +22,7 @@ struct SegmentTree {
             st[p >> 1] = M::op(st[p & ~1], st[p | 1]);
         }
     }
-    T query(int l, int r) {
+    T query(int l, int r) const {
         T resl = M::Id, resr = M::Id;
         for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
             if (l & 1) resl = M::op(resl, st[l++]);
@@ -31,23 +31,23 @@ struct SegmentTree {
         return M::op(resl, resr);
     }
     template<typename S, typename Cmp>
-    int binary_search(int p, T prefix, S value, Cmp&& cmp) {
+    int binary_search(int p, T prefix, S value, Cmp&& cmp) const {
         while (p < n) {
             T x = M::op(prefix, st[p <<= 1]);
             if (cmp(x, value)) prefix = x, p |= 1;
         }
         return p - n + cmp(M::op(prefix, st[p]), value);
     }
-    int lower_bound(T value) {
+    int lower_bound(T value) const {
         return lower_bound(0, n - 1, value, less<T>());
     }
-    int lower_bound(int a, int b, T value) {
+    int lower_bound(int a, int b, T value) const {
         return lower_bound(a, b, value, less<T>());
     }
     // first x in [a, b] with cmp(query(a, x), value) == false
     // returns b + 1 if no such x exists
     template<typename S, typename Cmp>
-    int lower_bound(int a, int b, S value, Cmp&& cmp) {
+    int lower_bound(int a, int b, S value, Cmp&& cmp) const {
         static vector<int> left, right;
         for (int l = a + n, r = b + n + 1; l < r; l >>= 1, r >>= 1) {
             if (l & 1) left.push_back(l++);

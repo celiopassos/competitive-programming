@@ -1,4 +1,4 @@
-auto sieve(int N) {
+pair<vector<int>, vector<int>> sieve(int N) {
     vector<int> lp(N + 1, 0), pr;
     for (int i = 2; i <= N; ++i) {
         if (lp[i] == 0) pr.push_back(lp[i] = i);
@@ -7,5 +7,5 @@ auto sieve(int N) {
             lp[i * p] = p;
         }
     }
-    return pair(lp, pr);
+    return {lp, pr};
 }

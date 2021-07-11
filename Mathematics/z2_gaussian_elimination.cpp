@@ -1,4 +1,5 @@
-template<int N> struct XORBasis {
+template<int N>
+struct Z2GaussianElimination {
     using V = bitset<N>;
     array<V, N> basis, alpha;
     int dim = 0;
@@ -19,7 +20,7 @@ template<int N> struct XORBasis {
         alpha[i][dim - 1] = 1;
         return true;
     }
-    auto solve(V x) const {
+    pair<bool, V> solve(V x) const {
         auto [i, coef] = reduce(x);
         return pair(i == -1, coef);
     }

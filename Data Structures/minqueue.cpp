@@ -1,8 +1,14 @@
 template<typename T>
-struct M1 {
+struct MinMonoid {
     using Type = T;
-    inline const static T Id = INF;
-    static T op(const T& x, const T& y) { return min(x, y); }
+    inline const static Type Id = numeric_limists<T>::max();
+    static Type op(Type x, Type y) { return min(x, y); }
+};
+template<typename T>
+struct MaxMonoid {
+    using Type = T;
+    inline const static Type Id = numeric_limists<T>::min();
+    static Type op(Type x, Type y) { return max(x, y); }
 };
 template<typename Monoid, bool top_down>
 struct MinimumStack {
@@ -25,9 +31,11 @@ struct MinimumQueue {
     MinimumStack<Monoid, false> in;
     MinimumStack<Monoid, true> out;
     void move() {
-        if (out.empty()) while (not in.empty()) {
-            out.push(in.top());
-            in.pop();
+        if (out.empty()) {
+            while (not in.empty()) {
+                out.push(in.top());
+                in.pop();
+            }
         }
     }
     T front() { move(); return out.top(); }

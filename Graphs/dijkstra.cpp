@@ -1,17 +1,16 @@
 template<typename T>
-bool chmin(T& x, T y) { return y < x ? (x = y, true) : false; }
-template<typename T>
-vector<T> dijkstra(int s, const auto& E) {
-    vector<T> dist((int)size(E), numeric_limits<T>::max());
+vector<T> dijkstra(int s, const vector<vector<pair<int, T>>>& E) {
+    vector<T> d(size(E), numeric_limits<T>::max());
     priority_queue<pair<T, int>> pq;
-    pq.emplace(dist[s] = 0, s);
+    pq.emplace(d[s] = 0, s);
     while (not empty(pq)) {
         auto [d, u] = pq.top();
         pq.pop();
-        if (-d > dist[u]) continue;
+        if (-d > d[u]) continue;
         for (auto [v, w] : E[u]) {
-            if (chmin(dist[v], dist[u] + w)) pq.emplace(-dist[v], v);
+            ll nd = d[u] + w;
+            if (nd < d[v]) pq.emplace(-(d[v] = nd), v);
         }
     }
-    return dist;
+    return d;
 }
