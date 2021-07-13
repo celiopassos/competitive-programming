@@ -1,3 +1,4 @@
+// atcoder Orz
 template<typename Cap, typename Cost>
 struct mcf_graph {
     inline static const Cap infcap = numeric_limits<Cap>::max();
@@ -64,55 +65,52 @@ struct mcf_graph {
         return d;
     }
     // returns slope changing points and dual optimum
-    pair<vector<Slope>, vector<Cost>> slope(int s, int t, vector<Cost> dual = {}, Cap limit = infcap) {
+    pair<vector<Slope>, vector<Cost>> slope(int s, int t, vector<Cost> dual = {}) {
         if (empty(dual)) dual = dual_feasible(s);
         for (int j = 0; j < M; ++j) {
             edges[j].flow = 0;
         }
         vector<Cost> dist(N);
+        vector<bool> vis(N);
         vector<int> p(N);
         vector<pair<Cost, int>> heap;
         heap.reserve(M);
-        auto push = [&](int v) {
-            heap.push_back({-dist[v], v});
-            push_heap(begin(heap), end(heap));
-        };
-        auto pop = [&]() {
-            auto p = heap[0];
-            pop_heap(begin(heap), end(heap));
-            heap.pop_back();
-            return p;
-        };
         auto dijkstra = [&]() {
             fill(begin(dist), end(dist), infcost);
-            dist[s] = 0;
-            push(s);
+            fill(begin(vis), end(vis), false);
+            heap.emplace_back(dist[s] = 0, s);
             while (not empty(heap)) {
-                auto [d, u] = pop();
-                if (-d > dist[u]) continue;
+                int u = heap[0].second;
+                pop_heap(begin(heap), end(heap));
+                heap.pop_back();
+                if (vis[u]) continue;
+                vis[u] = true;
+                if (u == t) break;
                 for (auto j : E[u]) {
                     if (edges[j].free() == 0) continue;
                     int v = edges[j].to;
                     Cost nd = dist[u] + dual[u] - dual[v] + edges[j].cost;
                     if (nd < dist[v]) {
-                        dist[v] = nd;
                         p[v] = j;
-                        push(v);
+                        dist[v] = nd;
+                        heap.emplace_back(-dist[v], v);
+                        push_heap(begin(heap), end(heap));
                     }
                 }
             }
-            if (dist[t] == infcost) return false;
+            heap.clear();
+            if (not vis[t]) return false;
             for (int u = 0; u < N; ++u) {
-                if (dist[u] == infcost) continue;
-                dual[u] += dist[u];
+                if (not vis[u]) continue;
+                dual[u] += dist[u] - dist[t];
             }
             return true;
         };
         vector<Slope> result = {{0, 0, -infcost}};
         Cap flow = 0;
         Cost cost = 0;
-        while (flow < limit && dijkstra()) {
-            Cap f = limit - flow;
+        while (dijkstra()) {
+            Cap f = infcap;
             for (int u = t; u != s; u = edges[p[u]].from) {
                 f = min(f, edges[p[u]].free());
             }
@@ -120,18 +118,19 @@ struct mcf_graph {
                 edges[p[u]].flow += f;
                 edges[p[u] ^ 1].flow -= f;
             }
-            if (dual[t] == result.back().slope) {
+            Cost d = dual[t] - dual[s];
+            if (d == result.back().slope) {
                 result.pop_back();
             }
             flow += f;
-            cost += f * dual[t];
-            result.push_back({flow, cost, dual[t]});
+            cost += f * d;
+            result.push_back({flow, cost, d});
         }
         return {result, dual};
     }
     // returns maximum flow, cost and dual optimum
-    tuple<Cap, Cost, vector<Cost>> mincostflow(int s, int t, vector<Cost> dual_init = {}, Cap limit = infcap) {
-        auto [slopes, dual] = slope(s, t, dual_init, limit);
+    tuple<Cap, Cost, vector<Cost>> mincostflow(int s, int t, vector<Cost> dual_init = {}) {
+        auto [slopes, dual] = slope(s, t, dual_init);
         return {slopes.back().flow, slopes.back().cost, dual};
     }
 };
