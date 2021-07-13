@@ -12,12 +12,17 @@ struct mcf_graph {
         Cap flow;
         Cost cost, slope;
     };
-    // cost of 'flow' units of flow
+    // returns the minimum cost of 'flow' units of flow
     static Cost compute_cost(const vector<Slope>& slopes, Cap flow) {
         auto iter = lower_bound(begin(slopes), end(slopes), flow, [](Slope sl, Cap f) { return sl.flow < f; });
         if (iter == end(slopes)) return infcost;
         return iter->cost - (iter->flow - flow) * iter->slope;
     };
+    // returns 'flow' value that minimizes above function (only useful with negative weights)
+    static Cap find_minimum(const vector<Slope>& slopes) {
+        auto iter = upper_bound(begin(slopes), end(slopes), 0, [](Cost c, Slope sl) { return c < sl.slope; });
+        return prev(iter)->flow;
+    }
     int N, M = 0;
     vector<Edge> edges;
     vector<vector<int>> E;
@@ -103,7 +108,7 @@ struct mcf_graph {
             }
             return true;
         };
-        vector<Slope> result = {{0, 0, 0}};
+        vector<Slope> result = {{0, 0, -infcost}};
         Cap flow = 0;
         Cost cost = 0;
         while (flow < limit && dijkstra()) {
