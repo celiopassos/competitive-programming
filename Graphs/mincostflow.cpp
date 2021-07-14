@@ -19,11 +19,6 @@ struct mcf_graph {
         if (iter == end(slopes)) return infcost;
         return iter->cost - (iter->flow - flow) * iter->slope;
     };
-    // returns 'flow' value that minimizes above function (only useful with negative weights)
-    static Cap find_minimum(const vector<Slope>& slopes) {
-        auto iter = upper_bound(begin(slopes), end(slopes), 0, [](Cost c, Slope sl) { return c < sl.slope; });
-        return prev(iter)->flow;
-    }
     int N, M = 0;
     vector<Edge> edges;
     vector<vector<int>> E;
