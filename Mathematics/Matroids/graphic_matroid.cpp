@@ -40,9 +40,6 @@ struct GraphicMatroid {
     bool oracle(int e, int f) const {
         if (oracle(f)) return true;
         int u = edges[e][L[edges[e][0]] < L[edges[e][1]]];
-        for (int t : {0, 1}) {
-            if (is_ancestor(u, edges[f][t]) && !is_ancestor(u, edges[f][t ^ 1])) return true;
-        }
-        return false;
+        return is_ancestor(u, edges[f][0]) != is_ancestor(u, edges[f][1]);
     }
 };
