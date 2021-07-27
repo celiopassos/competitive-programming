@@ -16,7 +16,7 @@ namespace fwht {
         return v;
     }
     template<typename T>
-    Matrix<T> or_matrix() { return {{{1, 1}, {1, 0}}}; }
+    Matrix<T> or_matrix() { return {{{1, 0}, {1, 1}}}; }
     template<typename T>
     Matrix<T> and_matrix() { return {{{1, 1}, {0, 1}}}; }
     template<typename T>
