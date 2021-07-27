@@ -1,5 +1,5 @@
 template<typename T>
-T one_coeff(vector<T> p, vector<T> q, ll n) {
+T one_coeff(vector<T> p, vector<T> q, long long n) {
     const int d = (int)size(p);
     for (; n > 0; n >>= 1) {
         auto qsgn = q;
@@ -17,7 +17,7 @@ T one_coeff(vector<T> p, vector<T> q, ll n) {
 // and the initial values u[0], ..., u[d-1], finds u[n]
 // O(convolution(d) * log(n))
 template<typename T>
-T solve(vector<T> c, vector<T> u, ll n) {
+T solve(vector<T> c, vector<T> u, long long n) {
     const int d = (int)size(c);
     vector<T> q(d + 1, 0);
     q[0] = 1;

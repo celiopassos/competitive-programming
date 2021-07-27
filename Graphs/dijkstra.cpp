@@ -8,7 +8,7 @@ vector<T> dijkstra(int s, const vector<vector<pair<int, T>>>& E) {
         pq.pop();
         if (-d > d[u]) continue;
         for (auto [v, w] : E[u]) {
-            ll nd = d[u] + w;
+            long long nd = d[u] + w;
             if (nd < d[v]) pq.emplace(-(d[v] = nd), v);
         }
     }

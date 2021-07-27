@@ -1,4 +1,4 @@
-ll sum_idx(ll n) { return n * (n + 1) / 2; }
+long long sum_idx(long long n) { return n * (n + 1) / 2; }
 template<typename T>
 struct RangeAddLinear {
     // adds a * (i - s) + b to the element in position i

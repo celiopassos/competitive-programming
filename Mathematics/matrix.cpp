@@ -34,7 +34,7 @@ struct Matrix : public array<array<T, M>, N> {
                     res[i][j] += lhs[i][k] * rhs[k][j];
         return res;
     }
-    Matrix power(ll p) {
+    Matrix power(long long p) {
         Matrix res(1), A = *this;
         while (p) {
             if (p & 1) res = A * res;

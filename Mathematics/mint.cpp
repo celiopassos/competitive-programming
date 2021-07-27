@@ -1,8 +1,8 @@
-template<ll mod>
+template<long long mod>
 struct Mint {
-    ll x;
+    long long x;
     Mint() : x(0) {}
-    Mint(ll x_) {
+    Mint(long long x_) {
         x = x_ % mod;
         if (x < 0) x += mod;
     }
@@ -23,7 +23,7 @@ struct Mint {
     Mint& operator/=(Mint rhs) {
         return *this *= rhs.power(-1);
     }
-    Mint power(ll p) const {
+    Mint power(long long p) const {
         p %= mod - 1;
         if (p < 0) p += mod - 1;
         Mint res = 1;
@@ -42,13 +42,13 @@ struct Mint {
     friend Mint operator/(Mint lhs, Mint rhs) { return lhs /= rhs; }
     friend ostream& operator<<(ostream& out, Mint a) { return out << a.x; }
     friend istream& operator>>(istream& in, Mint& a) {
-        ll x;
+        long long x;
         in >> x;
         a = Mint(x);
         return in;
     }
     inline static const Mint X = [](){
-        uniform_int_distribution<ll> unif(1, mod - 1);
+        uniform_int_distribution<long long> unif(1, mod - 1);
         mt19937 rng((int)chrono::steady_clock::now().time_since_epoch().count());
         return unif(rng);
     }(), Xinv = 1 / X;
