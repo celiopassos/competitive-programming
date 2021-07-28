@@ -1,65 +1,53 @@
-template<int K = 26, char offset = 'a'>
 struct AhoCorasick {
     struct Node {
-        int nxt[K], go[K];
-        bool leaf = false;
-        int p = -1, link = -1, leaflink = -1;
-        char pc;
-        Node(int p = -1, char pc = offset - 1) : p(p), pc(pc) {
-            fill(begin(nxt), end(nxt), -1), fill(begin(go), end(go), -1);
-        }
+        map<char, int> nxt, go;
+        int p, link = -1, occ_link = -1;
+        char c;
+        Node(int p, char c) : p(p), c(c) {}
     };
-    vector<Node> trie;
-    AhoCorasick() : trie(1) {}
-    int add(const string& s) {
+    vector<Node> tr;
+    AhoCorasick() {
+        tr.emplace_back(0, 0);
+        tr[0].occ_link = tr[0].link = 0;
+    }
+    int add_string(const string& s) {
         int u = 0;
         for (auto c : s) {
-            int v = trie[u].nxt[c - offset];
-            if (v == -1) {
-                v = (int)size(trie);
-                trie.emplace_back(u, c);
+            if (not tr[u].nxt.count(c)) {
+                int v = tr[u].go[c] = tr[u].nxt[c] = (int)size(tr);
+                tr.emplace_back(u, c);
+                if (u == 0) tr[v].link = 0;
             }
-            u = trie[u].nxt[c - offset] = v;
+            u = tr[u].nxt[c];
         }
-        trie[u].leaf = true, trie[u].leaflink = u;
+        tr[u].occ_link = u;
         return u;
     }
-    void remove(int u) {
-        trie[u].leaf = false, trie[u].leaflink = -1;
-    }
-    int getlink(int v) {
-        if (trie[v].link == -1) {
-            if (v == 0 || trie[v].p == 0) trie[v].link = 0;
-            else trie[v].link = go(getlink(trie[v].p), trie[v].pc);
+    int get_link(int u) {
+        if (tr[u].link == -1) {
+            tr[u].link = go(get_link(tr[u].p), tr[u].c);
         }
-        return trie[v].link;
+        return tr[u].link;
     }
-    int go(int v, char c) {
-        int idx = c - offset;
-        if (trie[v].go[idx] == -1) {
-            if (trie[v].nxt[idx] != -1) trie[v].go[idx] = trie[v].nxt[idx];
-            else trie[v].go[idx] = (v == 0 ? 0 : go(getlink(v), c));
+    int go(int u, char c) {
+        if (not tr[u].go.count(c)) {
+            tr[u].go[c] = (u == 0 ? 0 : go(get_link(u), c));
         }
-        return trie[v].go[idx];
+        return tr[u].go[c];
     }
-    // inclusive
-    int getleaf(int v) {
-        int &u = trie[v].leaflink;
-        if (u == -1) {
-            if (v == 0 || trie[v].leaf) u = v;
-            else u = getleaf(getlink(v));
+    int get_occurrence(int u) {
+        if (tr[u].occ_link == -1) {
+            tr[u].occ_link = get_occurrence(get_link(u));
         }
-        if (trie[u].leaflink != u) u = getleaf(u);
-        return u;
+        return tr[u].occ_link;
     }
-    // reports all occurrences in s (in order)
-    // O(size(s) + number of occurrences) amortized
-    template<typename F>
-    void run(const string& s, F&& report) {
-        int n = (int)size(s);
-        for (int i = 0, u = 0; i < n; ++i) {
-            u = go(u, s[i]);
-            for (int v = getleaf(u); v != 0; v = getleaf(getlink(v))) report(i, v);
+    template<typename Report>
+    void run(const string& t, Report&& report) {
+        for (int i = 0, u = 0; i < (int)size(t); ++i) {
+            u = go(u, t[i]);
+            for (int v = get_occurrence(u); v != 0; v = get_occurrence(get_link(v))) {
+                report(i, v);
+            }
         }
     }
 };
