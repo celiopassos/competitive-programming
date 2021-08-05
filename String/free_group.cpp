@@ -37,10 +37,4 @@ struct FreeGroup {
     bool operator<(const FreeGroup& rhs) const { return pair(shift, hash) < pair(rhs.shift, rhs.hash); }
     bool operator==(const FreeGroup& rhs) const { return shift == rhs.shift && hash == rhs.hash; }
     bool operator!=(const FreeGroup& rhs) const { return not (*this == rhs); }
-    template<typename S>
-    struct custom_hash {
-        bool operator()(const S& s) const {
-            return FreeGroup(begin(s), end(s));
-        }
-    };
 };
