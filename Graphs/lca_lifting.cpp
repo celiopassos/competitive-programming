@@ -16,7 +16,7 @@ struct LCA {
         }
         R[u] = timer - 1;
     }
-    LCA(const vector<vector<int>>& E, int root) : E(E), n((int)size(E)), L(n), R(n), inv(n), h(n), up(n) {
+    LCA(const vector<vector<int>>& E, int root) : E(E), n((int)E.size()), L(n), R(n), inv(n), h(n), up(n) {
         dfs(root, root);
     }
     bool is_ancestor(int u, int v) const {

@@ -1,5 +1,5 @@
 vector<int> prefix_function(const string& s) {
-    int n = (int)size(s);
+    int n = (int)s.size();
     vector<int> p(n + 1, 0);
     for (int len = 2; len <= n; ++len) {
         int x = p[len - 1];

@@ -11,7 +11,7 @@ struct SegmentTree {
     int n;
     vector<T> st;
     SegmentTree(int n) : n(n), st(2 * n, M::Id) {}
-    SegmentTree(const vector<T>& a) : SegmentTree((int)size(a)) {
+    SegmentTree(const vector<T>& a) : SegmentTree((int)a.size()) {
         for (int i = 0; i < n; ++i) st[n + i] = a[i];
         for (int i = n - 1; i > 0; --i) {
             st[i] = M::op(st[i << 1], st[i << 1 | 1]);
@@ -56,7 +56,7 @@ struct SegmentTree {
         left.insert(end(left), rbegin(right), rend(right));
         right.clear();
         T prefix = M::Id;
-        for (size_t i = 0; i < size(left); ++i) {
+        for (size_t i = 0; i < left.size(); ++i) {
             int p = left[i];
             T x = M::op(prefix, st[p]);
             if (cmp(x, value)) prefix = x;

@@ -23,13 +23,13 @@ struct CentroidDecomposition {
         return u;
     }
     CentroidDecomposition(const vector<vector<int>>& E_) :
-        E(E_), n((int)size(E)), sz(n), p(n, -1), subtree(n), dead(n), level(n), dist(n) {
+        E(E_), n((int)E.size()), sz(n), p(n, -1), subtree(n), dead(n), level(n), dist(n) {
         queue<int> q;
         dfs(0, -1, 0);
         root = find_centroid(0, -1, n / 2);
         q.push(root);
         dist[root][0] = 0;
-        while (not empty(q)) {
+        while (not q.empty()) {
             int rt = q.front();
             q.pop();
             dead[rt] = true;

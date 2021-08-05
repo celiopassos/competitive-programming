@@ -22,7 +22,7 @@ struct MinimumStack {
     }
     void pop() { st.pop(); }
     bool empty() const { return st.empty(); }
-    size_t size() const { return size(st); }
+    size_t size() const { return st.size(); }
 };
 template<typename Monoid>
 struct MinimumQueue {
@@ -43,5 +43,5 @@ struct MinimumQueue {
     void push(T value) { in.push(value); }
     void pop() { move(); out.pop(); }
     bool empty() const { return in.empty() && out.empty(); }
-    size_t size() const { return size(in) + size(out); }
+    size_t size() const { return in.size() + out.size(); }
 };

@@ -39,7 +39,7 @@ struct Dinic {
     }
     T push(int u, int t, T pushed) {
         if (u == t || pushed == 0) return pushed;
-        for (int& i = ptr[u]; i < (int)size(E[u]); ++i) {
+        for (int& i = ptr[u]; i < (int)E[u].size(); ++i) {
             auto &edge = edges[E[u][i]], &back = edges[E[u][i] ^ 1];
             if (level[edge.to] != level[u] + 1 || edge.free() <= 0) continue;
             T pushing = push(edge.to, t, min(pushed, edge.free()));

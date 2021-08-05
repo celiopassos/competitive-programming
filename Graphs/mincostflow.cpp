@@ -40,7 +40,7 @@ struct mcf_graph {
         q.push(s);
         on[s] = true;
         d[s] = 0;
-        while (not empty(q)) {
+        while (not q.empty()) {
             int u = q.front();
             q.pop();
             on[u] = false;
@@ -61,7 +61,7 @@ struct mcf_graph {
     }
     // returns slope changing points and dual optimum
     pair<vector<Slope>, vector<Cost>> slope(int s, int t, vector<Cost> dual = {}) {
-        if (empty(dual)) dual = dual_feasible(s);
+        if (dual.empty()) dual = dual_feasible(s);
         for (int j = 0; j < M; ++j) {
             edges[j].flow = 0;
         }
@@ -74,7 +74,7 @@ struct mcf_graph {
             fill(begin(dist), end(dist), infcost);
             fill(begin(vis), end(vis), false);
             heap.emplace_back(dist[s] = 0, s);
-            while (not empty(heap)) {
+            while (not heap.empty()) {
                 int u = heap[0].second;
                 pop_heap(begin(heap), end(heap));
                 heap.pop_back();

@@ -65,7 +65,7 @@ struct PersistentST {
     }
     PersistentST(int n) : n(n), num_nodes(0) { create(); }
     int build(const vector<T>& a) {
-        assert(size(a) == n);
+        assert(a.size() == n);
         int rt = create();
         build(rt, rt, 0, n - 1, a);
         return rt;

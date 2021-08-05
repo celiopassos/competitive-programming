@@ -1,5 +1,5 @@
 vector<int> sort_cyclic_shifts(const string& s) {
-    int n = (int)size(s);
+    int n = (int)s.size();
     vector<int> p(n), inv(n), tmp(n), cnt(n);
     iota(begin(p), end(p), 0);
     sort(begin(p), end(p), [&s](int i, int j){ return s[i] < s[j]; });
@@ -28,7 +28,7 @@ struct SuffixArray {
     const string s;
     int n;
     vector<int> p, pos, lcp;
-    SuffixArray(const string& s_) : s(s_ + char(0)), n((int)size(s)), pos(n, 0) {
+    SuffixArray(const string& s_) : s(s_ + char(0)), n((int)s.size()), pos(n, 0) {
         p = sort_cyclic_shifts(s);
         for (int i = 0; i < n; ++i) pos[p[i]] = i;
         build_lcp();
@@ -46,7 +46,7 @@ struct SuffixArray {
         }
     }
     template<typename RMQ> int lcp_query(int i, int j, const RMQ& rmq) const {
-        if (i == j) return (int)size(pos) - i;
+        if (i == j) return (int)pos.size() - i;
         if (pos[i] > pos[j]) swap(i, j);
         return rmq.query(pos[i], pos[j] - 1);
     }
@@ -62,7 +62,7 @@ struct SuffixArray {
     vector<Node> st;
     int create(int len, int idx) {
         st.push_back({-1 , len, idx});
-        return (int)size(st) - 1;
+        return (int)st.size() - 1;
     }
     void build_suffix_tree() {
         stack<int> stk;

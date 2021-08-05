@@ -15,6 +15,6 @@ long long merge_sort(vector<T>& v, vector<T>& aux, int l, int r) {
 template<typename T>
 long long inversions(vector<T> v) {
     static vector<T> aux;
-    aux.resize(max(size(aux), size(v)));
-    return merge_sort(v, aux, 0, (int)size(v) - 1);
+    aux.resize(max(aux.size(), v.size()));
+    return merge_sort(v, aux, 0, (int)v.size() - 1);
 }

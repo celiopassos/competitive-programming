@@ -8,7 +8,7 @@ struct Combinatorics {
     }
     static T interpolate(const vector<T>& y, T x) {
         static T pref[N], suff[N];
-        int n = (int)size(y);
+        int n = (int)y.size();
         pref[0] = suff[n - 1] = 1;
         for (int i = 0; i + 1 < n; ++i) pref[i + 1] = pref[i] * (x - i);
         for (int i = n - 1; i > 0; --i) suff[i - 1] = suff[i] * (x - i);

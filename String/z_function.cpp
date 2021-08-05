@@ -1,6 +1,6 @@
 // z-function from prefix function
 vector<int> z_function(const vector<int>& p) {
-    int n = (int)size(p) - 1;
+    int n = (int)p.size() - 1;
     vector<int> z(n, 0);
     for (int len = 1; len <= n; ++len) {
         if (p[len]) {

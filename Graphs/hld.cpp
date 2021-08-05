@@ -2,7 +2,7 @@ struct HLD {
     int n;
     vector<vector<int>> E;
     vector<int> p, h, head, L, R;
-    HLD(const vector<vector<int>>& E, int root) : n((int)size(E)), E(E), p(n, -1), h(n), head(n), L(n), R(n) {
+    HLD(const vector<vector<int>>& E, int root) : n((int)E.size()), E(E), p(n, -1), h(n), head(n), L(n), R(n) {
         dfs_sz(root);
         head[root] = root;
         dfs_hld(root);

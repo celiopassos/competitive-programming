@@ -10,7 +10,7 @@ complex<T> getroot(int N) {
 template<typename T>
 void fft(vector<T>& p, bool inverse) {
     int N = 1;
-    while ((int)size(p) > N) N *= 2;
+    while ((int)p.size() > N) N *= 2;
     p.resize(N);
     vector<T> q(N);
     for (int i = 0; i < N; ++i) {
@@ -34,10 +34,10 @@ void fft(vector<T>& p, bool inverse) {
 }
 template<typename T>
 vector<T> operator*(vector<T> p, vector<T> q) {
-    size_t N = size(p) + size(q) - 1;
+    size_t N = p.size() + q.size() - 1;
     p.resize(N), q.resize(N);
     fft(p, false), fft(q, false);
-    for (size_t i = 0; i < size(p); ++i) p[i] *= q[i];
+    for (size_t i = 0; i < p.size(); ++i) p[i] *= q[i];
     fft(p, true);
     p.resize(N);
     return p;

@@ -13,7 +13,7 @@ struct BIT {
     int n, h;
     vector<T> ft;
     BIT(int n) : n(n), h(__lg(n)), ft(n + 1, G::Id) { }
-    BIT(const vector<T>& a) : BIT((int)size(a)) {
+    BIT(const vector<T>& a) : BIT((int)a.size()) {
         for (int i = 1; i <= n; ++i) ft[i] = G::op(ft[i - 1], a[i - 1]);
         for (int i = n; i >= 1; --i) ft[i] = G::op(G::inv(ft[i - lsb(i)]), ft[i]);
     }

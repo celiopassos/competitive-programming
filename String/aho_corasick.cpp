@@ -14,7 +14,7 @@ struct AhoCorasick {
         int u = 0;
         for (auto c : s) {
             if (not tr[u].nxt.count(c)) {
-                int v = tr[u].go[c] = tr[u].nxt[c] = (int)size(tr);
+                int v = tr[u].go[c] = tr[u].nxt[c] = (int)tr.size();
                 tr.emplace_back(u, c);
                 if (u == 0) tr[v].link = 0;
             }
@@ -43,7 +43,7 @@ struct AhoCorasick {
     }
     template<typename Report>
     void run(const string& t, Report&& report) {
-        for (int i = 0, u = 0; i < (int)size(t); ++i) {
+        for (int i = 0, u = 0; i < (int)t.size(); ++i) {
             u = go(u, t[i]);
             for (int v = get_occurrence(u); v != 0; v = get_occurrence(get_link(v))) {
                 report(i, v);

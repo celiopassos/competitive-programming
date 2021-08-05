@@ -63,7 +63,7 @@ struct LazyST {
         }
     }
     template<typename C>
-    LazyST(const C& a) : n((int)size(a)), st(4 * n + 1), lazy(4 * n + 1) {
+    LazyST(const C& a) : n((int)a.size()), st(4 * n + 1), lazy(4 * n + 1) {
         build(0, 0, n - 1, a);
     }
     void update(int l, int r, F op) {

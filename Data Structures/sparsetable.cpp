@@ -5,7 +5,7 @@ struct SparseTable {
     Op op;
     vector<array<T, K>> st;
     vector<int> log;
-    SparseTable(const vector<T>& a, Op op = Op()) : n((int)size(a)), op(op), st(n), log(n + 1) {
+    SparseTable(const vector<T>& a, Op op = Op()) : n((int)a.size()), op(op), st(n), log(n + 1) {
         for (int x = 2; x <= n; ++x) log[x] = 1 + log[x >> 1];
         assert(log[n] < K);
         for (int i = 0; i < n; ++i) st[i][0] = a[i];

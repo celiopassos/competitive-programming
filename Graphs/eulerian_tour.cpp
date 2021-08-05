@@ -21,7 +21,7 @@ struct EulerianTour {
         vector<int> ptr(n, 0), p, e;
         stack<pair<int, int>> stk;
         stk.emplace(src, -1);
-        while (not empty(stk)) {
+        while (not stk.empty()) {
             auto [u, i] = stk.top();
             if (d[u] == 0) {
                 stk.pop();

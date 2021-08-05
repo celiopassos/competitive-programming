@@ -3,7 +3,7 @@ namespace fwht {
     using Matrix = array<array<T, 2>, 2>;
     template<typename T>
     vector<T> fwht(vector<T> v, Matrix<T> A) {
-        int N = (int)size(v);
+        int N = (int)v.size();
         for (int len = 1; len < N; len *= 2) {
             for (int pos = 0; pos < N; pos += 2 * len) {
                 for (int i = 0; i < len; ++i) {

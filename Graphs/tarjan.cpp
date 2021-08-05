@@ -5,7 +5,7 @@
 // i.e., scc's with 0 out-degree first
 // it is guarenteed that 0 <= scc[u] < n for all u
 vector<int> tarjan(const vector<vector<int>>& E) {
-    int n = (int)size(E), timer = 0, ct = 0;
+    int n = (int)E.size(), timer = 0, ct = 0;
     enum State { unvisited, active, visited };
     vector<State> state(n, unvisited);
     vector<int> low(n, -1), num(n, -1), scc(n, -1);
@@ -21,7 +21,7 @@ vector<int> tarjan(const vector<vector<int>>& E) {
             do {
                 int v = stk.top(); stk.pop();
                 scc[v] = ct, state[v] = visited;
-            } while (not empty(stk) && num[stk.top()] >= num[u]);
+            } while (not stk.empty() && num[stk.top()] >= num[u]);
             ++ct;
         }
     };

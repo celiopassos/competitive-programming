@@ -15,7 +15,7 @@ struct RangeUpdate {
     int n, h;
     vector<T> st;
     RangeUpdate(int n) : n(n), h(32 - __builtin_clz(n)), st(2 * n, M::Id) { }
-    RangeUpdate(const vector<T>& init) : RangeUpdate((int)size(init)) {
+    RangeUpdate(const vector<T>& init) : RangeUpdate((int)init.size()) {
         copy(begin(init), end(init), begin(st) + n);
     }
     T query(int p) const {

@@ -2,8 +2,8 @@
 template<typename T>
 vector<complex<T>> convex_hull(vector<complex<T>> pts) {
     sort(begin(pts), end(pts), lex_cmp<T>), pts.erase(unique(begin(pts), end(pts)), end(pts));
-    if (size(pts) <= 1) return pts;
-    vector<complex<T>> upper(size(pts)), lower(size(pts));
+    if (pts.size() <= 1) return pts;
+    vector<complex<T>> upper(pts.size()), lower(pts.size());
     int k = 0, l = 0;
     for (auto p : pts) {
         while (k > 1 && not cw(upper[k - 2], upper[k - 1], p)) --k;
