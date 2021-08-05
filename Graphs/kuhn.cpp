@@ -36,7 +36,9 @@ struct Kuhn {
     vector<int> left_cover() const {
         vector<int> U;
         for (int u = 0; u < N; ++u) {
-            if (not vis[u]) U.push_back(u);
+            if (not vis[u]) {
+                U.push_back(u);
+            }
         }
         return U;
     }
@@ -44,7 +46,9 @@ struct Kuhn {
         vector<int> V;
         for (int v = 0; v < M; ++v) {
             int u = matchB[v];
-            if (u != -1 && vis[u]) V.push_back(v);
+            if (u != -1 && vis[u]) {
+                V.push_back(v);
+            }
         }
         return V;
     }

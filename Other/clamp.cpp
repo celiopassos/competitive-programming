@@ -1,29 +1,16 @@
 template<typename T>
 struct Clamp {
-    static const T linf = numeric_limits<T>::min() / 2, rinf = numeric_limits<T>::max() / 2;
-    T low, high;
-    Clamp(T low = linf, T high = rinf) : low(low), high(high) {}
+    static const T inf = numeric_limits<T>::max() / 2;
+    T low, high, add;
+    Clamp(T low = -inf, T high = +inf, T add = 0) : low(low), high(high), add(add) {}
     // composition, rhs is applied first, *this is applied after
     Clamp operator*(Clamp rhs) const {
-        if (high <= rhs.low) return Clamp(high, high);
-        if (low >= rhs.high) return Clamp(low, low);
-        return Clamp(max(low, rhs.low), min(high, rhs.high));
+        T nadd = add + rhs.add;
+        T nlow = std::clamp(rhs.low - rhs.add, low - nadd, high - nadd) + nadd;
+        T nhigh = std::clamp(rhs.high - rhs.add, low - nadd, high - nadd) + nadd;
+        return Clamp(nlow, nhigh, nadd);
     }
     T operator()(T x) const {
-        return std::clamp(x, low, high);
-    }
-};
-template<typename T>
-struct OffsetClamp : Clamp<T> {
-    T add;
-    OffsetClamp(T low = Clamp<T>::linf, T high = Clamp<T>::rinf, T add = 0) : Clamp<T>(low, high), add(add) {}
-    OffsetClamp(Clamp<T> cl, T add = 0) : Clamp<T>(cl.low, cl.high), add(add) {}
-    // composition, rhs is applied first, *this is applied after
-    OffsetClamp operator*(OffsetClamp rhs) const {
-        auto cl = Clamp<T>::operator*(Clamp<T>(rhs.low + add, rhs.high + add));
-        return OffsetClamp(cl, add + rhs.add);
-    }
-    T operator()(T x) const {
-        return Clamp<T>::operator()(x + add);
+        return std::clamp(x + add, low, high);
     }
 };

@@ -9,7 +9,9 @@ vector<T> dijkstra(int s, const vector<vector<pair<int, T>>>& E) {
         if (-d > d[u]) continue;
         for (auto [v, w] : E[u]) {
             T nd = d[u] + w;
-            if (nd < d[v]) pq.emplace(-(d[v] = nd), v);
+            if (nd < d[v]) {
+                pq.emplace(-(d[v] = nd), v);
+            }
         }
     }
     return d;

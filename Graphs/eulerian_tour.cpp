@@ -1,24 +1,24 @@
 struct EulerianTour {
-    int n, m = 0, odd = 0;
+    int N, M = 0, odd = 0;
     vector<vector<pair<int, int>>> E;
     vector<int> deg;
-    EulerianTour(int n) : n(n), E(n), deg(n) {}
+    EulerianTour(int N) : N(N), E(N), deg(N) {}
     void add_edge(int u, int v) {
         int V[2] = {u, v};
         for (auto t : {0, 1}) {
             int v = V[t];
-            E[v].emplace_back(V[t ^ 1], m << 1 | t);
+            E[v].emplace_back(V[t ^ 1], M << 1 | t);
             deg[v] += 1;
             odd += (deg[v] % 2 ? +1 : -1);
         }
-        ++m;
+        ++M;
     }
     // returns eulerian tour by vertices and edges (reversed if first bit is 1)
     pair<vector<int>, vector<int>> find(int src) const {
         assert(odd == 0);
         auto d = deg;
-        vector<bool> dead(m, false);
-        vector<int> ptr(n, 0), p, e;
+        vector<bool> dead(M, false);
+        vector<int> ptr(N, 0), p, e;
         stack<pair<int, int>> stk;
         stk.emplace(src, -1);
         while (not stk.empty()) {

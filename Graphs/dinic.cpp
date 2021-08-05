@@ -8,17 +8,17 @@ struct Dinic {
         Edge(int u, int v, T cap) : from(u), to(v), cap(cap) {}
     };
     vector<Edge> edges;
-    int n, m = 0;
+    int N, M = 0;
     vector<vector<int>> E;
     vector<int> level, ptr;
-    Dinic(int n) : n(n), E(n), level(n), ptr(n) {}
+    Dinic(int N) : N(N), E(N), level(N), ptr(N) {}
     int add_edge(int u, int v, T cap) {
         assert(cap >= 0);
         edges.emplace_back(u, v, cap);
         edges.emplace_back(v, u, 0);
-        E[u].push_back(m++);
-        E[v].push_back(m++);
-        return m - 2;
+        E[u].push_back(M++);
+        E[v].push_back(M++);
+        return M - 2;
     }
     bool bfs(int s, int t) {
         fill(begin(level), end(level), -1);

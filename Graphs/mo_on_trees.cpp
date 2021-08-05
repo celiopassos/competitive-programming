@@ -1,6 +1,6 @@
 struct TreeDecomposition {
     const vector<vector<int>>& E;
-    const int n, root, K;
+    int N, root, K;
     vector<int> block, p, L, R;
     int num_blocks = 0;
     void mark(vector<int>& S) {
@@ -21,17 +21,17 @@ struct TreeDecomposition {
             S.insert(end(S), begin(R), end(R));
             if ((int)S.size() > K) mark(S);
         }
-        R[u] = timer - 1;
+        R[u] = timer;
         S.push_back(u);
         return S;
     }
-    // O(n * K)
-    TreeDecomposition(const vector<vector<int>>& E, int root, int K) : E(E), n((int)E.size()), root(root), K(K), block(n), p(n, -1), L(n), R(n) {
+    // O(N * K)
+    TreeDecomposition(const vector<vector<int>>& E, int root, int K) : E(E), N((int)E.size()), root(root), K(K), block(N), p(N, -1), L(N), R(N) {
         auto S = decompose(root);
         if (not S.empty()) mark(S);
     }
     bool is_ancestor(int u, int v) const {
-        return L[u] <= L[v] && L[v] <= R[u];
+        return L[u] <= L[v] && R[v] <= R[u];
     }
     template<typename Update>
     void traverse(array<int, 2> P, Update&& update) const {
@@ -42,7 +42,7 @@ struct TreeDecomposition {
             }
         }
     }
-    // O(n^2 / K + Q.size() * K)
+    // O(N^2 / K + Q.size() * K)
     template<typename Evaluate, typename Update>
     void run(const vector<array<int, 2>>& Q, Evaluate&& evaluate, Update&& update) const {
         vector<int> Z(Q.size());

@@ -1,8 +1,8 @@
-// K > centroid tree height, or simply log(n)
+// K > centroid tree height, or simply log(N)
 template<int K>
 struct CentroidDecomposition {
     const vector<vector<int>>& E;
-    int n, root;
+    int N, root;
     vector<int> sz, p, subtree, dead, level;
     vector<array<int, K>> dist;
     int timer;
@@ -23,10 +23,10 @@ struct CentroidDecomposition {
         return u;
     }
     CentroidDecomposition(const vector<vector<int>>& E_) :
-        E(E_), n((int)E.size()), sz(n), p(n, -1), subtree(n), dead(n), level(n), dist(n) {
+        E(E_), N((int)E.size()), sz(N), p(N, -1), subtree(N), dead(N), level(N), dist(N) {
         queue<int> q;
         dfs(0, -1, 0);
-        root = find_centroid(0, -1, n / 2);
+        root = find_centroid(0, -1, N / 2);
         q.push(root);
         dist[root][0] = 0;
         while (not q.empty()) {

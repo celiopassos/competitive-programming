@@ -2,7 +2,7 @@
 template<int K>
 struct LCA {
     const vector<vector<int>>& E;
-    int n;
+    int N;
     vector<int> L, R, inv, h;
     vector<array<int, K>> up;
     int timer = 0;
@@ -10,13 +10,14 @@ struct LCA {
         up[u][0] = p;
         for (int i = 0; i + 1 < K; ++i) up[u][i + 1] = up[up[u][i]][i];
         inv[L[u] = timer++] = u;
-        for (int v : E[u]) if (v != p) {
+        for (int v : E[u]) {
+            if (v == p) continue;
             h[v] = h[u] + 1;
             dfs(v, u);
         }
-        R[u] = timer - 1;
+        R[u] = timer;
     }
-    LCA(const vector<vector<int>>& E, int root) : E(E), n((int)E.size()), L(n), R(n), inv(n), h(n), up(n) {
+    LCA(const vector<vector<int>>& E, int root) : E(E), N((int)E.size()), L(N), R(N), inv(N), h(N), up(N) {
         dfs(root, root);
     }
     bool is_ancestor(int u, int v) const {

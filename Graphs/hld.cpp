@@ -1,8 +1,8 @@
 struct HLD {
-    int n;
+    int N;
     vector<vector<int>> E;
     vector<int> p, h, head, L, R;
-    HLD(const vector<vector<int>>& E, int root) : n((int)E.size()), E(E), p(n, -1), h(n), head(n), L(n), R(n) {
+    HLD(const vector<vector<int>>& E, int root) : N((int)E.size()), E(E), p(N, -1), h(N), head(N), L(N), R(N) {
         dfs_sz(root);
         head[root] = root;
         dfs_hld(root);
@@ -29,7 +29,7 @@ struct HLD {
             head[v] = (v == E[u][0] ? head[u] : v);
             dfs_hld(v);
         }
-        R[u] = timer - 1;
+        R[u] = timer;
     }
     // boolean is true if path should be 'reversed' (for uncommutative operations)
     vector<tuple<bool, int, int>> get_path(int u, int v) const {
