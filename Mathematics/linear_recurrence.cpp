@@ -3,9 +3,12 @@ T one_coeff(vector<T> p, vector<T> q, long long n) {
     int d = (int)p.size();
     for (; n > 0; n >>= 1) {
         auto qsgn = q;
-        for (int i = 1; i <= d; i += 2) qsgn[i] *= -1;
+        for (int i = 1; i <= d; i += 2) {
+            qsgn[i] *= -1;
+        }
         auto u = p * qsgn, v = q * qsgn;
-        for (int i = 0, b = (n & 1 ? 1 : 0); i < d; ++i) {
+        int b = n & 1;
+        for (int i = 0; i < d; ++i) {
             p[i] = u[i << 1 | b];
             q[i] = v[i << 1];
         }
@@ -17,7 +20,7 @@ T one_coeff(vector<T> p, vector<T> q, long long n) {
 // and the initial values u[0], ..., u[d-1], finds u[n]
 // O(convolution(d) * log(n))
 template<typename T>
-T solve(vector<T> c, vector<T> u, long long n) {
+T solve_linear_recurrence(vector<T> c, vector<T> u, long long n) {
     int d = (int)c.size();
     vector<T> q(d + 1, 0);
     q[0] = 1;
