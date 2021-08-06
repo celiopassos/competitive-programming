@@ -69,18 +69,27 @@ struct ImplicitSegmentTree {
         return root;
     }
     // merges in p 'into' q
+    template<typename LeafMerger>
+    void merge(Node* p, Node* q, LeafMerger&& leaf_merger) {
+        if (p == nullptr) {
+            return;
+        } else if (p->l + 1 < p->r) {
+            if (q->left == nullptr) {
+                q->left = p->left;
+            } else {
+                merge(p->left, get_left(q), leaf_merger);
+            }
+            if (q->right == nullptr) {
+                q->right = p->right;
+            } else {
+                merge(p->right, get_right(q), leaf_merger);
+            }
+            q->value = get_value(q->left) + get_value(q->right);
+        } else {
+            q->value = leaf_merger(p->value, q->value);
+        }
+    }
     void merge(Node* p, Node* q) {
-        if (p == nullptr) return;
-        q->value = q->value + p->value;
-        if (q->left == nullptr) {
-            q->left = p->left;
-        } else {
-            merge(p->left, get_left(q));
-        }
-        if (q->right == nullptr) {
-            q->right = p->right;
-        } else {
-            merge(p->right, get_right(q));
-        }
+        merge(p, q, std::plus<T>());
     }
 };
