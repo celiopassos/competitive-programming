@@ -1,44 +1,22 @@
-// make necessary changes when T is floating point
-template<typename T, int N>
-T determinant(Matrix<T, N, N> A, int n) {
-    T det = T(1);
-    for (int x = 0; x < n; ++x) {
-        int sel = -1;
-        for (int i = x; i < n; ++i) {
-            if (A[i][x] != T(0)) {
-                sel = i;
-                break;
-            }
-        }
-        if (sel == -1) return T(0);
-        if (sel != x) {
-            swap(A[sel], A[x]);
-            det *= T(-1);
-        }
-        det *= A[x][x];
-        for (int i = 0; i < n; ++i) if (i != x) {
-            T c = A[i][x] / A[x][x];
-            for (int j = x; j < n; ++j) A[i][j] -= c * A[x][j];
-        }
-    }
-    return det;
-}
-template<typename T, int N, int M>
+template<typename T>
 struct GaussianElimination {
-    using DomainType = Vector<T, M>;
-    using CodomainType = Vector<T, N>;
-    Matrix<T, N, M> A;
-    Matrix<T, N, N> E;
-    int n, m;
-    int pivot[M], rank = 0, nullity;
-    // O(min(n, m)nm)
-    GaussianElimination(const Matrix<T, N, M>& A_, int n, int m) : A(A_), E(1), n(n), m(m), nullity(m) {
-        fill(begin(pivot), end(pivot), -1);
-        for (int col = 0, row = 0; col < m && row < n; ++col) {
+    int N, M;
+    matrix<T> A, E;
+    vector<int> pivot;
+    int rank, nullity;
+    // O(min(N, M)NM)
+    GaussianElimination(const matrix<T>& A_) : A(A_) {
+        N = (int)size(A), M = (int)size(A[0]);
+        E = matrix<T>(N, vector<T>(N));
+        for (int i = 0; i < N; ++i) {
+            E[i][i] = 1;
+        }
+        rank = 0, nullity = M;
+        pivot.assign(M, -1);
+        for (int col = 0, row = 0; col < M && row < N; ++col) {
             int sel = -1;
-            for (int i = row; i < n; ++i) {
-                // for floating points take row with largest absolute value
-                if (A[i][col] != T(0)) {
+            for (int i = row; i < N; ++i) {
+                if (A[i][col] != 0) {
                     sel = i;
                     break;
                 }
@@ -48,53 +26,60 @@ struct GaussianElimination {
                 swap(A[sel], A[row]);
                 swap(E[sel], E[row]);
             }
-            for (int i = 0; i < n; ++i) if (i != row) {
+            for (int i = 0; i < N; ++i) {
+                if (i == row) continue;
                 T c = A[i][col] / A[row][col];
-                for (int j = col; j < m; ++j) A[i][j] -= c * A[row][j];
-                for (int j = 0; j < m; ++j) E[i][j] -= c * E[row][j];
+                for (int j = col; j < M; ++j) {
+                    A[i][j] -= c * A[row][j];
+                }
+                for (int j = 0; j < N; ++j) {
+                    E[i][j] -= c * E[row][j];
+                }
             }
             pivot[col] = row++;
             ++rank, --nullity;
         }
     }
-    // O(n^2 + m)
-    pair<bool, DomainType> solve(CodomainType b, bool reduced = false) const {
-        if (not reduced) b = E * b;
-        DomainType x;
-        for (int j = 0; j < m; ++j) {
-            if (pivot[j] != -1) {
-                x[j] = b[pivot[j]] / A[pivot[j]][j];
-                b[pivot[j]] = T(0);
-            }
+    // O(N^2 + M)
+    pair<bool, vector<T>> solve(vector<T> b, bool reduced = false) const {
+        assert(N == (int)size(b));
+        if (not reduced) {
+            b = E * b;
         }
-        for (int i = 0; i < n; ++i) {
-            if (b[i] != T(0)) return pair(false, x);
+        vector<T> x(M);
+        for (int j = 0; j < M; ++j) {
+            if (pivot[j] == -1) continue;
+            x[j] = b[pivot[j]] / A[pivot[j]][j];
+            b[pivot[j]] = 0;
+        }
+        for (int i = 0; i < N; ++i) {
+            if (b[i] != 0) return pair(false, x);
         }
         return pair(true, x);
     }
-    // O(nullity * nm)
-    vector<DomainType> kernel_basis() const {
-        vector<DomainType> basis;
-        DomainType e;
-        for (int j = 0; j < m; ++j) if (pivot[j] == -1) {
-            e[j] = T(1);
-            DomainType y = solve(A * e, true).second;
-            e[j] = T(0), y[j] = T(-1);
+    // O(nullity * NM)
+    vector<vector<T>> kernel_basis() const {
+        vector<vector<T>> basis;
+        vector<T> e(M);
+        for (int j = 0; j < M; ++j) {
+            if (pivot[j] != -1) continue;
+            e[j] = 1;
+            auto y = solve(A * e, true).second;
+            e[j] = 0, y[j] = -1;
             basis.push_back(y);
         }
         return basis;
     }
-    // O(n^3)
-    // assumes n == m (of course)
-    Matrix<T, N, M> inverse() const {
-        assert(n == m);
-        assert(rank == n);
-        Matrix<T, N, M> res;
-        CodomainType e;
-        for (int i = 0; i < n; ++i) {
+    // O(N^3)
+    matrix<T> inverse() const {
+        assert(N == M);
+        assert(rank == N);
+        matrix<T> res;
+        vector<T> e(N);
+        for (int i = 0; i < N; ++i) {
             e[i] = 1;
-            DomainType x = solve(e).second;
-            for (int j = 0; j < n; ++j) {
+            auto x = solve(e).second;
+            for (int j = 0; j < N; ++j) {
                 res[j][i] = x[j];
             }
             e[i] = 0;
