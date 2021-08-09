@@ -34,7 +34,7 @@ struct Pointwise : public array<T, K> {
     inline static const Pointwise X = [](){
         uniform_int_distribution<long long> unif(1, numeric_limits<long long>::max());
         Pointwise X;
-        mt19937 rng((int)chrono::steady_clock::now().time_since_epoch().count());
+        mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
         for (int j = 0; j < K; ++j) X[j] = T(unif(rng));
         return X;
     }(), Xinv = P(1) / X;

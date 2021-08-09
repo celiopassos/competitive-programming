@@ -1,16 +1,14 @@
 template<typename T>
-complex<T> get_root(int N) {
+complex<T> root_of_unity(int N, complex<T> dummy) {
     return polar<T>(1, 2 * acos(-1) / N);
 }
-//Mint<998244353> get_root(int N) {
-//     return Mint<998244353>(3).power(7 * 17 * (1LL << 23) / N);
+//template<long long P>
+//Z<P> root_of_unity(int N, Z<P> dummy) {
+//    return Z<P>(3).power((P - 1) / N);
 //}
-// inplace fft (resizes if necessary)
 template<typename T>
-void fft(vector<T>& p, bool inverse) {
-    int N = 1;
-    while ((int)p.size() > N) N *= 2;
-    p.resize(N);
+vector<T> fft(vector<T> p, bool inverse) {
+    int N = (int)p.size();
     vector<T> q(N);
     for (int i = 0; i < N; ++i) {
         int rev = 0;
@@ -21,26 +19,29 @@ void fft(vector<T>& p, bool inverse) {
     }
     swap(p, q);
     for (int b = 1; b < N; b <<= 1) {
-        T rt = inverse ? 1 / get_root(b << 1) : get_root(b << 1);
-        for (auto [i, x] = pair<int, T>(0, 1); i < N; ++i, x *= rt) {
+        T w = root_of_unity(b << 1, T());
+        if (inverse) w = T(1) / w;
+        for (auto [i, x] = pair(0, T(1)); i < N; ++i, x *= w) {
             q[i] = p[i & ~b] + x * p[i | b];
         }
         swap(p, q);
     }
     if (inverse) {
-        T inv = 1 / T(N);
+        T inv = T(1) / T(N);
         for (int i = 0; i < N; ++i) p[i] *= inv;
     }
+    return p;
 }
 template<typename T>
 vector<T> operator*(vector<T> p, vector<T> q) {
-    size_t N = p.size() + q.size() - 1;
-    p.resize(N), q.resize(N);
-    fft(p, false), fft(q, false);
-    for (size_t i = 0; i < p.size(); ++i) {
-        p[i] *= q[i];
+    int N = int(p.size() + q.size() - 1), M = 1;
+    while (M < N) M <<= 1;
+    p.resize(M), q.resize(M);
+    auto phat = fft(p, false), qhat = fft(q, false);
+    for (int i = 0; i < M; ++i) {
+        phat[i] *= qhat[i];
     }
-    fft(p, true);
-    p.resize(N);
-    return p;
+    auto r = fft(phat, true);
+    r.resize(N);
+    return r;
 }
