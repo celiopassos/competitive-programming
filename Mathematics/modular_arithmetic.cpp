@@ -33,9 +33,6 @@ struct Z {
     Z operator-() const {
         return Z() - *this;
     }
-    operator long long() const {
-        return x;
-    }
     bool operator==(Z rhs) const { return x == rhs.x; }
     bool operator!=(Z rhs) const { return x != rhs.x; }
     bool operator<(Z rhs) const { return x < rhs.x; }
