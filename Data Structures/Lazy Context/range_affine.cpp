@@ -13,7 +13,7 @@ struct RangeAffine {
     }
     template<typename Node>
     void apply(Node& p) const {
-        p.value = a * p.value + b * (p.r - p.l + 1);
+        p.value = a * p.value + b * (p.r - p.l);
     }
     void compose(RangeAffine op) {
         b = op.a * b + op.b;

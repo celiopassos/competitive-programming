@@ -15,7 +15,7 @@ struct RangeAddLinear {
     template<typename Node>
     void apply(Node& p) const {
         auto& v = p.value;
-        v += a * (sum_idx(p.r) - sum_idx(p.l - 1)) + (p.r - p.l + 1) * b;
+        v += a * (sum_idx(p.r - 1) - sum_idx(p.l - 1)) + (p.r - p.l) * b;
     }
     void compose(RangeAddLinear op) {
         a += op.a, b += op.b;
