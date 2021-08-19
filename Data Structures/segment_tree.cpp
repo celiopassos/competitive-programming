@@ -5,7 +5,7 @@ struct SegmentTree {
     SegmentTree(int N) : N(N), st(2 * N) {}
     template<typename Iterator>
     SegmentTree(Iterator first, Iterator last) : SegmentTree(int(last - first)) {
-        copy(first, last, begin(st) + N);
+        copy(first, last, st.begin() + N);
         for (int p = N - 1; p > 0; --p) {
             st[p] = st[p << 1] + st[p << 1 | 1];
         }
@@ -48,7 +48,7 @@ struct SegmentTree {
             if (l & 1) left.push_back(l++);
             if (r & 1) right.push_back(--r);
         }
-        left.insert(end(left), rbegin(right), rend(right));
+        left.insert(left.end(), right.rbegin(), right.rend());
         right.clear();
         T prefix = T();
         int res = b;

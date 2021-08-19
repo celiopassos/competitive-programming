@@ -5,7 +5,7 @@ struct RangeUpdate {
     RangeUpdate(int N) : N(N), h(__lg(N) + 1), st(2 * N) {}
     template<typename Iterator>
     RangeUpdate(Iterator first, Iterator last) : RangeUpdate(int(last - first)) {
-        copy(first, last, begin(st) + N);
+        copy(first, last, st.begin() + N);
     }
     T query(int p) const {
         T res = T();

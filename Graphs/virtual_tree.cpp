@@ -3,10 +3,10 @@
 template<typename LCA>
 int build_virtual_tree(vector<int>& V, vector<vector<int>>& F, const LCA& lca) {
     auto cmp = [&](int u, int v) { return lca.L[u] > lca.L[v]; };
-    sort(begin(V), end(V), cmp);
+    sort(V.begin(), V.end(), cmp);
     int k = (int)V.size();
     for (int j = 0; j + 1 < k; ++j) V.push_back(lca.lca(V[j], V[j + 1]));
-    sort(begin(V), end(V), cmp), V.erase(unique(begin(V), end(V)), end(V));
+    sort(V.begin(), V.end(), cmp), V.erase(unique(V.begin(), V.end()), V.end());
     stack<int> stk;
     for (auto u : V) {
         while (not stk.empty() && lca.is_ancestor(u, stk.top())) {

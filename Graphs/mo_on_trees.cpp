@@ -18,7 +18,7 @@ struct TreeDecomposition {
             if (v == p[u]) continue;
             p[v] = u;
             auto R = decompose(v);
-            S.insert(end(S), begin(R), end(R));
+            S.insert(S.end(), R.begin(), R.end());
             if ((int)S.size() > K) mark(S);
         }
         R[u] = timer;
@@ -46,9 +46,9 @@ struct TreeDecomposition {
     template<typename Evaluate, typename Update>
     void run(const vector<array<int, 2>>& Q, Evaluate&& evaluate, Update&& update) const {
         vector<int> Z(Q.size());
-        iota(begin(Z), end(Z), 0);
+        iota(Z.begin(), Z.end(), 0);
         auto key = [&](int i) { return pair<int, int>(block[Q[i][0]], L[Q[i][1]]); };
-        sort(begin(Z), end(Z), [&](int i, int j) { return key(i) < key(j); });
+        sort(Z.begin(), Z.end(), [&](int i, int j) { return key(i) < key(j); });
         array<int, 2> P = {0, 0};
         for (auto z : Z) {
             for (int t : {0, 1}) {

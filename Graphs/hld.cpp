@@ -45,7 +45,7 @@ struct HLD {
             }
         }
         h[u] > h[v] ? left.emplace_back(true, L[v], L[u]) : right.emplace_back(false, L[u], L[v]);
-        left.insert(end(left), rbegin(right), rend(right));
+        left.insert(left.end(), right.rbegin(), right.rend());
         return left;
     }
     int lca(int u, int v) const {

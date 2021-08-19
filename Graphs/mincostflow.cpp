@@ -15,8 +15,8 @@ struct mcf_graph {
     };
     // returns the minimum cost of 'flow' units of flow
     static Cost compute_cost(const vector<Slope>& slopes, Cap flow) {
-        auto iter = lower_bound(begin(slopes), end(slopes), flow, [](Slope sl, Cap f) { return sl.flow < f; });
-        if (iter == end(slopes)) return infcost;
+        auto iter = lower_bound(slopes.begin(), slopes.end(), flow, [](Slope sl, Cap f) { return sl.flow < f; });
+        if (iter == slopes.end()) return infcost;
         return iter->cost - (iter->flow - flow) * iter->slope;
     };
     int N, M = 0;
@@ -71,12 +71,12 @@ struct mcf_graph {
         vector<pair<Cost, int>> heap;
         heap.reserve(M);
         auto dijkstra = [&]() {
-            fill(begin(dist), end(dist), infcost);
-            fill(begin(vis), end(vis), false);
+            fill(dist.begin(), dist.end(), infcost);
+            fill(vis.begin(), vis.end(), false);
             heap.emplace_back(dist[s] = 0, s);
             while (not heap.empty()) {
                 int u = heap[0].second;
-                pop_heap(begin(heap), end(heap));
+                pop_heap(heap.begin(), heap.end());
                 heap.pop_back();
                 if (vis[u]) continue;
                 vis[u] = true;
@@ -89,7 +89,7 @@ struct mcf_graph {
                         p[v] = j;
                         dist[v] = nd;
                         heap.emplace_back(-dist[v], v);
-                        push_heap(begin(heap), end(heap));
+                        push_heap(heap.begin(), heap.end());
                     }
                 }
             }
