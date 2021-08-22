@@ -1,8 +1,8 @@
 namespace fwht {
     template<typename T>
-    using Matrix = array<array<T, 2>, 2>;
+    using matrix = array<array<T, 2>, 2>;
     template<typename T>
-    vector<T> fwht(vector<T> v, Matrix<T> A) {
+    vector<T> fwht(vector<T> v, matrix<T> A) {
         int N = (int)v.size();
         for (int len = 1; len < N; len *= 2) {
             for (int pos = 0; pos < N; pos += 2 * len) {
@@ -16,13 +16,13 @@ namespace fwht {
         return v;
     }
     template<typename T>
-    Matrix<T> or_matrix() { return {{{1, 0}, {1, 1}}}; }
+    matrix<T> or_matrix() { return {{{1, 0}, {1, 1}}}; }
     template<typename T>
-    Matrix<T> and_matrix() { return {{{1, 1}, {0, 1}}}; }
+    matrix<T> and_matrix() { return {{{1, 1}, {0, 1}}}; }
     template<typename T>
-    Matrix<T> xor_matrix() { return {{{+1, +1}, {+1, -1}}}; }
+    matrix<T> xor_matrix() { return {{{+1, +1}, {+1, -1}}}; }
     template<typename T>
-    Matrix<T> inverse(Matrix<T> A) {
+    matrix<T> inverse(matrix<T> A) {
         T det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
         assert(det != T(0));
         swap(A[0][0], A[1][1]);

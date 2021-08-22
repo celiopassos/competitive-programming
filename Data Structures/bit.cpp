@@ -1,6 +1,6 @@
-int lsb(int b) { return b & -b; }
 template<typename T>
 struct BIT {
+    static int lsb(int b) { return b & -b; }
     int N, h;
     vector<T> ft;
     BIT(int N) : N(N), h(__lg(N)), ft(N + 1, T()) { }
@@ -33,8 +33,9 @@ struct BIT {
         int pos = 0;
         for (int x = h; x >= 0; --x) {
             int npos = pos + (1 << x);
+            if (npos > N) continue;
             T nprefix = prefix + ft[npos];
-            if (npos <= N && pred(nprefix) == true) {
+            if (pred(nprefix)) {
                 pos = npos;
                 prefix = nprefix;
             }
@@ -42,6 +43,6 @@ struct BIT {
         return pos;
     }
     int lower_bound(T value) const {
-        return lower_bound(value, [value](T x) { return x < value; });
+        return find_right([value](T x) { return x < value; });
     }
 };
