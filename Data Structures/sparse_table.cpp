@@ -1,34 +1,32 @@
-// K > floor(log(N))
-template<int K, typename T, typename Op>
+template<typename T, typename Op>
 struct SparseTable {
     int N;
     Op op;
-    vector<array<T, K>> st;
     vector<int> log;
+    vector<vector<T>> st;
     template<typename Iterator>
-    SparseTable(Iterator first, Iterator last, Op op = Op()) :  op(op), N(int(last - first)), st(N), log(N) {
+    SparseTable(Iterator first, Iterator last, Op op = Op()) : N(int(last - first)), op(op), log(N + 1) {
         for (int x = 2; x <= N; ++x) {
             log[x] = 1 + log[x >> 1];
         }
-        assert(log[N] < K);
-        for (int i = 0; i < N; ++i) {
-            st[i][0] = a[i];
-        }
-        for (int x = 1; x <= log[N]; ++x) {
-            for (int i = 0; i + (1 << x) <= N; ++i) {
-                st[i][x] = op(st[i][x - 1], st[i + (1 << (x - 1))][x - 1]);
+        st.resize(log[N] + 1);
+        st[0] = vector<T>(first, last);
+        for (int x = 0; x < log[N]; ++x) {
+            st[x + 1].resize(N);
+            for (int i = 0; i + (1 << (x + 1)) <= N; ++i) {
+                st[x + 1][i] = op(st[x][i], st[x][i + (1 << x)]);
             }
         }
     }
     T query(int l, int r) const {
         assert(l < r);
         int x = log[r - l];
-        return op(st[l][x], st[r - (1 << x)][x]);
+        return op(st[x][l], st[x][r - (1 << x)]);
     }
 };
 template<typename T>
 struct MinFunctor {
     T operator()(T x, T y) const { return min(x, y); }
 };
-template<int K, typename T>
-using RMQ = SparseTable<K, T, MinFunctor<T>>;
+template<typename T>
+using RMQ = SparseTable<T, MinFunctor<T>>;
