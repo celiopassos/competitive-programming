@@ -1,4 +1,3 @@
-// 'heavy' matroid should be M2
 template<typename T, typename Matroid1, typename Matroid2>
 vector<int> weighted_matroid_intersection(int N, const vector<T>& w, Matroid1& M1, Matroid2& M2) {
     vector<bool> b(N), target(N);
