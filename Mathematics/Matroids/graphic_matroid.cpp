@@ -12,7 +12,7 @@ struct GraphicMatroid {
             component[v] = component[u];
             dfs(v);
         }
-        R[u] = timer - 1;
+        R[u] = timer;
     }
     void build(const vector<int>& I) {
         timer = 0;
@@ -32,7 +32,7 @@ struct GraphicMatroid {
         }
     }
     bool is_ancestor(int u, int v) const {
-        return L[u] <= L[v] && L[v] <= R[u];
+        return L[u] <= L[v] && L[v] < R[u];
     }
     bool oracle(int e) const {
         return component[edges[e][0]] != component[edges[e][1]];
