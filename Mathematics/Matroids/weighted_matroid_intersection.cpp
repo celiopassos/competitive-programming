@@ -1,22 +1,17 @@
+template<typename X, typename Y>
+pair<X, Y> neg(pair<X, Y> p) {
+    return {-p.first, -p.second};
+}
+// assumes w >= 0 (modify to SPFA otherwise)
 template<typename T, typename Matroid1, typename Matroid2>
 vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matroid2& M2) {
-    vector<bool> b(N), target(2 * N);
-    vector<int> I[2], from(2 * N);
-    vector<T> p(2 * N);
-    vector<pair<T, int>> d(2 * N);
+    vector<bool> b(N), target(N);
+    vector<int> I[2], from(N);
+    vector<array<T, 2>> p(N);
+    vector<pair<T, int>> d(N);
     vector<pair<pair<T, int>, int>> heap;
     auto check_edge = [&](int u, int v) {
         return (b[u] && M1.oracle(u, v)) || (b[v] && M2.oracle(v, u));
-    };
-    auto relax = [&](int u, int v, T cost) {
-        //assert(cost + p[u] - p[v] >= 0);
-        pair<T, int> nd(d[u].first + cost + p[u] - p[v], d[u].second + 1);
-        if (nd < d[v]) {
-            from[v] = u;
-            d[v] = nd;
-            heap.emplace_back(neg(d[v]), v);
-            push_heap(heap.begin(), heap.end());
-        }
     };
     while (true) {
         I[0].clear(), I[1].clear();
@@ -28,39 +23,45 @@ vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matr
         fill(target.begin(), target.end(), false);
         fill(from.begin(), from.end(), -1);
         for (auto u : I[0]) {
-            target[u << 1 | 1] = M2.oracle(u);
+            target[u] = M2.oracle(u);
             if (M1.oracle(u)) {
-                d[u << 1] = {0, 0};
-                heap.emplace_back(d[u << 1], u << 1);
+                d[u] = {w[u] + p[u][0] - p[u][1], 0};
+                heap.emplace_back(neg(d[u]), u);
             }
         }
+        make_heap(heap.begin(), heap.end());
         bool converged = true;
         while (!heap.empty()) {
-            auto [key, u] = heap[0];
+            auto [du, u] = heap[0];
             pop_heap(heap.begin(), heap.end());
             heap.pop_back();
-            if (neg(key) != d[u]) continue;
+            if (neg(du) != d[u]) continue;
             if (target[u]) {
-                heap.clear();
                 converged = false;
-                for (int v = u; v != -1; v = from[from[v]]) {
-                    int rv = v >> 1;
-                    b[rv] = !b[rv];
-                    w[rv] *= -1;
+                heap.clear();
+                for (int v = 0; v < N; ++v) {
+                    T cost = w[v] + p[v][b[v]] - p[v][!b[v]];
+                    //assert(cost >= 0);
+                    //assert(d[v].first - cost >= 0);
+                    p[v][b[v]] += min(d[v].first - cost, d[u].first);
+                    p[v][!b[v]] += min(d[v].first, d[u].first);
                 }
-                for (int v = 0; v < 2 * N; ++v) {
-                    p[v] += min(d[u], d[v]).first;
+                for (int v = u; v != -1; v = from[v]) {
+                    b[v] = !b[v];
+                    w[v] *= -1;
                 }
                 break;
             }
-            int ru = u >> 1;
-            if (b[ru] == (u & 1)) {
-                relax(u, u ^ 1, w[ru]);
-            } else {
-                for (auto v : I[!b[ru]]) {
-                    if (check_edge(ru, v)) {
-                        relax(u, v << 1 | (u & 1), 0);
-                    }
+            for (auto v : I[!b[u]]) {
+                if (!check_edge(u, v)) continue;
+                //assert(p[u][!b[u]] - p[v][!b[u]] >= 0);
+                //assert(w[v] + p[v][!b[u]] - p[v][b[u]] >= 0);
+                pair<T, int> nd(d[u].first + w[v] + p[u][!b[u]] - p[v][b[u]], d[u].second + 1);
+                if (nd < d[v]) {
+                    from[v] = u;
+                    d[v] = nd;
+                    heap.emplace_back(neg(d[v]), v);
+                    push_heap(heap.begin(), heap.end());
                 }
             }
         }
