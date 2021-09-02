@@ -1,52 +1,70 @@
 template<typename T, typename Matroid1, typename Matroid2>
-vector<int> weighted_matroid_intersection(int N, const vector<T>& w, Matroid1& M1, Matroid2& M2) {
-    vector<bool> b(N), target(N);
-    vector<int> I[2], p(N);
-    vector<T> l(N);
-    vector<vector<int>> E(N);
-    vector<pair<T, int>> d(N);
-    queue<int> q;
+vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matroid2& M2) {
+    vector<bool> b(N), target(2 * N);
+    vector<int> I[2], from(2 * N);
+    vector<T> p(2 * N);
+    vector<pair<T, int>> d(2 * N);
+    vector<pair<pair<T, int>, int>> heap;
+    auto check_edge = [&](int u, int v) {
+        return (b[u] && M1.oracle(u, v)) || (b[v] && M2.oracle(v, u));
+    };
+    auto relax = [&](int u, int v, T cost) {
+        //assert(cost + p[u] - p[v] >= 0);
+        pair<T, int> nd(d[u].first + cost + p[u] - p[v], d[u].second + 1);
+        if (nd < d[v]) {
+            from[v] = u;
+            d[v] = nd;
+            heap.emplace_back(neg(d[v]), v);
+            push_heap(heap.begin(), heap.end());
+        }
+    };
     while (true) {
-        for (int t : {0, 1}) I[t].clear();
+        I[0].clear(), I[1].clear();
         for (int u = 0; u < N; ++u) {
             I[b[u]].push_back(u);
-            l[u] = (b[u] ? -1 : +1) * w[u];
         }
         M1.build(I[1]), M2.build(I[1]);
-        for (int u = 0; u < N; ++u) {
-            E[u].clear();
-            for (auto v : I[!b[u]]) {
-                if ((b[u] && M1.oracle(u, v)) || (b[v] && M2.oracle(v, u))) {
-                    E[u].push_back(v);
-                }
-            }
-        }
         fill(d.begin(), d.end(), pair(numeric_limits<T>::max(), numeric_limits<int>::max()));
         fill(target.begin(), target.end(), false);
-        fill(p.begin(), p.end(), -1);
+        fill(from.begin(), from.end(), -1);
         for (auto u : I[0]) {
-            target[u] = M2.oracle(u);
+            target[u << 1 | 1] = M2.oracle(u);
             if (M1.oracle(u)) {
-                q.push(u);
-                d[u] = {w[u], 0};
+                d[u << 1] = {0, 0};
+                heap.emplace_back(d[u << 1], u << 1);
             }
         }
-        int t = -1;
-        while (not q.empty()) {
-            int u = q.front();
-            q.pop();
-            if (target[u] && (t == -1 || d[t] > d[u])) t = u;
-            for (auto v : E[u]) {
-                pair<T, int> nd(d[u].first + l[v], d[u].second + 1);
-                if (nd < d[v]) {
-                    p[v] = u;
-                    d[v] = nd;
-                    q.push(v);
+        bool converged = true;
+        while (!heap.empty()) {
+            auto [key, u] = heap[0];
+            pop_heap(heap.begin(), heap.end());
+            heap.pop_back();
+            if (neg(key) != d[u]) continue;
+            if (target[u]) {
+                heap.clear();
+                converged = false;
+                for (int v = u; v != -1; v = from[from[v]]) {
+                    int rv = v >> 1;
+                    b[rv] = !b[rv];
+                    w[rv] *= -1;
+                }
+                for (int v = 0; v < 2 * N; ++v) {
+                    p[v] += min(d[u], d[v]).first;
+                }
+                break;
+            }
+            int ru = u >> 1;
+            if (b[ru] == (u & 1)) {
+                relax(u, u ^ 1, w[ru]);
+            } else {
+                for (auto v : I[!b[ru]]) {
+                    if (check_edge(ru, v)) {
+                        relax(u, v << 1 | (u & 1), 0);
+                    }
                 }
             }
         }
-        if (t == -1) break;
-        for (int v = t; v != -1; v = p[v]) b[v] = !b[v];
+        if (converged) break;
     }
     return I[1];
 }
