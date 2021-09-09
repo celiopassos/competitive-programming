@@ -22,8 +22,8 @@ struct MonoidStack {
 };
 template<typename T>
 struct MonoidQueue {
-    MonoidStack<Monoid, false> in;
-    MonoidStack<Monoid, true> out;
+    MonoidStack<T, false> in;
+    MonoidStack<T, true> out;
     void move() {
         if (out.empty()) {
             while (not in.empty()) {
