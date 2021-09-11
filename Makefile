@@ -1,3 +1,2 @@
 CXX=g++
-CXXFLAGS=-Wall -Wextra -Wconversion -pedantic -fconcepts -std=gnu++17 -O2
-#CXXFLAGS+=-Wfloat-equal -Wlogical-op -Wshift-overflow=2 -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fsanitize=address -fsanitize=undefined -fno-sanitize-recover -fstack-protector
+CXXFLAGS=-Wall -Wextra -Wno-unused -pedantic -fconcepts -fsplit-stack -fsanitize=address -std=gnu++17 -O0 -ggdb
