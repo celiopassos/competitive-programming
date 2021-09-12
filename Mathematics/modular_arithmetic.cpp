@@ -33,14 +33,30 @@ struct Z {
     Z operator-() const {
         return Z() - *this;
     }
-    bool operator==(Z rhs) const { return x == rhs.x; }
-    bool operator!=(Z rhs) const { return x != rhs.x; }
-    bool operator<(Z rhs) const { return x < rhs.x; }
-    friend Z operator+(Z lhs, Z rhs) { return lhs += rhs; }
-    friend Z operator-(Z lhs, Z rhs) { return lhs -= rhs; }
-    friend Z operator*(Z lhs, Z rhs) { return lhs *= rhs; }
-    friend Z operator/(Z lhs, Z rhs) { return lhs /= rhs; }
-    friend ostream& operator<<(ostream& out, Z a) { return out << a.x; }
+    bool operator==(Z rhs) const {
+        return x == rhs.x;
+    }
+    bool operator!=(Z rhs) const {
+        return x != rhs.x;
+    }
+    bool operator<(Z rhs) const {
+        return x < rhs.x;
+    }
+    friend Z operator+(Z lhs, Z rhs) {
+        return lhs += rhs;
+    }
+    friend Z operator-(Z lhs, Z rhs) {
+        return lhs -= rhs;
+    }
+    friend Z operator*(Z lhs, Z rhs) {
+        return lhs *= rhs;
+    }
+    friend Z operator/(Z lhs, Z rhs) {
+        return lhs /= rhs;
+    }
+    friend ostream& operator<<(ostream& out, Z a) {
+        return out << a.x;
+    }
     friend istream& operator>>(istream& in, Z& a) {
         long long x;
         in >> x;

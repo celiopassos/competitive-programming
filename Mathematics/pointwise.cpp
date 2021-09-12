@@ -20,12 +20,24 @@ struct Pointwise : public array<T, K> {
         for (int j = 0; j < K; ++j) (*this)[j] /= rhs[j];
         return *this;
     }
-    friend P operator+(P lhs, const P& rhs) { return lhs += rhs; }
-    friend P operator-(P lhs, const P& rhs) { return lhs -= rhs; }
-    friend P operator*(P lhs, const P& rhs) { return lhs *= rhs; }
-    friend P operator/(P lhs, const P& rhs) { return lhs /= rhs; }
-    P operator+() const { return *this; }
-    P operator-() const { return P(T(0)) -= *this; }
+    friend P operator+(P lhs, const P& rhs) {
+        return lhs += rhs;
+    }
+    friend P operator-(P lhs, const P& rhs) {
+        return lhs -= rhs;
+    }
+    friend P operator*(P lhs, const P& rhs) {
+        return lhs *= rhs;
+    }
+    friend P operator/(P lhs, const P& rhs) {
+        return lhs /= rhs;
+    }
+    P operator+() const {
+        return *this;
+    }
+    P operator-() const {
+        return P(T(0)) -= *this;
+    }
     P power(long long p) const {
         P res;
         for (int j = 0; j < K; ++j) res[j] = (*this)[j].power(p);
@@ -38,8 +50,16 @@ struct Pointwise : public array<T, K> {
         for (int j = 0; j < K; ++j) X[j] = T(unif(rng));
         return X;
     }(), Xinv = P(1) / X;
-    P& operator<<=(long long p) { return *this *= X.power(p); }
-    P& operator>>=(long long p) { return *this *= Xinv.power(p); }
-    P operator<<(long long p) const { return *this * X.power(p); }
-    P operator>>(long long p) const { return *this * Xinv.power(p); }
+    P& operator<<=(long long p) {
+        return *this *= X.power(p);
+    }
+    P& operator>>=(long long p) {
+        return *this *= Xinv.power(p);
+    }
+    P operator<<(long long p) const {
+        return *this * X.power(p);
+    }
+    P operator>>(long long p) const {
+        return *this * Xinv.power(p);
+    }
 };

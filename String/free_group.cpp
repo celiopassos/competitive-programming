@@ -1,9 +1,9 @@
 template<typename T>
 struct FreeGroup {
     T shift, inv_shift, hash;
-    FreeGroup() : shift(1), inv_shift(1), hash(0) { }
+    FreeGroup() : shift(1), inv_shift(1), hash(0) {}
     FreeGroup(T shift, T inv_shift, T hash) : shift(shift), inv_shift(inv_shift), hash(hash) {}
-    FreeGroup(long long c) : shift(T::X), inv_shift(T::Xinv), hash(c) { }
+    FreeGroup(long long c) : shift(T::X), inv_shift(T::Xinv), hash(c) {}
     template<typename Iterator>
     FreeGroup(Iterator first, Iterator last) : FreeGroup() {
         while (first != last) {
@@ -17,10 +17,18 @@ struct FreeGroup {
         hash = rhs.shift * hash + rhs.hash;
         return *this;
     }
-    FreeGroup& operator-=(const FreeGroup& rhs) { return *this += -rhs; }
-    FreeGroup operator+(const FreeGroup& rhs) const { return FreeGroup(*this) += rhs; }
-    FreeGroup operator-(const FreeGroup& rhs) const { return FreeGroup(*this) -= rhs; }
-    FreeGroup operator+() const { return *this; }
+    FreeGroup& operator-=(const FreeGroup& rhs) {
+        return *this += -rhs;
+    }
+    FreeGroup operator+(const FreeGroup& rhs) const {
+        return FreeGroup(*this) += rhs;
+    }
+    FreeGroup operator-(const FreeGroup& rhs) const {
+        return FreeGroup(*this) -= rhs;
+    }
+    FreeGroup operator+() const {
+        return *this;
+    }
     FreeGroup operator-() const {
         return FreeGroup(inv_shift, shift, -inv_shift * hash);
     }
@@ -34,7 +42,13 @@ struct FreeGroup {
         }
         return res;
     }
-    bool operator<(const FreeGroup& rhs) const { return pair(shift, hash) < pair(rhs.shift, rhs.hash); }
-    bool operator==(const FreeGroup& rhs) const { return shift == rhs.shift && hash == rhs.hash; }
-    bool operator!=(const FreeGroup& rhs) const { return not (*this == rhs); }
+    bool operator<(const FreeGroup& rhs) const {
+        return shift != rhs.shift ? shift < rhs.shift : hash < rhs.hash;
+    }
+    bool operator==(const FreeGroup& rhs) const {
+        return shift == rhs.shift && hash == rhs.hash;
+    }
+    bool operator!=(const FreeGroup& rhs) const {
+        return not (*this == rhs);
+    }
 };
