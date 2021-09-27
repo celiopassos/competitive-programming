@@ -15,11 +15,13 @@ namespace fwht {
     template<typename T>
     matrix<T> inverse(matrix<T> M) {
         T det = determinant(M);
+        M = adjugate(M);
         for (int s : {0, 1}) {
             for (int t : {0, 1}) {
                 M[s][t] /= det;
             }
         }
+        return M;
     }
     template<typename T>
     vector<T> fwht(vector<T> v, matrix<T> M) {
