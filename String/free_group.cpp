@@ -42,9 +42,6 @@ struct FreeGroup {
         }
         return res;
     }
-    bool operator<(const FreeGroup& rhs) const {
-        return shift != rhs.shift ? shift < rhs.shift : hash < rhs.hash;
-    }
     bool operator==(const FreeGroup& rhs) const {
         return shift == rhs.shift && hash == rhs.hash;
     }

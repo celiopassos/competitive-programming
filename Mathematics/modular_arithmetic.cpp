@@ -39,9 +39,6 @@ struct Z {
     bool operator!=(Z rhs) const {
         return x != rhs.x;
     }
-    bool operator<(Z rhs) const {
-        return x < rhs.x;
-    }
     friend Z operator+(Z lhs, Z rhs) {
         return lhs += rhs;
     }
