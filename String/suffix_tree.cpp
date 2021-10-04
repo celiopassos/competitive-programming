@@ -33,7 +33,7 @@ vector<SuffixTreeNode> build_suffix_tree(const vector<int>& p, const vector<int>
         label[V[j]] = j;
         relabeled[j] = st[V[j]];
     }
-    for (int u = 0; u < M; ++u) {
+    for (int u = 1; u < M; ++u) {
         relabeled[u].link = label[relabeled[u].link];
     }
     return relabeled;
