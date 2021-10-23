@@ -28,10 +28,10 @@ vector<SuffixTreeNode> build_suffix_tree(const vector<int>& p, const vector<int>
     vector<int> V(M), label(M);
     iota(V.begin(), V.end(), 0);
     sort(V.begin(), V.end(), [&](int u, int v) { return st[u].len < st[v].len; });
-    vector<SuffixTreeNode> relabeled(M);
+    vector<SuffixTreeNode> relabeled;
     for (int j = 0; j < M; ++j) {
         label[V[j]] = j;
-        relabeled[j] = st[V[j]];
+        relabeled[j].push_back(st[V[j]]);
     }
     for (int u = 1; u < M; ++u) {
         relabeled[u].link = label[relabeled[u].link];

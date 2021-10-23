@@ -6,7 +6,9 @@ struct BIT {
     BIT(int N) : N(N), h(__lg(N)), ft(N + 1, T()) { }
     template<typename Iterator>
     BIT(Iterator first, Iterator last) : BIT(int(last - first)) {
-        partial_sum(first, last, ft.begin() + 1, plus<T>());
+        for (int i = 1; i <= N; ++i) {
+            ft[i] = first[i - 1] + ft[i - 1];
+        }
         for (int i = N; i >= 1; --i) {
             ft[i] = ft[i] - ft[i - lsb(i)];
         }
