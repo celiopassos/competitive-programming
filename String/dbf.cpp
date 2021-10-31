@@ -1,21 +1,21 @@
 struct dbf_t {
-    int N;
+    int N, K;
     std::vector<int> log;
     std::vector<std::vector<int>> p, rank;
     template<typename Iterator>
-    dbf_t(Iterator first, Iterator last) : N(last - first), log(N + 1) {
+    dbf_t(Iterator first, Iterator last) : N(last - first), K(1), log(N + 1), p(1, std::vector<int>(N)), rank(p) {
         for (int n = 2; n <= N; ++n) {
             log[n] = 1 + log[n >> 1];
         }
-        p.assign(log[N] + 1, std::vector<int>(N));
-        rank.assign(log[N] + 1, std::vector<int>(N));
         std::iota(p[0].begin(), p[0].end(), 0);
         std::sort(p[0].begin(), p[0].end(), [&](int i, int j) { return first[i] < first[j]; });
         for (int i = 1; i < N; ++i) {
             rank[0][p[0][i]] = rank[0][p[0][i - 1]] + (first[p[0][i]] != first[p[0][i - 1]]);
         }
         std::vector<int> cnt(N), tmp(N);
-        for (int k = 0; k < log[N]; ++k) {
+        for (int k = 0; (1 << k) < N; ++k, ++K) {
+            p.emplace_back(N);
+            rank.emplace_back(N);
             for (int i = 0; i < N; ++i) {
                 tmp[N - 1 - i] = (p[k][i] + N - (1 << k)) % N;
                 ++cnt[rank[k][p[k][i]]];
@@ -41,5 +41,18 @@ struct dbf_t {
         int lenS = S[1] - S[0], lenT = T[1] - T[0], min = std::min(lenS, lenT);
         auto keyS = key(S[0], min), keyT = key(T[0], min);
         return keyS != keyT ? keyS < keyT : lenS < lenT;
+    }
+    // cyclic lcp (assumes cyclic permutations starting from i and j are not equal)
+    int lcp(int i, int j) const {
+        int len = 0;
+        for (int k = K - 1; k >= 0; --k) {
+            if (rank[k][i] == rank[k][j]) {
+                int p = 1 << k;
+                len += p;
+                i = (i + p) % N;
+                j = (j + p) % N;
+            }
+        }
+        return len;
     }
 };
