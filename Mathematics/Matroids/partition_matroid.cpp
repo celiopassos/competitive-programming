@@ -1,8 +1,8 @@
 struct PartitionMatroid {
-    vector<int> cap, color, d;
-    PartitionMatroid(const vector<int>& cap, const vector<int>& color) : cap(cap), color(color), d(size(cap)) {}
-    void build(const vector<int>& I) {
-        fill(d.begin(), d.end(), 0);
+    std::vector<int> cap, color, d;
+    PartitionMatroid(const std::vector<int>& cap, const std::vector<int>& color) : cap(cap), color(color), d(cap.size()) {}
+    void build(const std::vector<int>& I) {
+        std::fill(d.begin(), d.end(), 0);
         for (auto u : I) {
             ++d[color[u]];
         }

@@ -1,16 +1,16 @@
 template<typename T>
 struct Clamp {
-    static const T inf = numeric_limits<T>::max() / 2;
-    T low, high, add;
-    Clamp(T low = -inf, T high = +inf, T add = 0) : low(low), high(high), add(add) {}
+    static const T inf = std::numeric_limits<T>::max() / 2;
+    T min, max, add;
+    Clamp(T min = -inf, T max = +inf, T add = 0) : min(min), max(max), add(add) {}
     // composition, rhs is applied first, *this is applied after
     Clamp operator*(Clamp rhs) const {
         T nadd = add + rhs.add;
-        T nlow = std::clamp(rhs.low - rhs.add, low - nadd, high - nadd) + nadd;
-        T nhigh = std::clamp(rhs.high - rhs.add, low - nadd, high - nadd) + nadd;
-        return Clamp(nlow, nhigh, nadd);
+        T nmin = std::clamp(rhs.min - rhs.add + nadd, min, max);
+        T nmax = std::clamp(rhs.max - rhs.add + nadd, min, max);
+        return Clamp(nmin, nmax, nadd);
     }
     T operator()(T x) const {
-        return std::clamp(x + add, low, high);
+        return std::clamp(x + add, min, max);
     }
-};
+}

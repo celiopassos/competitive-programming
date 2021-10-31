@@ -9,14 +9,14 @@ struct BeatsMonoid {
         const auto& lhs = *this;
         BeatsMonoid res;
         res.sum = lhs.sum + rhs.sum;
-        res.low[0] = min(lhs.low[0], rhs.low[0]);
-        res.high[0] = max(lhs.high[0], rhs.high[0]);
+        res.low[0] = std::min(lhs.low[0], rhs.low[0]);
+        res.high[0] = std::max(lhs.high[0], rhs.high[0]);
         int lowl = lhs.low[0] == res.low[0] ? (res.cntlow += lhs.cntlow, 1) : 0;
         int lowr = rhs.low[0] == res.low[0] ? (res.cntlow += rhs.cntlow, 1) : 0;
         int highl = lhs.high[0] == res.high[0] ? (res.cnthigh += lhs.cnthigh, 1) : 0;
         int highr = rhs.high[0] == res.high[0] ? (res.cnthigh += rhs.cnthigh, 1) : 0;
-        res.low[1] = min(lhs.low[lowl], rhs.low[lowr]);
-        res.high[1] = max(lhs.high[highl], rhs.high[highr]);
+        res.low[1] = std::min(lhs.low[lowl], rhs.low[lowr]);
+        res.high[1] = std::max(lhs.high[highl], rhs.high[highr]);
         return res;
     }
 };

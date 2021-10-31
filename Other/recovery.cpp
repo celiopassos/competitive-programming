@@ -5,17 +5,17 @@ struct Recovery {
         Node* prev;
         Node(T value, Node* prev) : value(value), prev(prev) { }
     };
-    deque<Node> states;
+    std::deque<Node> states;
     Node* create(T value, Node* prev) {
         return &states.emplace_back(value, prev);
     } 
-    vector<T> recover(Node* last) {
-        vector<T> res;
+    std::vector<T> recover(Node* last) {
+        std::vector<T> res;
         while (last != nullptr) {
             res.push_back(last->value);
             last = last->prev;
         }
-        reverse(res.begin(), res.end());
+        std::reverse(res.begin(), res.end());
         return res;
     }
 };

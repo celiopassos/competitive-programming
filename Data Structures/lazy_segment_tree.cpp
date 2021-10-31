@@ -6,7 +6,7 @@ struct LazySegmentTree {
         int l, r;
     };
     int N;
-    vector<Node> st;
+    std::vector<Node> st;
     int left(int p) const {
         return 2 * p + 1;
     }
@@ -55,7 +55,7 @@ struct LazySegmentTree {
             st[p].value = st[left(p)].value + st[right(p)].value;
         }
     }
-    void partition(vector<int>& q, int p, int ql, int qr) {
+    void partition(std::vector<int>& q, int p, int ql, int qr) {
         if (st[p].r <= ql || qr <= st[p].l) {
             return;
         } else if (ql <= st[p].l && st[p].r <= qr) {
@@ -81,7 +81,7 @@ struct LazySegmentTree {
         }
     }
     template<typename Iterator>
-    LazySegmentTree(Iterator first, Iterator last) : N(int(last - first)), st(4 * N) {
+    LazySegmentTree(Iterator first, Iterator last) : N(last - first), st(4 * N) {
         build(0, 0, N, first);
     }
     T query(int l, int r) {
@@ -96,7 +96,7 @@ struct LazySegmentTree {
     // returns first i in [l, r) with pred(query(l, i + 1)) == false (r if no such i exists)
     template<typename Pred>
     int find_right(int l, int r, Pred&& pred) {
-        static vector<int> q;
+        static std::vector<int> q;
         partition(q, 0, l, r);
         int res = r;
         T prefix = T();

@@ -1,16 +1,16 @@
 template<int N>
 struct Z2GaussianElimination {
-    using V = bitset<N>;
-    array<V, N> basis, alpha;
+    using V = std::bitset<N>;
+    std::array<V, N> basis, alpha;
     int dim = 0;
-    auto reduce(V& x) const {
+    std::pair<int, V> reduce(V& x) const {
         V coef;
         for (int i = N - 1; i >= 0 && x.any(); --i) {
             if (x[i] == 0) continue;
-            if (basis[i] == 0) return pair(i, coef);
+            if (basis[i] == 0) return std::pair(i, coef);
             x ^= basis[i], coef ^= alpha[i];
         }
-        return pair(-1, coef);
+        return std::pair(-1, coef);
     }
     bool insert(V x) {
         auto [i, coef] = reduce(x);
@@ -20,8 +20,8 @@ struct Z2GaussianElimination {
         alpha[i][dim - 1] = 1;
         return true;
     }
-    pair<bool, V> solve(V x) const {
+    std::pair<bool, V> solve(V x) const {
         auto [i, coef] = reduce(x);
-        return pair(i == -1, coef);
+        return std::pair(i == -1, coef);
     }
 };

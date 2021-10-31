@@ -1,9 +1,9 @@
 struct GraphicMatroid {
     int N, M;
-    vector<array<int, 2>> edges;
-    vector<vector<int>> E;
-    vector<int> component, L, R;
-    GraphicMatroid(int N, const vector<array<int, 2>>& edges_) : N(N), M((int)edges_.size()), edges(edges_), E(N), component(N), L(N), R(N) {}
+    std::vector<std::array<int, 2>> edges;
+    std::vector<std::vector<int>> E;
+    std::vector<int> component, L, R;
+    GraphicMatroid(int N, const std::vector<std::array<int, 2>>& edges_) : N(N), M(edges_.size()), edges(edges_), E(N), component(N), L(N), R(N) {}
     int timer = 0;
     void dfs(int u) {
         L[u] = timer++;
@@ -14,7 +14,7 @@ struct GraphicMatroid {
         }
         R[u] = timer;
     }
-    void build(const vector<int>& I) {
+    void build(const std::vector<int>& I) {
         timer = 0;
         for (int u = 0; u < N; ++u) {
             E[u].clear();

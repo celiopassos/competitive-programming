@@ -1,9 +1,9 @@
 // op should map (X, Y) -> Y
 template<typename X, typename Y, typename Op>
-vector<Y> exclusive(const vector<X>& a, Y Id, Op&& op) {
-    int N = (int)a.size();
-    vector<Y> res(N, Id);
-    for (int b = __lg(N - 1); b >= 0; --b) {
+std::vector<Y> exclusive(const std::vector<X>& a, Y Id, Op&& op) {
+    int N = a.size();
+    std::vector<Y> res(N, Id);
+    for (int b = std::__lg(N - 1); b >= 0; --b) {
         for (int i = N - 1; i >= 0; --i) {
             res[i] = res[i >> 1];
         }

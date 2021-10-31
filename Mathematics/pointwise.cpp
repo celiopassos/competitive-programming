@@ -1,8 +1,8 @@
 template<typename T, int K>
-struct Pointwise : public array<T, K> {
+struct Pointwise : public std::array<T, K> {
     using P = Pointwise;
     Pointwise(T value = 0) {
-        fill(*this.begin(), *this.end(), value);
+        std::fill(*this.begin(), *this.end(), value);
     }
     P& operator+=(const P& rhs) {
         for (int j = 0; j < K; ++j) (*this)[j] += rhs[j];
@@ -38,28 +38,28 @@ struct Pointwise : public array<T, K> {
     P operator-() const {
         return P(T(0)) -= *this;
     }
-    P power(long long p) const {
+    P power(int64_t p) const {
         P res;
         for (int j = 0; j < K; ++j) res[j] = (*this)[j].power(p);
         return res;
     }
     inline static const Pointwise X = [](){
-        uniform_int_distribution<long long> unif(1, numeric_limits<long long>::max());
+        std::uniform_int_distribution<int64_t> unif(1, std::numeric_limits<int64_t>::max());
         Pointwise X;
-        mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
         for (int j = 0; j < K; ++j) X[j] = T(unif(rng));
         return X;
     }(), Xinv = P(1) / X;
-    P& operator<<=(long long p) {
+    P& operator<<=(int64_t p) {
         return *this *= X.power(p);
     }
-    P& operator>>=(long long p) {
+    P& operator>>=(int64_t p) {
         return *this *= Xinv.power(p);
     }
-    P operator<<(long long p) const {
+    P operator<<(int64_t p) const {
         return *this * X.power(p);
     }
-    P operator>>(long long p) const {
+    P operator>>(int64_t p) const {
         return *this * Xinv.power(p);
     }
 };

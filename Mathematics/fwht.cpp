@@ -1,9 +1,9 @@
 namespace fwht {
     template<typename T>
-    using matrix = array<array<T, 2>, 2>;
+    using matrix = std::array<std::array<T, 2>, 2>;
     template<typename T>
     matrix<T> adjugate(matrix<T> M) {
-        swap(M[0][0], M[1][1]);
+        std::swap(M[0][0], M[1][1]);
         M[0][1] *= -1;
         M[1][0] *= -1;
         return M;
@@ -24,8 +24,8 @@ namespace fwht {
         return M;
     }
     template<typename T>
-    vector<T> fwht(vector<T> v, matrix<T> M) {
-        int N = (int)v.size();
+    std::vector<T> fwht(std::vector<T> v, matrix<T> M) {
+        int N = v.size();
         for (int len = 1; len < N; len *= 2) {
             for (int pos = 0; pos < N; pos += 2 * len) {
                 for (int i = 0; i < len; ++i) {
@@ -38,9 +38,9 @@ namespace fwht {
         return v;
     }
     template<typename T>
-    vector<T> convolution(const vector<T>& a, const vector<T>& b, matrix<T> M) {
+    std::vector<T> convolution(const std::vector<T>& a, const std::vector<T>& b, matrix<T> M) {
         auto ahat = fwht(a, M), bhat = fwht(b, M);
-        int N = (int)a.size();
+        int N = a.size();
         for (int i = 0; i < N; ++i) {
             ahat[i] *= bhat[i];
         }

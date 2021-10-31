@@ -2,12 +2,12 @@ template<typename T>
 struct GaussianElimination {
     int N, M;
     matrix<T> A, E;
-    vector<int> pivot;
+    std::vector<int> pivot;
     int rank, nullity;
-    // O(min(N, M)NM)
+    // O(std::min(N, M)NM)
     GaussianElimination(const matrix<T>& A_) : A(A_) {
-        N = (int)size(A), M = (int)size(A[0]);
-        E = matrix<T>(N, vector<T>(N));
+        N = A.size(), M = A[0].size();
+        E = matrix<T>(N, std::vector<T>(N));
         for (int i = 0; i < N; ++i) {
             E[i][i] = 1;
         }
@@ -23,8 +23,8 @@ struct GaussianElimination {
             }
             if (sel == -1) continue;
             if (sel != row) {
-                swap(A[sel], A[row]);
-                swap(E[sel], E[row]);
+                std::swap(A[sel], A[row]);
+                std::swap(E[sel], E[row]);
             }
             for (int i = 0; i < N; ++i) {
                 if (i == row) continue;
@@ -41,26 +41,26 @@ struct GaussianElimination {
         }
     }
     // O(N^2 + M)
-    pair<bool, vector<T>> solve(vector<T> b, bool reduced = false) const {
-        assert(N == (int)size(b));
+    std::pair<bool, std::vector<T>> solve(std::vector<T> b, bool reduced = false) const {
+        assert(N == b.size());
         if (not reduced) {
             b = E * b;
         }
-        vector<T> x(M);
+        std::vector<T> x(M);
         for (int j = 0; j < M; ++j) {
             if (pivot[j] == -1) continue;
             x[j] = b[pivot[j]] / A[pivot[j]][j];
             b[pivot[j]] = 0;
         }
         for (int i = 0; i < N; ++i) {
-            if (b[i] != 0) return pair(false, x);
+            if (b[i] != 0) return std::pair(false, x);
         }
-        return pair(true, x);
+        return std::pair(true, x);
     }
     // O(nullity * NM)
-    vector<vector<T>> kernel_basis() const {
-        vector<vector<T>> basis;
-        vector<T> e(M);
+    std::vector<std::vector<T>> kernel_basis() const {
+        std::vector<std::vector<T>> basis;
+        std::vector<T> e(M);
         for (int j = 0; j < M; ++j) {
             if (pivot[j] != -1) continue;
             e[j] = 1;
@@ -75,7 +75,7 @@ struct GaussianElimination {
         assert(N == M);
         assert(rank == N);
         matrix<T> res;
-        vector<T> e(N);
+        std::vector<T> e(N);
         for (int i = 0; i < N; ++i) {
             e[i] = 1;
             auto x = solve(e).second;

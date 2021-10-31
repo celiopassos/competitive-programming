@@ -7,7 +7,7 @@ struct ImplicitSegmentTree {
         Node(int l, int r, int tag) : l(l), r(r), m((l + r) / 2), tag(tag) {}
     };
     int num_tags = 0;
-    deque<Node> deq;
+    std::deque<Node> deq;
     Node* create(int l, int r, int tag = -1) {
         return &deq.emplace_back(l, r, tag == -1 ? num_tags++ : tag);
     }
@@ -64,7 +64,7 @@ struct ImplicitSegmentTree {
     }
     template<typename Iterator>
     Node* build(Iterator first, Iterator last) {
-        Node* root = create(0, int(last - first), num_tags++);
+        Node* root = create(0, last - first, num_tags++);
         build(root, first);
         return root;
     }

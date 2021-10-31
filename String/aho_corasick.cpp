@@ -1,20 +1,20 @@
 struct AhoCorasick {
     struct Node {
-        map<char, int> nxt, go;
+        std::map<char, int> nxt, go;
         int p, link = -1, occ_link = -1;
         char c;
         Node(int p, char c) : p(p), c(c) {}
     };
-    vector<Node> tr;
+    std::vector<Node> tr;
     AhoCorasick() {
         tr.emplace_back(0, 0);
         tr[0].occ_link = tr[0].link = 0;
     }
-    int add_string(const string& s) {
+    int add_string(const std::string& s) {
         int u = 0;
         for (auto c : s) {
             if (not tr[u].nxt.count(c)) {
-                int v = tr[u].go[c] = tr[u].nxt[c] = (int)tr.size();
+                int v = tr[u].go[c] = tr[u].nxt[c] = tr.size();
                 tr.emplace_back(u, c);
                 if (u == 0) tr[v].link = 0;
             }
@@ -42,8 +42,8 @@ struct AhoCorasick {
         return tr[u].occ_link;
     }
     template<typename Report>
-    void run(const string& t, Report&& report) {
-        for (int i = 0, u = 0; i < (int)t.size(); ++i) {
+    void run(const std::string& t, Report&& report) {
+        for (int i = 0, u = 0; i < t.size(); ++i) {
             u = go(u, t[i]);
             for (int v = get_occurrence(u); v != 0; v = get_occurrence(get_link(v))) {
                 report(i, v);

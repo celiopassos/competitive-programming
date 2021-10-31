@@ -2,10 +2,10 @@ template<typename T>
 struct BIT {
     static int lsb(int b) { return b & -b; }
     int N, h;
-    vector<T> ft;
-    BIT(int N) : N(N), h(__lg(N)), ft(N + 1, T()) { }
+    std::vector<T> ft;
+    BIT(int N) : N(N), h(std::__lg(N)), ft(N + 1, T()) { }
     template<typename Iterator>
-    BIT(Iterator first, Iterator last) : BIT(int(last - first)) {
+    BIT(Iterator first, Iterator last) : BIT(last - first) {
         for (int i = 1; i <= N; ++i) {
             ft[i] = first[i - 1] + ft[i - 1];
         }

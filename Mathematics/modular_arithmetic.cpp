@@ -1,8 +1,8 @@
-template<long long P>
+template<int P>
 struct Z {
-    long long x;
+    int x;
     Z() : x(0) {}
-    Z(long long x_) {
+    Z(int64_t x_) {
         x = x_ % P;
         if (x < 0) x += P;
     }
@@ -17,13 +17,13 @@ struct Z {
         return *this;
     }
     Z& operator*=(Z rhs) {
-        x = x * rhs.x % P;
+        x = int64_t(x) * rhs.x % P;
         return *this;
     }
     Z& operator/=(Z rhs) {
         return *this *= rhs.power(-1);
     }
-    Z power(long long p) const {
+    Z power(int64_t p) const {
         p %= P - 1;
         if (p < 0) p += P - 1;
         Z res = 1;
@@ -51,18 +51,18 @@ struct Z {
     friend Z operator/(Z lhs, Z rhs) {
         return lhs /= rhs;
     }
-    friend ostream& operator<<(ostream& out, Z a) {
+    friend std::ostream& operator<<(std::ostream& out, Z a) {
         return out << a.x;
     }
-    friend istream& operator>>(istream& in, Z& a) {
-        long long x;
+    friend std::istream& operator>>(std::istream& in, Z& a) {
+        int64_t x;
         in >> x;
         a = Z(x);
         return in;
     }
     inline static const Z X = [](){
-        uniform_int_distribution<long long> unif(1, P - 1);
-        mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+        std::uniform_int_distribution<int64_t> unif(1, P - 1);
+        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
         return unif(rng);
     }(), Xinv = 1 / X;
 };

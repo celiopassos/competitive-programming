@@ -1,11 +1,11 @@
 template<typename T>
 struct SegmentTree {
     int N;
-    vector<T> st;
+    std::vector<T> st;
     SegmentTree(int N) : N(N), st(2 * N) {}
     template<typename Iterator>
-    SegmentTree(Iterator first, Iterator last) : SegmentTree(int(last - first)) {
-        copy(first, last, st.begin() + N);
+    SegmentTree(Iterator first, Iterator last) : SegmentTree(last - first) {
+        std::copy(first, last, st.begin() + N);
         for (int p = N - 1; p > 0; --p) {
             st[p] = st[p << 1] + st[p << 1 | 1];
         }
@@ -43,7 +43,7 @@ struct SegmentTree {
     // first i in [a, b) with pred(query(a, i + 1)) == false (b if no such i exists)
     template<typename Pred>
     int find_right(int a, int b, Pred&& pred) {
-        static vector<int> left, right;
+        static std::vector<int> left, right;
         for (int l = a + N, r = b + N; l < r; l >>= 1, r >>= 1) {
             if (l & 1) left.push_back(l++);
             if (r & 1) right.push_back(--r);

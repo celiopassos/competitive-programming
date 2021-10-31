@@ -1,13 +1,13 @@
 // builds virtual tree on F given the vertex set V and returns its root
-// V is modified to contain the new vertices and is sorted by L[u]
+// V is modified to contain the new vertices and is sorted by lca.L[u]
 template<typename LCA>
-int build_virtual_tree(vector<int>& V, vector<vector<int>>& F, const LCA& lca) {
+int build_virtual_tree(std::vector<int>& V, std::vector<std::vector<int>>& F, const LCA& lca) {
     auto cmp = [&](int u, int v) { return lca.L[u] > lca.L[v]; };
-    sort(V.begin(), V.end(), cmp);
-    int k = (int)V.size();
+    std::sort(V.begin(), V.end(), cmp);
+    int k = V.size();
     for (int j = 0; j + 1 < k; ++j) V.push_back(lca.lca(V[j], V[j + 1]));
-    sort(V.begin(), V.end(), cmp), V.erase(unique(V.begin(), V.end()), V.end());
-    stack<int> stk;
+    std::sort(V.begin(), V.end(), cmp), V.erase(std::unique(V.begin(), V.end()), V.end());
+    std::stack<int> stk;
     for (auto u : V) {
         while (not stk.empty() && lca.is_ancestor(u, stk.top())) {
             F[u].push_back(stk.top());

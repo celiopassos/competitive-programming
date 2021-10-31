@@ -1,4 +1,4 @@
-// pass Cmp = std::less<Y> for min queries or std::greater<Y> for max queries
+// pass Cmp = std::less<Y> for std::min queries or std::greater<Y> for std::max queries
 template<typename F, typename X, typename Y, typename Cmp>
 struct LiChaoTree {
     struct Node {
@@ -9,7 +9,7 @@ struct LiChaoTree {
     };
     Cmp cmp;
     LiChaoTree(Cmp cmp = Cmp()) : cmp(cmp) {}
-    deque<Node> deq;
+    std::deque<Node> deq;
     Node* create(X l, X r) {
         return &deq.emplace_back(l, r);
     }
@@ -21,7 +21,7 @@ struct LiChaoTree {
     }
     void add(Node *p, F g) {
         if (cmp(g(p->m), (p->f)(p->m))) {
-            swap(p->f, g);
+            std::swap(p->f, g);
         }
         if (p->r - p->l > 1) {
             if (cmp(g(p->l), (p->f)(p->l))) {

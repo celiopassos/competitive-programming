@@ -1,4 +1,4 @@
 template<typename T>
-using Line = pair<complex<T>, T>; // hyperplane dot(first, x) = second
+using Line = std::pair<std::complex<T>, T>; // hyperplane dot(first, x) = second
 template<typename T>
-using Segment = array<complex<T>, 2>;
+using Segment = std::array<std::complex<T>, 2>;

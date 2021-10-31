@@ -1,10 +1,10 @@
 // K > floor(log(tree height))
 template<int K>
 struct LCA {
-    const vector<vector<int>>& E;
+    const std::vector<std::vector<int>>& E;
     int N;
-    vector<int> L, R, inv, h;
-    vector<array<int, K>> up;
+    std::vector<int> L, R, inv, h;
+    std::vector<std::array<int, K>> up;
     int timer = 0;
     void dfs(int u, int p) {
         up[u][0] = p;
@@ -17,7 +17,7 @@ struct LCA {
         }
         R[u] = timer;
     }
-    LCA(const vector<vector<int>>& E, int root) : E(E), N((int)E.size()), L(N), R(N), inv(N), h(N), up(N) {
+    LCA(const std::vector<std::vector<int>>& E, int root) : E(E), N(E.size()), L(N), R(N), inv(N), h(N), up(N) {
         dfs(root, root);
     }
     bool is_ancestor(int u, int v) const {

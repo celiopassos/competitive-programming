@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
-using namespace std;
 int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
     exit(0);
 }

@@ -1,16 +1,16 @@
 template<typename T>
 struct Dinic {
-    inline static const T inf = numeric_limits<T>::max();
+    inline static const T inf = std::numeric_limits<T>::max();
     struct Edge {
         int from, to;
         T cap, flow = 0;
         T free() const { return cap - flow; }
         Edge(int u, int v, T cap) : from(u), to(v), cap(cap) {}
     };
-    vector<Edge> edges;
+    std::vector<Edge> edges;
     int N, M = 0;
-    vector<vector<int>> E;
-    vector<int> level, ptr;
+    std::vector<std::vector<int>> E;
+    std::vector<int> level, ptr;
     Dinic(int N) : N(N), E(N), level(N), ptr(N) {}
     int add_edge(int u, int v, T cap) {
         assert(cap >= 0);
@@ -21,9 +21,9 @@ struct Dinic {
         return M - 2;
     }
     bool bfs(int s, int t) {
-        fill(level.begin(), level.end(), -1);
+        std::fill(level.begin(), level.end(), -1);
         level[s] = 0;
-        static queue<int> q;
+        static std::queue<int> q;
         q.push(s);
         while (not q.empty()) {
             int u = q.front();
@@ -39,10 +39,10 @@ struct Dinic {
     }
     T push(int u, int t, T pushed) {
         if (u == t || pushed == 0) return pushed;
-        for (int& i = ptr[u]; i < (int)E[u].size(); ++i) {
+        for (int& i = ptr[u]; i < E[u].size(); ++i) {
             auto &edge = edges[E[u][i]], &back = edges[E[u][i] ^ 1];
             if (level[edge.to] != level[u] + 1 || edge.free() <= 0) continue;
-            T pushing = push(edge.to, t, min(pushed, edge.free()));
+            T pushing = push(edge.to, t, std::min(pushed, edge.free()));
             if (pushing == 0) continue;
             edge.flow += pushing, back.flow -= pushing;
             return pushing;
@@ -53,7 +53,7 @@ struct Dinic {
         for (auto& edge : edges) edge.flow = 0;
         T f = 0;
         while (bfs(s, t)) {
-            fill(ptr.begin(), ptr.end(), 0);
+            std::fill(ptr.begin(), ptr.end(), 0);
             while (T pushed = push(s, t, inf)) f += pushed;
         }
         return f;

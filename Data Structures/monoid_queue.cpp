@@ -1,6 +1,6 @@
 template<typename T, bool top_down>
 struct MonoidStack {
-    stack<pair<T, T>> st;
+    std::stack<std::pair<T, T>> st;
     T top() const {
         return st.top().first;
     }

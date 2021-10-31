@@ -1,24 +1,24 @@
 // maintains maximum matching of minimum weight
 template<typename T>
 struct Hungarian {
-    inline static const T inf = numeric_limits<T>::max();
+    inline static const T inf = std::numeric_limits<T>::max();
     int N, M;
     T cost;
-    vector<int> match;
-    vector<T> ldual, rdual;
-    vector<vector<T>> C;
+    std::vector<int> match;
+    std::vector<T> ldual, rdual;
+    std::vector<std::vector<T>> C;
     Hungarian(int N, int M) : N(N), M(M), cost(0), match(M, -1), ldual(N), rdual(M), C(N) {
         assert(N <= M);
     }
-    void insert(int u, const vector<T>& row) {
+    void insert(int u, const std::vector<T>& row) {
         C[u] = row;
         ldual[u] = inf;
         for (int v = 0; v < M; ++v) {
-            ldual[u] = min(ldual[u], C[u][v] - rdual[v]);
+            ldual[u] = std::min(ldual[u], C[u][v] - rdual[v]);
         }
-        vector<T> dmin(M, inf);
-        vector<int> best(M, -1);
-        vector<bool> vis(M);
+        std::vector<T> dmin(M, inf);
+        std::vector<int> best(M, -1);
+        std::vector<bool> vis(M);
         int last = -1;
         for (int z = u; z != -1; z = match[last]) {
             T delta = inf;

@@ -1,7 +1,7 @@
 struct EulerianTour {
     int N, M = 0, odd = 0;
-    vector<vector<pair<int, int>>> E;
-    vector<int> deg;
+    std::vector<std::vector<std::pair<int, int>>> E;
+    std::vector<int> deg;
     EulerianTour(int N) : N(N), E(N), deg(N) {}
     void add_edge(int u, int v) {
         int V[2] = {u, v};
@@ -14,12 +14,12 @@ struct EulerianTour {
         ++M;
     }
     // returns eulerian tour by vertices and edges (reversed if first bit is 1)
-    pair<vector<int>, vector<int>> find(int src) const {
+    std::pair<std::vector<int>, std::vector<int>> find(int src) const {
         assert(odd == 0);
         auto d = deg;
-        vector<bool> dead(M, false);
-        vector<int> ptr(N, 0), p, e;
-        stack<pair<int, int>> stk;
+        std::vector<bool> dead(M, false);
+        std::vector<int> ptr(N, 0), p, e;
+        std::stack<std::pair<int, int>> stk;
         stk.emplace(src, -1);
         while (not stk.empty()) {
             auto [u, i] = stk.top();

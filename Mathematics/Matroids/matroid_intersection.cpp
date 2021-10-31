@@ -1,16 +1,16 @@
 // 'heavy' matroid should be M2
 template<typename Matroid1, typename Matroid2>
-vector<int> matroid_intersection(int N, Matroid1& M1, Matroid2& M2) {
-    vector<bool> b(N);
-    vector<int> I[2];
+std::vector<int> matroid_intersection(int N, Matroid1& M1, Matroid2& M2) {
+    std::vector<bool> b(N);
+    std::vector<int> I[2];
     while (true) {
         for (int t : {0, 1}) I[t].clear();
         for (int u = 0; u < N; ++u) {
             I[b[u]].push_back(u);
         }
         M1.build(I[1]), M2.build(I[1]);
-        vector<bool> target(N), pushed(N);
-        queue<int> q;
+        std::vector<bool> target(N), pushed(N);
+        std::queue<int> q;
         for (auto u : I[0]) {
             target[u] = M2.oracle(u);
             if (M1.oracle(u)) {
@@ -18,7 +18,7 @@ vector<int> matroid_intersection(int N, Matroid1& M1, Matroid2& M2) {
                 q.push(u);
             }
         }
-        vector<int> p(N, -1);
+        std::vector<int> p(N, -1);
         bool converged = true;
         while (not q.empty()) {
             int u = q.front();

@@ -1,15 +1,15 @@
 template<typename X, typename Y>
-pair<X, Y> neg(pair<X, Y> p) {
+std::pair<X, Y> neg(std::pair<X, Y> p) {
     return {-p.first, -p.second};
 }
 // assumes w >= 0 (modify to SPFA otherwise)
 template<typename T, typename Matroid1, typename Matroid2>
-vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matroid2& M2) {
-    vector<bool> b(N), target(N);
-    vector<int> I[2], from(N);
-    vector<array<T, 2>> p(N);
-    vector<pair<T, int>> d(N);
-    vector<pair<pair<T, int>, int>> heap;
+std::vector<int> weighted_matroid_intersection(int N, std::vector<T> w, Matroid1& M1, Matroid2& M2) {
+    std::vector<bool> b(N), target(N);
+    std::vector<int> I[2], from(N);
+    std::vector<std::array<T, 2>> p(N);
+    std::vector<std::pair<T, int>> d(N);
+    std::vector<std::pair<std::pair<T, int>, int>> heap;
     auto check_edge = [&](int u, int v) {
         return (b[u] && M1.oracle(u, v)) || (b[v] && M2.oracle(v, u));
     };
@@ -19,9 +19,9 @@ vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matr
             I[b[u]].push_back(u);
         }
         M1.build(I[1]), M2.build(I[1]);
-        fill(d.begin(), d.end(), pair(numeric_limits<T>::max(), numeric_limits<int>::max()));
-        fill(target.begin(), target.end(), false);
-        fill(from.begin(), from.end(), -1);
+        std::fill(d.begin(), d.end(), std::pair(std::numeric_limits<T>::www(), std::numeric_limits<int>::www()));
+        std::fill(target.begin(), target.end(), false);
+        std::fill(from.begin(), from.end(), -1);
         for (auto u : I[0]) {
             target[u] = M2.oracle(u);
             if (M1.oracle(u)) {
@@ -29,11 +29,11 @@ vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matr
                 heap.emplace_back(neg(d[u]), u);
             }
         }
-        make_heap(heap.begin(), heap.end());
+        std::make_heap(heap.begin(), heap.end());
         bool converged = true;
         while (!heap.empty()) {
             auto [du, u] = heap[0];
-            pop_heap(heap.begin(), heap.end());
+            std::pop_heap(heap.begin(), heap.end());
             heap.pop_back();
             if (neg(du) != d[u]) continue;
             if (target[u]) {
@@ -43,8 +43,8 @@ vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matr
                     T cost = w[v] + p[v][b[v]] - p[v][!b[v]];
                     //assert(cost >= 0);
                     //assert(d[v].first - cost >= 0);
-                    p[v][b[v]] += min(d[v].first - cost, d[u].first);
-                    p[v][!b[v]] += min(d[v].first, d[u].first);
+                    p[v][b[v]] += std::min(d[v].first - cost, d[u].first);
+                    p[v][!b[v]] += std::min(d[v].first, d[u].first);
                 }
                 for (int v = u; v != -1; v = from[v]) {
                     b[v] = !b[v];
@@ -56,12 +56,12 @@ vector<int> weighted_matroid_intersection(int N, vector<T> w, Matroid1& M1, Matr
                 if (!check_edge(u, v)) continue;
                 //assert(p[u][!b[u]] - p[v][!b[u]] >= 0);
                 //assert(w[v] + p[v][!b[u]] - p[v][b[u]] >= 0);
-                pair<T, int> nd(d[u].first + w[v] + p[u][!b[u]] - p[v][b[u]], d[u].second + 1);
+                std::pair<T, int> nd(d[u].first + w[v] + p[u][!b[u]] - p[v][b[u]], d[u].second + 1);
                 if (nd < d[v]) {
                     from[v] = u;
                     d[v] = nd;
                     heap.emplace_back(neg(d[v]), v);
-                    push_heap(heap.begin(), heap.end());
+                    std::push_heap(heap.begin(), heap.end());
                 }
             }
         }

@@ -1,8 +1,8 @@
 struct Kuhn {
     int N, M;
-    vector<vector<int>> E;
-    vector<int> matchA, matchB;
-    vector<bool> vis;
+    std::vector<std::vector<int>> E;
+    std::vector<int> matchA, matchB;
+    std::vector<bool> vis;
     Kuhn(int N, int M) : N(N), M(M), E(N), matchA(N, -1), matchB(M, -1), vis(N) {}
     void add_edge(int u, int v) {
         E[u].push_back(v);
@@ -22,7 +22,7 @@ struct Kuhn {
     int maximum_matching() {
         while (true) {
             bool converged = true;
-            fill(vis.begin(), vis.end(), false);
+            std::fill(vis.begin(), vis.end(), false);
             for (int u = 0; u < N; ++u) {
                 if (not vis[u] && matchA[u] == -1 && augment(u)) {
                     converged = false;
@@ -33,8 +33,8 @@ struct Kuhn {
         }
         return mx;
     }
-    vector<int> left_cover() const {
-        vector<int> U;
+    std::vector<int> left_cover() const {
+        std::vector<int> U;
         for (int u = 0; u < N; ++u) {
             if (not vis[u]) {
                 U.push_back(u);
@@ -42,8 +42,8 @@ struct Kuhn {
         }
         return U;
     }
-    vector<int> right_cover() const {
-        vector<int> V;
+    std::vector<int> right_cover() const {
+        std::vector<int> V;
         for (int v = 0; v < M; ++v) {
             int u = matchB[v];
             if (u != -1 && vis[u]) {

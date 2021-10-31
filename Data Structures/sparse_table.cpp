@@ -2,15 +2,15 @@ template<typename T, typename Op>
 struct SparseTable {
     int N;
     Op op;
-    vector<int> log;
-    vector<vector<T>> st;
+    std::vector<int> log;
+    std::vector<std::vector<T>> st;
     template<typename Iterator>
-    SparseTable(Iterator first, Iterator last, Op op = Op()) : N(int(last - first)), op(op), log(N + 1) {
+    SparseTable(Iterator first, Iterator last, Op op = Op()) : N(last - first), op(op), log(N + 1) {
         for (int x = 2; x <= N; ++x) {
             log[x] = 1 + log[x >> 1];
         }
         st.resize(log[N] + 1);
-        st[0] = vector<T>(first, last);
+        st[0] = std::vector<T>(first, last);
         for (int x = 0; x < log[N]; ++x) {
             st[x + 1].resize(N);
             for (int i = 0; i + (1 << (x + 1)) <= N; ++i) {
@@ -26,7 +26,7 @@ struct SparseTable {
 };
 template<typename T>
 struct MinFunctor {
-    T operator()(T x, T y) const { return min(x, y); }
+    T operator()(T x, T y) const { return std::min(x, y); }
 };
 template<typename T>
 using RMQ = SparseTable<T, MinFunctor<T>>;

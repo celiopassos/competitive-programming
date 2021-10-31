@@ -1,20 +1,22 @@
 template<typename T>
-long long merge_sort(vector<T>& v, vector<T>& aux, int l, int r) {
-    if (r <= l) return 0LL;
-    int m = l + (r - l) / 2;
-    long long res = merge_sort(v, aux, l, m) + merge_sort(v, aux, m + 1, r);
-    int x = l, y = m + 1, z = l;
-    while (x <= m && y <= r) {
-        aux[z++] = v[x] <= v[y] ? v[x++] : (res += m - x + 1, v[y++]);
+int64_t merge_sort(T *v, T *aux, int l, int r) {
+    if (r <= l + 1) return 0;
+    int m = (l + r) / 2;
+    int64_t res = merge_sort(v, aux, l, m) + merge_sort(v, aux, m, r);
+    int i = l, j = m, k = l;
+    while (i < m && j < r) {
+        aux[k++] = v[i] <= v[j] ? v[i++] : (res += m - i, v[j++]);
     }
-    while (x <= m) aux[z++] = v[x++];
-    while (y <= r) aux[z++] = v[y++];
-    while (l <= r) v[--z] = aux[r--];
+    while (i < m) aux[k++] = v[i++];
+    while (j < r) aux[k++] = v[j++];
+    while (l < r) {
+        v[l] = aux[l];
+        ++l;
+    }
     return res;
 }
 template<typename T>
-long long inversions(vector<T> v) {
-    static vector<T> aux;
-    aux.resize(max(aux.size(), v.size()));
-    return merge_sort(v, aux, 0, (int)v.size() - 1);
+int64_t count_inversions(std::vector<T> v) {
+    std::vector<T> aux(v.size());
+    return merge_sort(v.data(), aux.data(), 0, v.size());
 }

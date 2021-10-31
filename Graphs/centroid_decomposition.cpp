@@ -1,10 +1,10 @@
 // K > centroid tree height, or simply log(N)
 template<int K>
 struct CentroidDecomposition {
-    const vector<vector<int>>& E;
+    const std::vector<std::vector<int>>& E;
     int N, root;
-    vector<int> sz, p, subtree, dead, level;
-    vector<array<int, K>> dist;
+    std::vector<int> sz, p, subtree, dead, level;
+    std::vector<std::array<int, K>> dist;
     int timer;
     void dfs(int u, int p, int k) {
         sz[u] = 1;
@@ -22,9 +22,9 @@ struct CentroidDecomposition {
         }
         return u;
     }
-    CentroidDecomposition(const vector<vector<int>>& E_) :
-        E(E_), N((int)E.size()), sz(N), p(N, -1), subtree(N), dead(N), level(N), dist(N) {
-        queue<int> q;
+    CentroidDecomposition(const std::vector<std::vector<int>>& E_) :
+        E(E_), N(E.size()), sz(N), p(N, -1), subtree(N), dead(N), level(N), dist(N) {
+        std::queue<int> q;
         dfs(0, -1, 0);
         root = find_centroid(0, -1, N / 2);
         q.push(root);
@@ -49,7 +49,7 @@ struct CentroidDecomposition {
         return p[u];
     }
     int lca(int u, int v) const {
-        if (level[u] < level[v]) swap(u, v);
+        if (level[u] < level[v]) std::swap(u, v);
         while (level[u] > level[v]) u = p[u];
         while (u != v) u = p[u], v = p[v];
         return u;

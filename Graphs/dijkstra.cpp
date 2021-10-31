@@ -1,7 +1,7 @@
 template<typename T>
-vector<T> dijkstra(int s, const vector<vector<pair<int, T>>>& E) {
-    vector<T> dist(E.size(), numeric_limits<T>::max());
-    priority_queue<pair<T, int>> pq;
+std::vector<T> dijkstra(int s, const std::vector<std::vector<std::pair<int, T>>>& E) {
+    std::vector<T> dist(E.size(), std::numeric_limits<T>::max());
+    std::priority_queue<std::pair<T, int>> pq;
     pq.emplace(dist[s] = 0, s);
     while (not pq.empty()) {
         auto [d, u] = pq.top();

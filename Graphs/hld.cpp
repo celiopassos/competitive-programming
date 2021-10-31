@@ -1,8 +1,8 @@
 struct HLD {
     int N;
-    vector<vector<int>> E;
-    vector<int> p, h, head, L, R;
-    HLD(const vector<vector<int>>& E, int root) : N((int)E.size()), E(E), p(N, -1), h(N), head(N), L(N), R(N) {
+    std::vector<std::vector<int>> E;
+    std::vector<int> p, h, head, L, R;
+    HLD(const std::vector<std::vector<int>>& E, int root) : N(E.size()), E(E), p(N, -1), h(N), head(N), L(N), R(N) {
         dfs_sz(root);
         head[root] = root;
         dfs_hld(root);
@@ -16,7 +16,7 @@ struct HLD {
             sz += x;
             if (x > mx) {
                 mx = x;
-                swap(v, E[u][0]);
+                std::swap(v, E[u][0]);
             }
         }
         return sz;
@@ -32,8 +32,8 @@ struct HLD {
         R[u] = timer;
     }
     // boolean is true if path should be 'reversed' (for uncommutative operations)
-    vector<tuple<bool, int, int>> get_path(int u, int v) const {
-        vector<tuple<bool, int, int>> left, right;
+    std::vector<std::tuple<bool, int, int>> get_path(int u, int v) const {
+        std::vector<std::tuple<bool, int, int>> left, right;
         while (head[u] != head[v]) {
             if (h[head[u]] > h[head[v]]) {
                 left.emplace_back(true, L[head[u]], L[u]);
@@ -50,7 +50,7 @@ struct HLD {
     }
     int lca(int u, int v) const {
         while (head[u] != head[v]) {
-            if (h[head[u]] < h[head[v]]) swap(u, v);
+            if (h[head[u]] < h[head[v]]) std::swap(u, v);
             u = p[head[u]];
         }
         return h[u] < h[v] ? u : v;

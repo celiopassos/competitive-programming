@@ -1,11 +1,11 @@
 template<typename T, bool commutative = false>
 struct RangeUpdate {
     int N, h;
-    vector<T> st;
-    RangeUpdate(int N) : N(N), h(__lg(N) + 1), st(2 * N) {}
+    std::vector<T> st;
+    RangeUpdate(int N) : N(N), h(std::__lg(N) + 1), st(2 * N) {}
     template<typename Iterator>
-    RangeUpdate(Iterator first, Iterator last) : RangeUpdate(int(last - first)) {
-        copy(first, last, st.begin() + N);
+    RangeUpdate(Iterator first, Iterator last) : RangeUpdate(last - first) {
+        std::copy(first, last, st.begin() + N);
     }
     T query(int p) const {
         T res = T();

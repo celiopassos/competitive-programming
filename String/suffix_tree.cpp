@@ -2,15 +2,15 @@ struct SuffixTreeNode {
     int link, len, idx;
     SuffixTreeNode(int len, int idx) : link(-1), len(len), idx(idx) {}
 };
-vector<SuffixTreeNode> build_suffix_tree(const vector<int>& p, const vector<int>& lcp) {
-    vector<SuffixTreeNode> st;
-    stack<int> stk;
+std::vector<SuffixTreeNode> build_suffix_tree(const std::vector<int>& p, const std::vector<int>& lcp) {
+    std::vector<SuffixTreeNode> st;
+    std::stack<int> stk;
     auto create = [&](int len, int idx) {
-        stk.push((int)st.size());
+        stk.push(st.size());
         st.emplace_back(len, idx);
     };
     create(0, -1);
-    int N = (int)p.size();
+    int N = p.size();
     for (int i = 1; i < N; ++i) {
         for (auto len : {N - 1 - p[i], lcp[i]}) {
             int l = p[i];
@@ -24,11 +24,11 @@ vector<SuffixTreeNode> build_suffix_tree(const vector<int>& p, const vector<int>
             if (len > st[stk.top()].len) create(len, l);
         }
     }
-    int M = (int)st.size();
-    vector<int> V(M), label(M);
-    iota(V.begin(), V.end(), 0);
-    sort(V.begin(), V.end(), [&](int u, int v) { return st[u].len < st[v].len; });
-    vector<SuffixTreeNode> relabeled;
+    int M = st.size();
+    std::vector<int> V(M), label(M);
+    std::iota(V.begin(), V.end(), 0);
+    std::sort(V.begin(), V.end(), [&](int u, int v) { return st[u].len < st[v].len; });
+    std::vector<SuffixTreeNode> relabeled;
     for (int j = 0; j < M; ++j) {
         label[V[j]] = j;
         relabeled[j].push_back(st[V[j]]);

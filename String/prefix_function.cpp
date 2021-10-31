@@ -1,10 +1,11 @@
-vector<int> prefix_function(const string& s) {
-    int N = (int)s.size();
-    vector<int> p(N + 1, 0);
+template<typename Iterator>
+std::vector<int> prefix_function(Iterator first, Iterator last) {
+    int N = last - first;
+    std::vector<int> p(N + 1, 0);
     for (int len = 2; len <= N; ++len) {
         int x = p[len - 1];
-        while (x && s[len - 1] != s[x]) x = p[x];
-        if (s[len - 1] == s[x]) ++x;
+        while (x && first[len - 1] != first[x]) x = p[x];
+        if (first[len - 1] == first[x]) ++x;
         p[len] = x;
     }
     return p;

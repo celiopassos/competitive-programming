@@ -1,15 +1,25 @@
 template<typename T>
-complex<T> root_of_unity(int N, complex<T> dummy) {
-    return polar<T>(1, 2 * acos(-1) / N);
-}
-//template<long long P>
-//Z<P> root_of_unity(int N, Z<P> dummy) {
-//    return Z<P>(3).power((P - 1) / N);
-//}
+struct root_of_unity {
+    T operator()(int N) const = delete; // not implemented
+};
 template<typename T>
-vector<T> fft(vector<T> p, bool inverse) {
-    int N = (int)p.size();
-    vector<T> q(N);
+struct root_of_unity<std::complex<T>> {
+    inline static const T PI = std::acos(-1);
+    std::complex<T> operator()(int N) const {
+        return std::polar<T>(1, 2 * PI / N);
+    }
+};
+//constexpr int ntt_mod = 998244353;
+//template<>
+//struct root_of_unity<Z<ntt_mod>> {
+//    Z<ntt_mod> operator()(int N) const {
+//        return Z<ntt_mod>(3).power((ntt_mod - 1) / N);
+//    }
+//};
+template<typename T>
+std::vector<T> fft(std::vector<T> p, bool inverse) {
+    int N = p.size();
+    std::vector<T> q(N);
     for (int i = 0; i < N; ++i) {
         int rev = 0;
         for (int b = 1; b < N; b <<= 1) {
@@ -17,14 +27,15 @@ vector<T> fft(vector<T> p, bool inverse) {
         }
         q[rev] = p[i];
     }
-    swap(p, q);
+    std::swap(p, q);
+    root_of_unity<T> rt;
     for (int b = 1; b < N; b <<= 1) {
-        T w = root_of_unity(b << 1, T());
+        T w = rt(b << 1);
         if (inverse) w = T(1) / w;
-        for (auto [i, x] = pair(0, T(1)); i < N; ++i, x *= w) {
+        for (auto [i, x] = std::pair(0, T(1)); i < N; ++i, x *= w) {
             q[i] = p[i & ~b] + x * p[i | b];
         }
-        swap(p, q);
+        std::swap(p, q);
     }
     if (inverse) {
         T inv = T(1) / T(N);
@@ -33,8 +44,8 @@ vector<T> fft(vector<T> p, bool inverse) {
     return p;
 }
 template<typename T>
-vector<T> operator*(vector<T> p, vector<T> q) {
-    int N = int(p.size() + q.size() - 1), M = 1;
+std::vector<T> operator*(std::vector<T> p, std::vector<T> q) {
+    int N = p.size() + q.size() - 1, M = 1;
     while (M < N) M <<= 1;
     p.resize(M), q.resize(M);
     auto phat = fft(p, false), qhat = fft(q, false);

@@ -3,7 +3,7 @@ struct FreeGroup {
     T shift, inv_shift, hash;
     FreeGroup() : shift(1), inv_shift(1), hash(0) {}
     FreeGroup(T shift, T inv_shift, T hash) : shift(shift), inv_shift(inv_shift), hash(hash) {}
-    FreeGroup(long long c) : shift(T::X), inv_shift(T::Xinv), hash(c) {}
+    FreeGroup(int64_t c) : shift(T::X), inv_shift(T::Xinv), hash(c) {}
     template<typename Iterator>
     FreeGroup(Iterator first, Iterator last) : FreeGroup() {
         while (first != last) {
@@ -23,7 +23,7 @@ struct FreeGroup {
     FreeGroup operator+(const FreeGroup& rhs) const {
         return FreeGroup(*this) += rhs;
     }
-    FreeGroup operator-(const FreeGroup& rhs) const {
+    FreeGroup operator+(const FreeGroup& rhs) const {
         return FreeGroup(*this) -= rhs;
     }
     FreeGroup operator+() const {
@@ -32,7 +32,7 @@ struct FreeGroup {
     FreeGroup operator-() const {
         return FreeGroup(inv_shift, shift, -inv_shift * hash);
     }
-    FreeGroup power(long long p) const {
+    FreeGroup power(int64_t p) const {
         FreeGroup x = *this;
         if (p < 0) p *= -1, x = -x;
         FreeGroup res;

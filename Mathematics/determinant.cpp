@@ -1,7 +1,7 @@
 template<typename T>
 T determinant(matrix<T> A) {
-    int N = (int)size(A);
-    assert(N == (int)size(A[0]));
+    int N = A.size();
+    assert(N == A[0].size());
     T det = 1;
     for (int x = 0; x < N; ++x) {
         int sel = -1;
@@ -13,7 +13,7 @@ T determinant(matrix<T> A) {
         }
         if (sel == -1) return 0;
         if (sel != x) {
-            swap(A[sel], A[x]);
+            std::swap(A[sel], A[x]);
             det *= -1;
         }
         det *= A[x][x];
