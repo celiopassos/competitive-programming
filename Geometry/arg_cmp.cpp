@@ -8,7 +8,3 @@ template<typename T>
 bool arg_cmp(std::complex<T> a, std::complex<T> b) {
     return up(a) == up(b) ? cross(a, b) > 0 : up(a) < up(b);
 }
-template<typename T>
-bool lex_cmp(std::complex<T> a, std::complex<T> b) {
-    return a.x() != b.x() ? a.x() < b.x() : a.y() < b.y();
-}
