@@ -1,26 +1,20 @@
-template<int K, int32_t mod>
+std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+template<int K, int32_t P>
 struct Hash {
-    inline static const std::array<int64_t, K> x = [](){
-        std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-        std::array<int64_t, K> y;
-        std::uniform_int_distribution<int64_t> unif(1, mod - 1);
+    inline static const auto x_xinv = [](){
+        std::array<int64_t, K> x, xinv;
+        std::uniform_int_distribution<int64_t> unif(1, P - 1);
         for (int i = 0; i < K; ++i) {
-            y[i] = unif(rng);
-        }
-        return y;
-    }(), xinv = [](){
-        std::array<int64_t, K> y;
-        for (int i = 0; i < K; ++i) {
-            y[i] = 1;
-            for (int64_t p = mod - 2, a = x[i]; p; p >>= 1) {
-                if (p & 1) {
-                    y[i] = y[i] * a % mod;
-                }
-                a = a * a % mod;
+            x[i] = unif(rng);
+            xinv[i] = 1;
+            for (int64_t p = P - 2, a = x[i]; p; p >>= 1) {
+                if (p & 1) xinv[i] = xinv[i] * a % P;
+                a = a * a % P;
             }
         }
-        return y;
+        return std::pair(x, xinv);
     }();
+    inline static const auto x = x_xinv.first, xinv = x_xinv.second;
     std::array<int64_t, K> xp, xpinv, hash;
     Hash() {
         std::fill(xp.begin(), xp.end(), 1);
@@ -32,9 +26,9 @@ struct Hash {
     }
     Hash& operator+=(const Hash& rhs) {
         for (int i = 0; i < K; ++i) {
-            xp[i] = xp[i] * rhs.xp[i] % mod;
-            xpinv[i] = xpinv[i] * rhs.xpinv[i] % mod;
-            hash[i] = (rhs.xp[i] * hash[i] + rhs.hash[i]) % mod;
+            xp[i] = xp[i] * rhs.xp[i] % P;
+            xpinv[i] = xpinv[i] * rhs.xpinv[i] % P;
+            hash[i] = (rhs.xp[i] * hash[i] + rhs.hash[i]) % P;
         }
         return *this;
     }
@@ -53,7 +47,7 @@ struct Hash {
     Hash operator-() const {
         auto res = *this;
         for (int i = 0; i < K; ++i) {
-            res.hash[i] = (mod - xpinv[i]) * hash[i] % mod;
+            res.hash[i] = (P - xpinv[i]) * hash[i] % P;
             std::swap(res.xp[i], res.xpinv[i]);
         }
         return res;
@@ -75,10 +69,11 @@ struct Hash {
         return !(*this == rhs);
     }
     struct custom_hash {
+        inline static const size_t y = std::uniform_int_distribution<size_t>(1)(rng);
         size_t operator()(const Hash& h) const {
             size_t res = 0;
             for (int i = 0; i < K; ++i) {
-                res = res * mod + h.hash[i];
+                res = res * y + h.hash[i];
             }
             return res;
         }
