@@ -54,4 +54,4 @@ struct SuffixArray {
         }
         return rmq.query(pos[i], pos[j]); // range query should be [l, r)
     }
-}
+};
