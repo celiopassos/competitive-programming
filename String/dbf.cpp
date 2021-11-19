@@ -34,6 +34,7 @@ struct dbf_t {
         }
     }
     std::pair<int, int> key(int i, int len) const {
+        if (len == 0) return {-1, -1};
         int k = log[len];
         return std::pair(rank[k][i], rank[k][(i + len - (1 << k)) % N]);
     };
@@ -43,7 +44,7 @@ struct dbf_t {
         return keyS != keyT ? keyS < keyT : lenS < lenT;
     }
     // cyclic lcp (assumes cyclic permutations starting from i and j are not equal)
-    int lcp(int i, int j) const {
+    int lcp_query(int i, int j) const {
         int len = 0;
         for (int k = K - 1; k >= 0; --k) {
             if (rank[k][i] == rank[k][j]) {
