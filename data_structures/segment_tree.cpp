@@ -53,7 +53,7 @@ struct SegmentTree {
         T prefix = T();
         int res = b;
         for (auto p : left) {
-            T nprefix = prefix + st[p].value;
+            T nprefix = prefix + st[p];
             if (pred(nprefix)) {
                 prefix = nprefix;
             } else {
