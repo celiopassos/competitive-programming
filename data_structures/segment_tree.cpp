@@ -40,7 +40,7 @@ struct SegmentTree {
     int lower_bound(int a, int b, T value) const {
         return find_right(a, b, [value](T x) { return x < value; });
     }
-    // first i in [a, b) with pred(query(a, i + 1)) == false (b if no such i exists)
+    // Returns largest r in [a, b] with pred(query(a, r)) == true.
     template<typename Pred>
     int find_right(int a, int b, Pred&& pred) {
         static std::vector<int> left, right;

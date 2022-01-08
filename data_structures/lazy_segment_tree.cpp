@@ -93,7 +93,7 @@ struct LazySegmentTree {
     int lower_bound(int l, int r, T target) {
         return find_right(l, r, [target](T value) { return value < target; });
     }
-    // returns first i in [l, r) with pred(query(l, i + 1)) == false (r if no such i exists)
+    // Returns largest i in [l, r] with pred(query(l, i)) == true.
     template<typename Pred>
     int find_right(int l, int r, Pred&& pred) {
         static std::vector<int> q;

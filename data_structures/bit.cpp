@@ -28,7 +28,7 @@ struct BIT {
             ft[p] = ft[p] + value;
         }
     }
-    // returns first r such that pred(query(0, r + 1)) == false (N if no such r exists)
+    // returns largest r such that pred(query(0, r)) == true
     template<typename Pred>
     int find_right(Pred&& pred) const {
         T prefix = T();
