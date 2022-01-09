@@ -1,2 +1,2 @@
 CXX=g++
-CXXFLAGS=-fconcepts -fsplit-stack -std=gnu++17 -O2
+CXXFLAGS=-fconcepts -fsplit-stack -std=gnu++2a -O2
