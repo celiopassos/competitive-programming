@@ -1,6 +1,6 @@
 template <typename T>
 struct root_of_unity {
-  T operator()(int N) const = delete;  // !implemented
+  T operator()(int N) const = delete;  // not implemented
 };
 template <typename T>
 struct root_of_unity<std::complex<T>> {
@@ -30,9 +30,8 @@ std::vector<T> fft(std::vector<T> p, bool inverse) {
   std::swap(p, q);
   root_of_unity<T> rt;
   for (int b = 1; b < N; b <<= 1) {
-    T w = rt(b << 1);
-    if (inverse) w = T(1) / w;
-    for (auto [i, x] = std::pair(0, T(1)); i < N; ++i, x *= w) {
+    T w = rt((inverse ? -1 : +1) * 2 * b);
+    for (auto [i, x] = std::pair<int, T>(0, 1); i < N; ++i, x *= w) {
       q[i] = p[i & ~b] + x * p[i | b];
     }
     std::swap(p, q);
