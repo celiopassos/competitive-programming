@@ -1,10 +1,11 @@
-template <int P>
+template <uint32_t P>
 struct Z {
-  int x;
+  uint32_t x;
   Z() : x(0) {}
   Z(int64_t x_) {
-    x = x_ % P;
-    if (x < 0) x += P;
+    x_ %= P;
+    if (x_ < 0) x_ += P;
+    x = x_;
   }
   Z& operator+=(Z rhs) {
     x += rhs.x;
@@ -12,12 +13,12 @@ struct Z {
     return *this;
   }
   Z& operator-=(Z rhs) {
-    x -= rhs.x;
-    if (x < 0) x += P;
+    x += P - rhs.x;
+    if (x >= P) x -= P;
     return *this;
   }
   Z& operator*=(Z rhs) {
-    x = int64_t(x) * rhs.x % P;
+    x = uint64_t(x) * rhs.x % P;
     return *this;
   }
   Z& operator/=(Z rhs) {
