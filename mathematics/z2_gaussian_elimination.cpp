@@ -5,7 +5,7 @@ struct Z2GaussianElimination {
   int dim = 0, first[N];
   std::pair<int, V> reduce(V& x) const {
     V coef;
-    for (int i = 0; i < N && x.any(); ++i) {
+    for (int i = 0; i < N; ++i) {
       if (x[i] == 0) continue;
       if (basis[i] == 0) return std::pair(i, coef);
       x ^= basis[i], coef ^= alpha[i];
