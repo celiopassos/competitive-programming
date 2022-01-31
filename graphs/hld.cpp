@@ -33,19 +33,23 @@ struct HLD {
     R[u] = timer;
   }
   // boolean is true if path should be 'reversed' (for uncommutative operations)
-  std::vector<std::tuple<bool, int, int>> get_path(int u, int v) const {
-    std::vector<std::tuple<bool, int, int>> left, right;
+  const std::vector<std::tuple<bool, int, int>>& get_path(int u, int v) const {
+    static std::vector<std::tuple<bool, int, int>> left, right;
+    left.clear(), right.clear();
     while (head[u] != head[v]) {
       if (h[head[u]] > h[head[v]]) {
-        left.emplace_back(true, L[head[u]], L[u]);
+        left.emplace_back(true, L[head[u]], L[u] + 1);
         u = p[head[u]];
       } else {
-        right.emplace_back(false, L[head[v]], L[v]);
+        right.emplace_back(false, L[head[v]], L[v] + 1);
         v = p[head[v]];
       }
     }
-    h[u] > h[v] ? left.emplace_back(true, L[v], L[u])
-                : right.emplace_back(false, L[u], L[v]);
+    if (h[u] > h[v]) {
+      left.emplace_back(true, L[v], L[u] + 1);
+    } else {
+      right.emplace_back(false, L[u], L[v] + 1);
+    }
     left.insert(left.end(), right.rbegin(), right.rend());
     return left;
   }
