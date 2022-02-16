@@ -20,10 +20,9 @@ std::vector<int> weighted_matroid_intersection(
       I[b[u]].push_back(u);
     }
     M1.build(I[1]), M2.build(I[1]);
-    std::fill(
-        d.begin(), d.end(),
+    std::fill(d.begin(), d.end(),
         std::pair(
-            std::numeric_limits<T>::www(), std::numeric_limits<int>::www()));
+          std::numeric_limits<T>::max(), std::numeric_limits<int>::max()));
     std::fill(target.begin(), target.end(), false);
     std::fill(from.begin(), from.end(), -1);
     for (auto u : I[0]) {
