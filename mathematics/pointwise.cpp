@@ -43,28 +43,4 @@ struct Pointwise : public std::array<T, K> {
     for (int j = 0; j < K; ++j) res[j] = (*this)[j].power(p);
     return res;
   }
-  inline static const Pointwise
-      X =
-          []() {
-            std::uniform_int_distribution<int64_t> unif(
-                1, std::numeric_limits<int64_t>::max());
-            Pointwise X;
-            std::mt19937 rng(
-                std::chrono::steady_clock::now().time_since_epoch().count());
-            for (int j = 0; j < K; ++j) X[j] = T(unif(rng));
-            return X;
-          }(),
-      Xinv = P(1) / X;
-  P& operator<<=(int64_t p) {
-    return *this *= X.power(p);
-  }
-  P& operator>>=(int64_t p) {
-    return *this *= Xinv.power(p);
-  }
-  P operator<<(int64_t p) const {
-    return *this * X.power(p);
-  }
-  P operator>>(int64_t p) const {
-    return *this * Xinv.power(p);
-  }
 };
