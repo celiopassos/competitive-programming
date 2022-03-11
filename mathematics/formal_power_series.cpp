@@ -83,6 +83,22 @@ struct FormalPowerSeries : public std::vector<T> {
     }
     return *this;
   }
+  F& operator*=(T alpha) {
+    for (auto& x : *this) {
+      x *= alpha;
+    }
+    return *this;
+  }
+  F operator*(T alpha) {
+    return F(*this) *= alpha;
+  }
+  friend F operator*(T alpha, F rhs) {
+    return rhs *= alpha;
+  }
+  F operator-() const {
+    return F(*this) *= -1;
+  }
+
   F naive_multiply(const F& rhs) const {
     int N = this->size(), M = rhs.size();
     F r(N + M - 1);
@@ -114,40 +130,28 @@ struct FormalPowerSeries : public std::vector<T> {
     }
     return *this;
   }
-
-  template <typename Solver>
-  void solve(int l, int r, F& A, Solver&& solver) const {
-    if (r - l == 1) {
-      solver(A, l);
-    } else {
-      int len = r - l, m = (l + r) / 2;
-      solve(l, m, A, solver);
-      F a(A.begin() + l, A.begin() + m);
-      const F& B = *this;
-      F b(B.begin(), B.begin() + std::min<int>(B.size(), len));
-      a *= b;
-      for (int i = m - l; i < r - l && i < a.size(); ++i) {
-        A[i + l] += a[i];
-      }
-      solve(m, r, A, solver);
-    }
-  }
-  template <typename Solver>
-  F solve(Solver&& solver) const {
-    int N = this->size();
-    F A(N);
-    solve(0, N, A, solver);
-    return A;
-  }
 };
 
 template <typename T>
 FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
+  using F = FormalPowerSeries<T>;
   assert(P[0] != 0);
-  auto solver = [mult = 1 / P[0]](auto& A, int i) {
-    A[i] = (i == 0 ? 1 : -A[i]) * mult;
-  };
-  return P.solve(solver);
+  F Q = {1 / P[0]};
+  int N = P.size(), K = 1;
+  while (K < N) {
+    K *= 2;
+    fft_t<T> fft(2 * K);
+    auto Qhat = fft(Q, false);
+    auto Phat = fft(F(P.begin(), P.begin() + std::min(K, N)), false);
+    for (int i = 0; i < 2 * K; ++i) {
+      Qhat[i] *= 2 - Phat[i] * Qhat[i];
+    }
+    auto nQ = fft(Qhat, true);
+    Q.swap(nQ);
+    Q.resize(K);
+  }
+  Q.resize(N);
+  return Q;
 }
 
 template <typename T>
@@ -184,15 +188,22 @@ FormalPowerSeries<T> log(const FormalPowerSeries<T>& P) {
 }
 
 template <typename T>
-FormalPowerSeries<T> exp(FormalPowerSeries<T> P) {
+FormalPowerSeries<T> exp(const FormalPowerSeries<T>& P) {
   assert(P[0] == 0);
-  for (int i = 0; i < P.size(); ++i) {
-    P[i] *= i;
+  FormalPowerSeries<T> Q = {1};
+  int N = P.size(), K = 1;
+  while (K < N) {
+    K *= 2;
+    Q.resize(K);
+    auto B = -log(Q);
+    B[0] += 1;
+    for (int i = 0; i < std::min(N, K); ++i) {
+      B[i] += P[i];
+    }
+    Q *= B;
+    Q.resize(K);
   }
-  auto solver = [&](auto& A, int n) {
-    A[n] = n == 0 ? 1 : A[n] / T(n);
-  };
-  return P.solve(solver);
+  return Q;
 }
 
 template <typename T>
@@ -207,7 +218,7 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, int64_t k) {
   FormalPowerSeries<T> Q(P.begin() + t, P.begin() + t + max);
   T alpha = Q[0];
   for (int i = 0; i < Q.size(); ++i) {
-    Q[i] /= alpha;
+    Q[i] *= alpha.power(-1);
   }
   assert(Q[0] == 1);
   Q = log(Q);
