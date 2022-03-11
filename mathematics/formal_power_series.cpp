@@ -17,8 +17,8 @@ template <typename T>
 struct fft_t {
   int N;
   std::vector<int> rev;
-  std::vector<T> q, r;
-  fft_t(int N) : N(N), rev(N), q(N), r(N) {
+  std::vector<T> rs;
+  fft_t(int N) : N(N), rev(N) {
     for (int i = 0; i < N; ++i) {
       int r = 0;
       for (int b = 1, j = i; b < N; b <<= 1, j >>= 1) {
@@ -26,24 +26,37 @@ struct fft_t {
       }
       rev[i] = r;
     }
+    for (auto sgn : {-1, +1}) {
+      for (int b = 1; b < N; b <<= 1) {
+        T w = root_of_unity<T>(sgn * 2 * b);
+        rs.push_back(1);
+        for (int i = 0; i + 1 < b; ++i) {
+          rs.push_back(rs.back() * w);
+        }
+      }
+    }
   }
   std::vector<T> operator()(std::vector<T> p, bool inverse) {
     p.resize(N);
     for (int i = 0; i < N; ++i) {
-      q[rev[i]] = p[i];
+      if (i < rev[i]) {
+        std::swap(p[i], p[rev[i]]);
+      }
     }
-    std::swap(p, q);
+    T* r = rs.data();
+    if (inverse) {
+      r += rs.size() / 2;
+    }
     for (int b = 1; b < N; b <<= 1) {
-      r[0] = 1;
-      r[1] = root_of_unity<T>((inverse ? -1 : +1) * 2 * b);
-      for (int i = 1; i + 1 < 2 * b; ++i) {
-        r[i + 1] = r[i] * r[1];
+      for (int s = 0; s < N; s += 2 * b) {
+        for (int i = 0; i < b; ++i) {
+          int u = s | i, v = u | b;
+          T x = p[u], y = r[i] * p[v];
+          p[u] = x + y;
+          p[v] = x - y;
+        }
       }
-      int prefix = 2 * b - 1;
-      for (int i = 0; i < N; ++i) {
-        q[i] = p[i & ~b] + r[i & prefix] * p[i | b];
-      }
-      std::swap(p, q);
+      r += b;
     }
     if (inverse) {
       T inv = T(1) / T(N);
@@ -129,6 +142,15 @@ struct FormalPowerSeries : public std::vector<T> {
       this->resize(N);
     }
     return *this;
+  }
+
+  T operator(T x) const {
+    T pow = 1, y = 0;
+    for (auto& c : *this) {
+      y += c * pow;
+      pow *= x;
+    }
+    return y;
   }
 };
 
