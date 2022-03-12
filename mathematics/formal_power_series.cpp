@@ -75,7 +75,7 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator+(const F& rhs) const {
     return F(*this) += rhs;
   }
-  F& operator+=(const F& rhs) const {
+  F& operator+=(const F& rhs) {
     if (this->size() < rhs.size()) {
       this->resize(rhs.size());
     }
@@ -87,12 +87,12 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator-(const F& rhs) const {
     return F(*this) -= rhs;
   }
-  F& operator-=(const F& rhs) const {
+  F& operator-=(const F& rhs) {
     if (this->size() < rhs.size()) {
       this->resize(rhs.size());
     }
     for (int i = 0; i < rhs.size(); ++i) {
-      (*this)[i] += rhs[i];
+      (*this)[i] -= rhs[i];
     }
     return *this;
   }
@@ -144,7 +144,42 @@ struct FormalPowerSeries : public std::vector<T> {
     return *this;
   }
 
-  T operator(T x) const {
+  F operator/(const F& rhs) const {
+    return F(*this) /= rhs;
+  }
+  F& operator/=(F rhs) {
+    int N = this->size(), M = rhs.size();
+    if (N < M) {
+      *this = F();
+    } else {
+      int K = N - M + 1;
+      std::reverse(rhs.begin(), rhs.end());
+      rhs.resize(K);
+      auto res = F(this->rbegin(), this->rbegin() + K) * inv(rhs);
+      res.resize(K);
+      std::reverse(res.begin(), res.end());
+      this->swap(res);
+    }
+    return *this;
+  }
+  F operator%(const F& rhs) const {
+    return divided_by(rhs).second;
+  }
+  F operator%=(const F& rhs) {
+    return *this = divided_by(rhs)->second;
+  }
+  std::pair<F, F> divided_by(F rhs) const {
+    auto q = *this / rhs;
+    if (rhs.size() > 1) {
+      rhs.pop_back();
+    }
+    auto q0 = F(q.begin(), q.begin() + std::min(q.size(), rhs.size()));
+    auto r = *this - rhs * q0;
+    r.resize(rhs.size());
+    return {q, r};
+  }
+
+  T operator()(T x) const {
     T pow = 1, y = 0;
     for (auto& c : *this) {
       y += c * pow;
@@ -242,7 +277,6 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, int64_t k) {
   for (int i = 0; i < Q.size(); ++i) {
     Q[i] *= alpha.power(-1);
   }
-  assert(Q[0] == 1);
   Q = log(Q);
   for (auto& x : Q) {
     x *= k;
@@ -253,4 +287,112 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, int64_t k) {
   }
   Q.insert(Q.begin(), k * t, 0);
   return Q;
+}
+
+template <typename T>
+struct Interpolator {
+  using F = FormalPowerSeries<T>;
+  struct Node {
+    F P;
+    T y;
+    Node* left = nullptr;
+    Node* right = nullptr;
+  };
+  std::deque<Node> deq;
+  template <typename Iterator>
+  Interpolator(Iterator first, Iterator last) {
+    Node* root = &deq.emplace_back();
+    build(root, first, last);
+    auto y = evaluate(D(root->P));
+    auto iter = y.begin();
+    for (auto& node : deq) {
+      if (node.left) continue;
+      node.y = *iter;
+      ++iter;
+    }
+  }
+  template <typename Iterator>
+  void build(Node* node, Iterator first, Iterator last) {
+    int len = last - first;
+    if (len == 1) {
+      node->P = {-first[0], 1};
+    } else {
+      node->left = &deq.emplace_back();
+      node->right = &deq.emplace_back();
+      Iterator middle = first + len / 2;
+      build(node->left, first, middle);
+      build(node->right, middle, last);
+      node->P = node->left->P * node->right->P;
+    }
+  }
+  std::vector<T> res;
+  std::vector<T> evaluate(const F& Q) {
+    res.clear();
+    evaluate(&deq[0], Q % deq[0].P);
+    return std::move(res);
+  }
+  void evaluate(Node* node, F Q) {
+    if (node->left) {
+      for (auto next : {node->left, node->right}) {
+        evaluate(next, Q % next->P);
+      }
+    } else {
+      assert(Q.size() == 1);
+      res.push_back(Q[0]);
+    }
+  }
+  template <typename Iterator>
+  F interpolate(Iterator first, Iterator last) {
+    return interpolate(&deq[0], first, last);
+  }
+  template <typename Iterator>
+  F interpolate(Node* node, Iterator first, Iterator last) {
+    int len = last - first;
+    if (len == 1) {
+      return {first[0] / node->y};
+    } else {
+      Iterator middle = first + len / 2;
+      return node->right->P * interpolate(node->left, first, middle) +
+        node->left->P * interpolate(node->right, middle, last);
+    }
+  }
+};
+
+// computes P(D)A
+template <typename T>
+FormalPowerSeries<T> apply_polynomial_of_derivative(FormalPowerSeries<T> P,
+    FormalPowerSeries<T> A) {
+  int N = A.size();
+  if (P.size() > N) {
+    P.resize(N);
+  }
+  std::vector<T> f(N);
+  f[0] = 1;
+  for (int k = 0; k + 1 < N; ++k) {
+    f[k + 1] = (k + 1) * f[k];
+  }
+  for (int k = 0; k < N; ++k) {
+    A[k] *= f[k];
+  }
+  std::reverse(P.begin(), P.end());
+  auto res = P * A;
+  res.erase(res.begin(), res.begin() + P.size() - 1);
+  for (int k = 0; k < N; ++k) {
+    res[k] /= f[k];
+  }
+  return res;
+}
+
+// finds coefficients of polynomial x -> P(x + c)
+template <typename T>
+FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
+  int N = P.size();
+  FormalPowerSeries<T> expc(N);
+  T f = 1, pow = 1;
+  for (int k = 0; k < N; ++k) {
+    expc[k] = pow / f;
+    f *= k + 1;
+    pow *= c;
+  }
+  return apply_polynomial_of_derivative(expc, P);
 }
