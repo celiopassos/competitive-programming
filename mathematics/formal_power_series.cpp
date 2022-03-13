@@ -1,76 +1,11 @@
 template <typename T>
-T root_of_unity(int N);
-
-template <>
-std::complex<double> root_of_unity<std::complex<double>>(int N) {
-  static constexpr double PI = std::acos(-1);
-  return std::polar<double>(1, 2 * PI / N);
-}
-
-constexpr int ntt_mod = 998244353;
-template <>
-Z<ntt_mod> root_of_unity(int N) {
-  return Z<ntt_mod>(3).power((ntt_mod - 1) / N);
-}
-
-template <typename T>
-struct fft_t {
-  int N;
-  std::vector<int> rev;
-  std::vector<T> rs;
-  fft_t(int N) : N(N), rev(N) {
-    for (int i = 0; i < N; ++i) {
-      int r = 0;
-      for (int b = 1, j = i; b < N; b <<= 1, j >>= 1) {
-        r = (r << 1) | j & 1;
-      }
-      rev[i] = r;
-    }
-    for (auto sgn : {-1, +1}) {
-      for (int b = 1; b < N; b <<= 1) {
-        T w = root_of_unity<T>(sgn * 2 * b);
-        rs.push_back(1);
-        for (int i = 0; i + 1 < b; ++i) {
-          rs.push_back(rs.back() * w);
-        }
-      }
-    }
-  }
-  std::vector<T> operator()(std::vector<T> p, bool inverse) {
-    p.resize(N);
-    for (int i = 0; i < N; ++i) {
-      if (i < rev[i]) {
-        std::swap(p[i], p[rev[i]]);
-      }
-    }
-    T* r = rs.data();
-    if (inverse) {
-      r += rs.size() / 2;
-    }
-    for (int b = 1; b < N; b <<= 1) {
-      for (int s = 0; s < N; s += 2 * b) {
-        for (int i = 0; i < b; ++i) {
-          int u = s | i, v = u | b;
-          T x = p[u], y = r[i] * p[v];
-          p[u] = x + y;
-          p[v] = x - y;
-        }
-      }
-      r += b;
-    }
-    if (inverse) {
-      T inv = T(1) / T(N);
-      for (int i = 0; i < N; ++i) p[i] *= inv;
-    }
-    return p;
-  }
-};
-
-template <typename T>
 struct FormalPowerSeries : public std::vector<T> {
   using F = FormalPowerSeries;
   using std::vector<T>::vector;
   FormalPowerSeries() : std::vector<T>(1) {}
+  template <typename... Args>
+  FormalPowerSeries(Args&&... args) :
+    std::vector<T>(std::forward<Args>(args)...) {}
 
   F operator+(const F& rhs) const {
     return F(*this) += rhs;
@@ -112,36 +47,11 @@ struct FormalPowerSeries : public std::vector<T> {
     return F(*this) *= -1;
   }
 
-  F naive_multiply(const F& rhs) const {
-    int N = this->size(), M = rhs.size();
-    F r(N + M - 1);
-    for (int i = 0; i < N; ++i) {
-      for (int j = 0; j < M; ++j) {
-        r[i + j] += (*this)[i] * rhs[j];
-      }
-    }
-    return r;
-  }
   F operator*(const F& rhs) {
-    return F(*this) *= rhs;
+    return static_cast<std::vector<T>>(*this) * rhs;
   }
   F& operator*=(const F& rhs) {
-    if (std::min(this->size(), rhs.size()) <= 64) {
-      auto r = naive_multiply(rhs);
-      this->swap(r);
-    } else {
-      int N = this->size() + rhs.size() - 1, M = 1;
-      while (M < N) M <<= 1;
-      fft_t<T> fft(M);
-      auto phat = fft(std::move(*this), false), qhat = fft(rhs, false);
-      for (int i = 0; i < M; ++i) {
-        phat[i] *= qhat[i];
-      }
-      auto r = fft(phat, true);
-      this->swap(r);
-      this->resize(N);
-    }
-    return *this;
+    return *this = static_cast<std::vector<T>>(std::move(*this)) * rhs;
   }
 
   F operator/(const F& rhs) const {
