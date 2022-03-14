@@ -170,11 +170,12 @@ FormalPowerSeries<T> exp(const FormalPowerSeries<T>& P) {
     Q *= B;
     Q.resize(K);
   }
+  Q.resize(N);
   return Q;
 }
 
 template <typename T>
-FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, int64_t k) {
+FormalPowerSeries<T> pow(FormalPowerSeries<T> P, int64_t k) {
   int N = P.size();
   int t = 0;
   while (t < N && P[t] == 0) ++t;
@@ -182,21 +183,13 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, int64_t k) {
     return FormalPowerSeries<T>(N, 0);
   }
   int max = N - k * t;
-  FormalPowerSeries<T> Q(P.begin() + t, P.begin() + t + max);
-  T alpha = Q[0];
-  for (int i = 0; i < Q.size(); ++i) {
-    Q[i] *= alpha.power(-1);
-  }
-  Q = log(Q);
-  for (auto& x : Q) {
-    x *= k;
-  }
-  Q = exp(Q);
-  for (auto& x : Q) {
-    x *= alpha.power(k);
-  }
-  Q.insert(Q.begin(), k * t, 0);
-  return Q;
+  P.erase(P.begin(), P.begin() + t);
+  P.resize(max);
+  T alpha = P[0];
+  P *= 1 / alpha;
+  P = alpha.power(k) * exp(k * log(P));
+  P.insert(P.begin(), k * t, 0);
+  return P;
 }
 
 template <typename T>
