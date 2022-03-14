@@ -1,49 +1,18 @@
 template <typename T>
-struct root_of_unity {
-  T operator()(int N) const = delete; // not implemented
-};
+struct root_of_unity {};
 
 template <typename T>
 struct root_of_unity<std::complex<T>> {
   inline static constexpr T PI = std::acos(-1);
-  std::complex<T> operator()(int N) const {
+  static std::complex<T> root_of_unity(int N) {
     return std::polar<T>(1, 2 * PI / N);
   }
 };
 
 template <uint32_t P>
-int find_primitive_root() {
-  constexpr int phi = P - 1;
-  std::vector<int> primes;
-  int x = phi;
-  for (int p = 2; p * p <= x; ++p) {
-    if (x % p) continue;
-    primes.push_back(x);
-    while (x % p == 0) x /= p;
-  }
-  if (x > 1) {
-    primes.push_back(x);
-  }
-  for (int g = 1; g < P; ++g) {
-    bool good = true;
-    for (auto p : primes) {
-      if (Z<P>(g).power(phi / p) == 1) {
-        good = false;
-        break;
-      }
-    }
-    if (good) {
-      return g;
-    }
-  }
-  assert(false);
-  return -1;
-}
-
-template <uint32_t P>
 struct root_of_unity<Z<P>> {
   inline static const Z<P> g = P == 998244353 ? 3 : find_primitive_root<P>();
-  Z<P> operator()(int N) const {
+  static Z<P> root_of_unity(int N) {
     return g.power(int(P - 1) / N);
   }
 };
@@ -61,10 +30,9 @@ struct fft_t {
       }
       rev[i] = r;
     }
-    root_of_unity<T> rou;
     for (auto sgn : {+1, -1}) {
       for (int b = 1; b < N; b <<= 1) {
-        T w = rou(sgn * 2 * b);
+        T w = root_of_unity<T>::root_of_unity(sgn * 2 * b);
         rs.push_back(1);
         for (int i = 0; i + 1 < b; ++i) {
           rs.push_back(rs.back() * w);
@@ -122,7 +90,7 @@ std::vector<T> operator*(std::vector<T> p, std::vector<T> q) {
       phat[i] *= qhat[i];
     }
     res = fft(std::move(phat), true);
-    res.resize(N + M - 1);
+    res.resize(R);
   }
   return res;
 }
