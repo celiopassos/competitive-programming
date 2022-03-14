@@ -37,14 +37,14 @@ struct FormalPowerSeries : public std::vector<T> {
     }
     return *this;
   }
-  F operator*(T alpha) {
+  F operator*(T alpha) const {
     return F(*this) *= alpha;
   }
   friend F operator*(T alpha, F rhs) {
     return rhs *= alpha;
   }
   F operator-() const {
-    return F(*this) *= -1;
+    return F() -= *this;
   }
 
   F operator*(const F& rhs) {
@@ -213,13 +213,6 @@ struct Interpolator {
   Interpolator(Iterator first, Iterator last) {
     Node* root = &deq.emplace_back();
     build(root, first, last);
-    auto y = evaluate(D(root->P));
-    auto iter = y.begin();
-    for (auto& node : deq) {
-      if (node.left) continue;
-      node.y = *iter;
-      ++iter;
-    }
   }
   template <typename Iterator>
   void build(Node* node, Iterator first, Iterator last) {
@@ -251,8 +244,19 @@ struct Interpolator {
       res.push_back(Q[0]);
     }
   }
+  bool flag = false;
   template <typename Iterator>
   F interpolate(Iterator first, Iterator last) {
+    if (!flag) {
+      flag = true;
+      auto y = evaluate(D(deq[0].P));
+      auto iter = y.begin();
+      for (auto& node : deq) {
+        if (node.left) continue;
+        node.y = *iter;
+        ++iter;
+      }
+    }
     return interpolate(&deq[0], first, last);
   }
   template <typename Iterator>
@@ -305,4 +309,21 @@ FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
     pow *= c;
   }
   return apply_polynomial_of_derivative(expc, P);
+}
+
+// returns coefficients in the basis of falling factorials of the unique
+// polynomial P (of degree < N) with P(i) = y[i] (the coefficient of y)
+template <typename T>
+FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
+  int N = y.size();
+  FormalPowerSeries<T> exp(N);
+  T f = 1;
+  for (int k = 0; k < N; ++k) {
+    exp[k] = (k % 2 ? -1 : +1) / f;
+    y[k] /= f;
+    f *= k + 1;
+  }
+  auto res = exp * y;
+  res.resize(N);
+  return res;
 }
