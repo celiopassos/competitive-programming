@@ -1,17 +1,52 @@
 template <typename T>
-T root_of_unity(int N);
+struct root_of_unity {
+  T operator()(int N) const = delete; // not implemented
+};
 
-template <>
-std::complex<double> root_of_unity<std::complex<double>>(int N) {
-  static constexpr double PI = std::acos(-1);
-  return std::polar<double>(1, 2 * PI / N);
+template <typename T>
+struct root_of_unity<std::complex<T>> {
+  inline static constexpr T PI = std::acos(-1);
+  std::complex<T> operator()(int N) const {
+    return std::polar<T>(1, 2 * PI / N);
+  }
+};
+
+template <uint32_t P>
+int find_primitive_root() {
+  constexpr int phi = P - 1;
+  std::vector<int> primes;
+  int x = phi;
+  for (int p = 2; p * p <= x; ++p) {
+    if (x % p) continue;
+    primes.push_back(x);
+    while (x % p == 0) x /= p;
+  }
+  if (x > 1) {
+    primes.push_back(x);
+  }
+  for (int g = 1; g < P; ++g) {
+    bool good = true;
+    for (auto p : primes) {
+      if (Z<P>(g).power(phi / p) == 1) {
+        good = false;
+        break;
+      }
+    }
+    if (good) {
+      return g;
+    }
+  }
+  assert(false);
+  return -1;
 }
 
-constexpr int ntt_mod = 998244353;
-template <>
-Z<ntt_mod> root_of_unity(int N) {
-  return Z<ntt_mod>(3).power((ntt_mod - 1) / N);
-}
+template <uint32_t P>
+struct root_of_unity<Z<P>> {
+  inline static const Z<P> g = P == 998244353 ? 3 : find_primitive_root<P>();
+  Z<P> operator()(int N) const {
+    return g.power(int(P - 1) / N);
+  }
+};
 
 template <typename T>
 struct fft_t {
@@ -26,9 +61,10 @@ struct fft_t {
       }
       rev[i] = r;
     }
-    for (auto sgn : {-1, +1}) {
+    root_of_unity<T> rou;
+    for (auto sgn : {+1, -1}) {
       for (int b = 1; b < N; b <<= 1) {
-        T w = root_of_unity<T>(sgn * 2 * b);
+        T w = rou(sgn * 2 * b);
         rs.push_back(1);
         for (int i = 0; i + 1 < b; ++i) {
           rs.push_back(rs.back() * w);
