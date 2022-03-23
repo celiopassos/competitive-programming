@@ -1,12 +1,8 @@
 template <uint32_t P>
 struct Z {
   uint32_t x;
-  Z() : x(0) {}
-  Z(int64_t x_) {
-    x_ %= P;
-    if (x_ < 0) x_ += P;
-    x = x_;
-  }
+  constexpr Z() : x(0) {}
+  constexpr Z(int64_t a) : x(((a % P) + P) % P) {}
   Z& operator+=(Z rhs) {
     x += rhs.x;
     if (x >= P) x -= P;
@@ -22,16 +18,7 @@ struct Z {
     return *this;
   }
   Z& operator/=(Z rhs) {
-    return *this *= rhs.power(-1);
-  }
-  Z power(int64_t p) const {
-    p %= P - 1;
-    if (p < 0) p += P - 1;
-    Z res = 1;
-    for (Z y = *this; p; p >>= 1, y *= y) {
-      if (p & 1) res *= y;
-    }
-    return res;
+    return *this *= pow(rhs, -1);
   }
   Z operator-() const {
     return Z() - *this;
@@ -64,3 +51,18 @@ struct Z {
     return in;
   }
 };
+
+template <uint32_t P>
+Z<P> pow(Z<P> x, int64_t p) {
+  p %= P - 1;
+  if (p < 0) p += P - 1;
+  Z<P> res = 1;
+  while (p) {
+    if (p & 1) {
+      res *= x;
+    }
+    x *= x;
+    p >>= 1;
+  }
+  return res;
+}

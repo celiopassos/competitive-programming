@@ -38,9 +38,4 @@ struct Pointwise : public std::array<T, K> {
   P operator-() const {
     return P(T(0)) -= *this;
   }
-  P power(int64_t p) const {
-    P res;
-    for (int j = 0; j < K; ++j) res[j] = (*this)[j].power(p);
-    return res;
-  }
 };
