@@ -4,7 +4,7 @@ struct FormalPowerSeries : public std::vector<T> {
   using std::vector<T>::vector;
   FormalPowerSeries() : std::vector<T>(1) {}
   template <typename... Args>
-  FormalPowerSeries(Args&&... args) :
+  explicit FormalPowerSeries(Args&&... args) :
     std::vector<T>(std::forward<Args>(args)...) {}
 
   F operator+(const F& rhs) const {
@@ -40,6 +40,9 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator*(T alpha) const {
     return F(*this) *= alpha;
   }
+  F operator/(T alpha) const {
+    return F(*this) *= 1 / alpha;
+  }
   friend F operator*(T alpha, F rhs) {
     return rhs *= alpha;
   }
@@ -48,10 +51,10 @@ struct FormalPowerSeries : public std::vector<T> {
   }
 
   F operator*(const F& rhs) {
-    return static_cast<std::vector<T>>(*this) * rhs;
+    return F(static_cast<std::vector<T>>(*this) * rhs);
   }
   F& operator*=(const F& rhs) {
-    return *this = static_cast<std::vector<T>>(std::move(*this)) * rhs;
+    return *this = F(static_cast<std::vector<T>>(std::move(*this)) * rhs);
   }
 
   F operator/(const F& rhs) const {
@@ -187,8 +190,34 @@ FormalPowerSeries<T> pow(FormalPowerSeries<T> P, int64_t k) {
   P.resize(max);
   T alpha = P[0];
   P *= 1 / alpha;
-  P = alpha.power(k) * exp(k * log(P));
+  P = pow(alpha, k) * exp(k * log(P));
   P.insert(P.begin(), k * t, 0);
+  return P;
+}
+
+namespace flags {
+  bool fps_sqrt_failed;
+};
+
+template <typename T>
+FormalPowerSeries<T> sqrt(FormalPowerSeries<T> P) {
+  int N = P.size();
+  int t = 0;
+  while (t < N && P[t] == 0) ++t;
+  if (t == N) {
+    return P;
+  }
+  auto x = sqrt(P[t]);
+  if (t % 2 || x * x != P[t]) {
+    flags::fps_sqrt_failed = true;
+    return {};
+  }
+  P.erase(P.begin(), P.begin() + t);
+  P.resize(N - t / 2);
+  P *= 1 / P[0];
+  P = x * exp(log(P) / 2);
+  P.insert(P.begin(), t / 2, 0);
+  flags::fps_sqrt_failed = false;
   return P;
 }
 
