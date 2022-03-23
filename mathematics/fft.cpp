@@ -1,19 +1,20 @@
 template <typename T>
-struct root_of_unity {};
+struct root_of_unity_t {};
 
 template <typename T>
-struct root_of_unity<std::complex<T>> {
-  inline static constexpr T PI = std::acos(-1);
+struct root_of_unity_t<std::complex<T>> {
+  static constexpr T PI = std::acos(-1);
   static std::complex<T> root_of_unity(int N) {
     return std::polar<T>(1, 2 * PI / N);
   }
 };
 
-template <uint32_t P>
-struct root_of_unity<Z<P>> {
-  inline static const Z<P> g = P == 998244353 ? 3 : find_primitive_root<P>();
-  static Z<P> root_of_unity(int N) {
-    return g.power(int(P - 1) / N);
+constexpr int ntt_mod = 998244353;
+template <>
+struct root_of_unity_t<Z<ntt_mod>> {
+  static constexpr Z<ntt_mod> g = Z<ntt_mod>(3);
+  static Z<ntt_mod> root_of_unity(int N) {
+    return pow(g, int(ntt_mod - 1) / N);
   }
 };
 
@@ -32,7 +33,7 @@ struct fft_t {
     }
     for (auto sgn : {+1, -1}) {
       for (int b = 1; b < N; b <<= 1) {
-        T w = root_of_unity<T>::root_of_unity(sgn * 2 * b);
+        T w = root_of_unity_t<T>::root_of_unity(sgn * 2 * b);
         rs.push_back(1);
         for (int i = 0; i + 1 < b; ++i) {
           rs.push_back(rs.back() * w);
