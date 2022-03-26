@@ -32,7 +32,7 @@ struct Dinic {
       q.pop();
       for (auto j : E[u]) {
         int v = edges[j].to;
-        if (level[v] != -1 || edges[j].free() <= 0) continue;
+        if (level[v] != -1 || edges[j].free() == 0) continue;
         level[v] = level[u] + 1;
         q.push(v);
       }
@@ -40,13 +40,16 @@ struct Dinic {
     return level[t] != -1;
   }
   T push(int u, int t, T pushed) {
-    if (u == t || pushed == 0) return pushed;
+    if (u == t) return pushed;
     for (int& i = ptr[u]; i < E[u].size(); ++i) {
-      auto &edge = edges[E[u][i]], &back = edges[E[u][i] ^ 1];
-      if (level[edge.to] != level[u] + 1 || edge.free() <= 0) continue;
-      T pushing = push(edge.to, t, std::min(pushed, edge.free()));
+      auto& edge = edges[E[u][i]];
+      auto& back = edges[E[u][i] ^ 1];
+      int v = edge.to;
+      if (level[v] != level[u] + 1 || edge.free() == 0) continue;
+      T pushing = push(v, t, std::min(pushed, edge.free()));
       if (pushing == 0) continue;
-      edge.flow += pushing, back.flow -= pushing;
+      edge.flow += pushing;
+      back.flow -= pushing;
       return pushing;
     }
     return 0;
@@ -60,8 +63,8 @@ struct Dinic {
     }
     return f;
   }
+  // make sure to check all edges (or just the even numbered ones)
   bool cut(int j) const {
-    return edges[j].free() == 0 && level[edges[j].from] != -1 &&
-           level[edges[j].to] == -1;
+    return level[edges[j].from] != -1 && level[edges[j].to] == -1;
   }
 };
