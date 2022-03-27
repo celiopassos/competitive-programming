@@ -3,7 +3,7 @@ struct Z {
   uint32_t x;
   constexpr Z() : x(0) {}
   template <typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
-  constexpr Z(T a) : x(((a % P) + P) % P) {}
+  constexpr Z(T a) : x(((int64_t(a) % P) + P) % P) {}
   Z& operator+=(Z rhs) {
     x += rhs.x;
     if (x >= P) x -= P;
