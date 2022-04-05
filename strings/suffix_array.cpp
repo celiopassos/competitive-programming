@@ -3,8 +3,7 @@ std::vector<int> sort_cyclic_shifts(Iterator first, Iterator last) {
   int N = last - first;
   std::vector<int> p(N), inv(N), tmp(N), cnt(N);
   std::iota(p.begin(), p.end(), 0);
-  std::sort(
-      p.begin(), p.end(), [&](int i, int j) { return first[i] < first[j]; });
+  std::sort(p.begin(), p.end(), [&](int i, int j) { return first[i] < first[j]; });
   inv[p[0]] = 0;
   for (int i = 1; i < N; ++i) {
     inv[p[i]] = inv[p[i - 1]] + (first[p[i]] != first[p[i - 1]] ? 1 : 0);

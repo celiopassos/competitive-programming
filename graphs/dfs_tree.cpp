@@ -4,9 +4,8 @@ struct dfs_tree_t {
   std::vector<State> st;
   std::vector<int> dp, back;
   std::vector<bool> cut, bridge;
-  dfs_tree_t(int N, const std::vector<std::array<int, 2>>& edges) :
-    N(N), M(edges.size()), st(N), E(N), dp(N), back(N), cut(N), bridge(M)
-  {
+  dfs_tree_t(int N, const std::vector<std::array<int, 2>>& edges)
+      : N(N), M(edges.size()), st(N), E(N), dp(N), back(N), cut(N), bridge(M) {
     for (int j = 0; j < M; ++j) {
       auto [u, v] = edges[j];
       if (u == v) continue;

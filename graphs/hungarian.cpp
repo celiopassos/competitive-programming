@@ -7,8 +7,7 @@ struct Hungarian {
   std::vector<int> match;
   std::vector<T> ldual, rdual;
   std::vector<std::vector<T>> C;
-  Hungarian(int N, int M)
-      : N(N), M(M), cost(0), match(M, -1), ldual(N), rdual(M), C(N) {
+  Hungarian(int N, int M) : N(N), M(M), cost(0), match(M, -1), ldual(N), rdual(M), C(N) {
     assert(N <= M);
   }
   void insert(int u, const std::vector<T>& row) {

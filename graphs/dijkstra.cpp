@@ -1,6 +1,5 @@
 template <typename T>
-std::vector<T> dijkstra(
-    int s, const std::vector<std::vector<std::pair<int, T>>>& E) {
+std::vector<T> dijkstra(int s, const std::vector<std::vector<std::pair<int, T>>>& E) {
   std::vector<T> dist(E.size(), std::numeric_limits<T>::max());
   std::priority_queue<std::pair<T, int>> pq;
   pq.emplace(dist[s] = 0, s);

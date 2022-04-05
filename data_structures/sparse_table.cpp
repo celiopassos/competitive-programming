@@ -5,8 +5,7 @@ struct SparseTable {
   std::vector<int> log;
   std::vector<std::vector<T>> st;
   template <typename Iterator>
-  SparseTable(Iterator first, Iterator last, Op op = Op())
-      : N(last - first), op(op), log(N + 1) {
+  SparseTable(Iterator first, Iterator last, Op op = Op()) : N(last - first), op(op), log(N + 1) {
     for (int x = 2; x <= N; ++x) {
       log[x] = 1 + log[x >> 1];
     }

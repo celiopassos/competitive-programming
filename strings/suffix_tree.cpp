@@ -28,8 +28,7 @@ std::vector<SuffixTreeNode> build_suffix_tree(
   int M = st.size();
   std::vector<int> V(M), label(M);
   std::iota(V.begin(), V.end(), 0);
-  std::sort(
-      V.begin(), V.end(), [&](int u, int v) { return st[u].len < st[v].len; });
+  std::sort(V.begin(), V.end(), [&](int u, int v) { return st[u].len < st[v].len; });
   std::vector<SuffixTreeNode> relabeled;
   for (int j = 0; j < M; ++j) {
     label[V[j]] = j;

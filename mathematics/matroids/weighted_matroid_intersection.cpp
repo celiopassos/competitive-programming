@@ -21,8 +21,7 @@ std::vector<int> weighted_matroid_intersection(
     }
     M1.build(I[1]), M2.build(I[1]);
     std::fill(d.begin(), d.end(),
-        std::pair(
-          std::numeric_limits<T>::max(), std::numeric_limits<int>::max()));
+        std::pair(std::numeric_limits<T>::max(), std::numeric_limits<int>::max()));
     std::fill(target.begin(), target.end(), false);
     std::fill(from.begin(), from.end(), -1);
     for (auto u : I[0]) {
@@ -59,8 +58,7 @@ std::vector<int> weighted_matroid_intersection(
         if (!check_edge(u, v)) continue;
         // assert(p[u][!b[u]] - p[v][!b[u]] >= 0);
         // assert(w[v] + p[v][!b[u]] - p[v][b[u]] >= 0);
-        std::pair<T, int> nd(
-            d[u].first + w[v] + p[u][!b[u]] - p[v][b[u]], d[u].second + 1);
+        std::pair<T, int> nd(d[u].first + w[v] + p[u][!b[u]] - p[v][b[u]], d[u].second + 1);
         if (nd < d[v]) {
           from[v] = u;
           d[v] = nd;

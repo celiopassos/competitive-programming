@@ -75,8 +75,7 @@ struct Hash {
     return !(*this == rhs);
   }
   struct custom_hash {
-    inline static const size_t y =
-        std::uniform_int_distribution<size_t>(1)(rng);
+    inline static const size_t y = std::uniform_int_distribution<size_t>(1)(rng);
     size_t operator()(const Hash& h) const {
       size_t res = 0;
       for (int i = 0; i < K; ++i) {

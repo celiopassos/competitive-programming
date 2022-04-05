@@ -45,16 +45,11 @@ struct TreeDecomposition {
   }
   // O(N^2 / K + Q.size() * K)
   template <typename Evaluate, typename Update>
-  void run(
-      const std::vector<std::array<int, 2>>& Q, Evaluate&& evaluate,
-      Update&& update) const {
+  void run(const std::vector<std::array<int, 2>>& Q, Evaluate&& evaluate, Update&& update) const {
     std::vector<int> Z(Q.size());
     std::iota(Z.begin(), Z.end(), 0);
-    auto key = [&](int i) {
-      return std::pair<int, int>(block[Q[i][0]], L[Q[i][1]]);
-    };
-    std::sort(
-        Z.begin(), Z.end(), [&](int i, int j) { return key(i) < key(j); });
+    auto key = [&](int i) { return std::pair<int, int>(block[Q[i][0]], L[Q[i][1]]); };
+    std::sort(Z.begin(), Z.end(), [&](int i, int j) { return key(i) < key(j); });
     std::array<int, 2> P = {0, 0};
     for (auto z : Z) {
       for (int t : {0, 1}) {

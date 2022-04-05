@@ -3,10 +3,8 @@ struct BeatsMonoid {
   static const T inf = Clamp<T>::inf;
   T sum, low[2], high[2];
   int cntlow, cnthigh;
-  BeatsMonoid()
-      : sum(0), low{+inf, +inf}, high{-inf, -inf}, cntlow(0), cnthigh(0) {}
-  BeatsMonoid(T x)
-      : sum(x), low{x, +inf}, high{x, -inf}, cntlow(1), cnthigh(1) {}
+  BeatsMonoid() : sum(0), low{+inf, +inf}, high{-inf, -inf}, cntlow(0), cnthigh(0) {}
+  BeatsMonoid(T x) : sum(x), low{x, +inf}, high{x, -inf}, cntlow(1), cnthigh(1) {}
   BeatsMonoid operator+(const BeatsMonoid& rhs) const {
     const auto& lhs = *this;
     BeatsMonoid res;
@@ -15,10 +13,8 @@ struct BeatsMonoid {
     res.high[0] = std::max(lhs.high[0], rhs.high[0]);
     int lowl = lhs.low[0] == res.low[0] ? (res.cntlow += lhs.cntlow, 1) : 0;
     int lowr = rhs.low[0] == res.low[0] ? (res.cntlow += rhs.cntlow, 1) : 0;
-    int highl =
-        lhs.high[0] == res.high[0] ? (res.cnthigh += lhs.cnthigh, 1) : 0;
-    int highr =
-        rhs.high[0] == res.high[0] ? (res.cnthigh += rhs.cnthigh, 1) : 0;
+    int highl = lhs.high[0] == res.high[0] ? (res.cnthigh += lhs.cnthigh, 1) : 0;
+    int highr = rhs.high[0] == res.high[0] ? (res.cnthigh += rhs.cnthigh, 1) : 0;
     res.low[1] = std::min(lhs.low[lowl], rhs.low[lowr]);
     res.high[1] = std::max(lhs.high[highl], rhs.high[highr]);
     return res;
@@ -40,8 +36,7 @@ struct BeatsUpdate {
   template <typename Node>
   bool can_apply(const Node& p) const {
     const auto &low = p.value.low, high = p.value.high;
-    return cl(low[0]) == cl(high[0]) ||
-           (cl(low[0]) != cl(low[1]) && cl(high[0]) != cl(high[1]));
+    return cl(low[0]) == cl(high[0]) || (cl(low[0]) != cl(low[1]) && cl(high[0]) != cl(high[1]));
   }
   template <typename Node>
   void apply(Node& p) const {

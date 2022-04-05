@@ -38,8 +38,7 @@ std::vector<T> fwht(std::vector<T> v, matrix<T> M) {
   return v;
 }
 template <typename T>
-std::vector<T> convolution(
-    const std::vector<T>& a, const std::vector<T>& b, matrix<T> M) {
+std::vector<T> convolution(const std::vector<T>& a, const std::vector<T>& b, matrix<T> M) {
   auto ahat = fwht(a, M), bhat = fwht(b, M);
   int N = a.size();
   for (int i = 0; i < N; ++i) {

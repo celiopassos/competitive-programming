@@ -41,8 +41,7 @@ struct GaussianElimination {
     }
   }
   // O(N^2 + M)
-  std::pair<bool, std::vector<T>> solve(
-      std::vector<T> b, bool reduced = false) const {
+  std::pair<bool, std::vector<T>> solve(std::vector<T> b, bool reduced = false) const {
     assert(N == b.size());
     if (!reduced) {
       b = E * b;

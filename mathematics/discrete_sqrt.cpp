@@ -1,5 +1,5 @@
 namespace flags {
-  bool zp_sqrt_failed;
+bool zp_sqrt_failed;
 };
 
 template <uint32_t P>
@@ -38,4 +38,3 @@ Z<P> sqrt(Z<P> alpha) {
     }
   }
 }
-

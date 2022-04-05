@@ -9,12 +9,9 @@ struct dbf_t {
       log[n] = 1 + log[n >> 1];
     }
     std::iota(p[0].begin(), p[0].end(), 0);
-    std::sort(p[0].begin(), p[0].end(), [&](int i, int j) {
-      return first[i] < first[j];
-    });
+    std::sort(p[0].begin(), p[0].end(), [&](int i, int j) { return first[i] < first[j]; });
     for (int i = 1; i < N; ++i) {
-      rank[0][p[0][i]] =
-          rank[0][p[0][i - 1]] + (first[p[0][i]] != first[p[0][i - 1]]);
+      rank[0][p[0][i]] = rank[0][p[0][i - 1]] + (first[p[0][i]] != first[p[0][i - 1]]);
     }
     std::vector<int> cnt(N), tmp(N);
     for (int k = 0; (1 << k) < N; ++k, ++K) {
@@ -29,12 +26,10 @@ struct dbf_t {
         p[k + 1][--cnt[rank[k][i]]] = i;
       }
       std::fill(cnt.begin(), cnt.end(), 0);
-      auto key = [&](int i) {
-        return std::pair(rank[k][i], rank[k][(i + (1 << k)) % N]);
-      };
+      auto key = [&](int i) { return std::pair(rank[k][i], rank[k][(i + (1 << k)) % N]); };
       for (int i = 1; i < N; ++i) {
-        rank[k + 1][p[k + 1][i]] = rank[k + 1][p[k + 1][i - 1]] +
-                                   (key(p[k + 1][i]) != key(p[k + 1][i - 1]));
+        rank[k + 1][p[k + 1][i]] =
+            rank[k + 1][p[k + 1][i - 1]] + (key(p[k + 1][i]) != key(p[k + 1][i - 1]));
       }
     }
   }

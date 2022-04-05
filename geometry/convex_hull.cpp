@@ -1,9 +1,8 @@
 // counter-clockwise order
 template <typename T>
 std::vector<std::complex<T>> convex_hull(std::vector<std::complex<T>> pts) {
-  std::sort(pts.begin(), pts.end(), [](auto p, auto q) {
-    return p.x() != q.x() ? p.x() < q.x() : p.y() < q.y();
-  });
+  std::sort(pts.begin(), pts.end(),
+      [](auto p, auto q) { return p.x() != q.x() ? p.x() < q.x() : p.y() < q.y(); });
   pts.erase(std::unique(pts.begin(), pts.end()), pts.end());
   if (pts.size() <= 2) return pts;
   std::vector<std::complex<T>> upper(pts.size()), lower(pts.size());

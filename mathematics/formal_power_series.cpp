@@ -4,8 +4,7 @@ struct FormalPowerSeries : public std::vector<T> {
   using std::vector<T>::vector;
   FormalPowerSeries() : std::vector<T>(1) {}
   template <typename... Args>
-  explicit FormalPowerSeries(Args&&... args) :
-    std::vector<T>(std::forward<Args>(args)...) {}
+  explicit FormalPowerSeries(Args&&... args) : std::vector<T>(std::forward<Args>(args)...) {}
 
   F operator+(const F& rhs) const {
     return F(*this) += rhs;
@@ -224,7 +223,7 @@ FormalPowerSeries<T> pow(FormalPowerSeries<T> P, int64_t k) {
 }
 
 namespace flags {
-  bool fps_sqrt_failed;
+bool fps_sqrt_failed;
 };
 
 template <typename T>
@@ -317,15 +316,15 @@ struct Interpolator {
     } else {
       Iterator middle = first + len / 2;
       return node->right->P * interpolate(node->left, first, middle) +
-        node->left->P * interpolate(node->right, middle, last);
+          node->left->P * interpolate(node->right, middle, last);
     }
   }
 };
 
 // computes P(D)A
 template <typename T>
-FormalPowerSeries<T> apply_polynomial_of_derivative(FormalPowerSeries<T> P,
-    FormalPowerSeries<T> A) {
+FormalPowerSeries<T> apply_polynomial_of_derivative(
+    FormalPowerSeries<T> P, FormalPowerSeries<T> A) {
   int N = A.size();
   if (P.size() > N) {
     P.resize(N);

@@ -18,8 +18,7 @@ struct mcf_graph {
   // returns the minimum cost of 'flow' units of flow
   static Cost compute_cost(const std::vector<Slope>& slopes, Cap flow) {
     auto iter = std::lower_bound(
-        slopes.begin(), slopes.end(), flow,
-        [](Slope sl, Cap f) { return sl.flow < f; });
+        slopes.begin(), slopes.end(), flow, [](Slope sl, Cap f) { return sl.flow < f; });
     if (iter == slopes.end()) return infcost;
     return iter->cost - (iter->flow - flow) * iter->slope;
   };

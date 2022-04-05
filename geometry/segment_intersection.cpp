@@ -13,10 +13,9 @@ bool intersects(Segment<T> U, Segment<T> V) {
   auto [a, b] = U;
   auto [c, d] = V;
   if (cross(a - c, d - c) == 0 && cross(b - c, d - c) == 0) {
-    return intersects(a.x(), b.x(), c.x(), d.x()) &&
-           intersects(a.y(), b.y(), c.y(), d.y());
+    return intersects(a.x(), b.x(), c.x(), d.x()) && intersects(a.y(), b.y(), c.y(), d.y());
   } else {
     return sgn(cross(b - a, c - a)) != sgn(cross(b - a, d - a)) &&
-           sgn(cross(d - c, a - c)) != sgn(cross(d - c, b - c));
+        sgn(cross(d - c, a - c)) != sgn(cross(d - c, b - c));
   }
 }

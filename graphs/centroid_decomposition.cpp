@@ -1,8 +1,7 @@
 struct CentroidDecomposition {
   struct Info {
     int root, dist, bucket;
-    Info(int root, int dist, int bucket) :
-      root(root), dist(dist), bucket(bucket) {}
+    Info(int root, int dist, int bucket) : root(root), dist(dist), bucket(bucket) {}
   };
   const std::vector<std::vector<int>>& E;
   int N, num_buckets = 0;
@@ -28,9 +27,8 @@ struct CentroidDecomposition {
       size[u] += size[v];
     }
   }
-  CentroidDecomposition(const std::vector<std::vector<int>>& E) :
-    E(E), N(E.size()), dead(N), size(N), level(N), info(N)
-  {
+  CentroidDecomposition(const std::vector<std::vector<int>>& E)
+      : E(E), N(E.size()), dead(N), size(N), level(N), info(N) {
     std::queue<int> q;
     q.push(0);
     while (!q.empty()) {
