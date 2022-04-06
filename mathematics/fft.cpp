@@ -71,17 +71,21 @@ struct fft_t {
   }
 };
 
+constexpr int naive_threshold = 64;
+
 template <typename T>
 std::vector<T> operator*(std::vector<T> p, std::vector<T> q) {
   int N = p.size(), M = q.size();
-  std::vector<T> res;
-  if (std::min(N, M) <= 64) {
-    res.resize(N + M - 1);
+  if (N == 0 || M == 0) {
+    return {};
+  } else if (std::min(N, M) <= naive_threshold) {
+    std::vector<T> res(N + M - 1);
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < M; ++j) {
         res[i + j] += p[i] * q[j];
       }
     }
+    return res;
   } else {
     int R = N + M - 1, K = 1;
     while (K < R) K <<= 1;
@@ -90,8 +94,8 @@ std::vector<T> operator*(std::vector<T> p, std::vector<T> q) {
     for (int i = 0; i < K; ++i) {
       phat[i] *= qhat[i];
     }
-    res = fft(std::move(phat), true);
+    auto res = fft(std::move(phat), true);
     res.resize(R);
+    return res;
   }
-  return res;
 }

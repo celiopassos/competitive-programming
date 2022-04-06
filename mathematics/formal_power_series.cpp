@@ -2,7 +2,6 @@ template <typename T>
 struct FormalPowerSeries : public std::vector<T> {
   using F = FormalPowerSeries;
   using std::vector<T>::vector;
-  FormalPowerSeries() : std::vector<T>(1) {}
   template <typename... Args>
   explicit FormalPowerSeries(Args&&... args) : std::vector<T>(std::forward<Args>(args)...) {}
 
@@ -56,13 +55,18 @@ struct FormalPowerSeries : public std::vector<T> {
     return *this = F(static_cast<std::vector<T>>(std::move(*this)) * rhs);
   }
 
-  F operator/(const F& rhs) const {
-    return F(*this) /= rhs;
+  void trim_zeros() {
+    while (!this->empty() && this->back() == 0) {
+      this->pop_back();
+    }
   }
-  F& operator/=(F rhs) {
+
+  F operator/(F rhs) const {
     int N = this->size(), M = rhs.size();
     if (N < M) {
-      *this = F();
+      return {};
+    } else if (M <= naive_threshold) {
+      return naive_division(rhs).first;
     } else {
       int K = N - M + 1;
       std::reverse(rhs.begin(), rhs.end());
@@ -70,9 +74,12 @@ struct FormalPowerSeries : public std::vector<T> {
       auto res = F(this->rbegin(), this->rbegin() + K) * inv(rhs);
       res.resize(K);
       std::reverse(res.begin(), res.end());
-      this->swap(res);
+      res.trim_zeros();
+      return res;
     }
-    return *this;
+  }
+  F& operator/=(const F& rhs) {
+    return *this = *this / rhs;
   }
   F operator%(const F& rhs) const {
     return divided_by(rhs).second;
@@ -80,15 +87,35 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator%=(const F& rhs) {
     return *this = divided_by(rhs)->second;
   }
-  std::pair<F, F> divided_by(F rhs) const {
-    auto q = *this / rhs;
-    if (rhs.size() > 1) {
-      rhs.pop_back();
+  std::pair<F, F> naive_division(const F& d) const {
+    F q, r = *this;
+    while (r.size() >= d.size()) {
+      T c = r.back() / d.back();
+      q.push_back(c);
+      for (int i = 0; i < d.size(); ++i) {
+        r.rbegin()[i] -= c * d.rbegin()[i];
+      }
+      r.pop_back();
     }
-    auto q0 = F(q.begin(), q.begin() + std::min(q.size(), rhs.size()));
-    auto r = *this - rhs * q0;
-    r.resize(rhs.size());
-    return {q, r};
+    std::reverse(q.begin(), q.end());
+    q.trim_zeros();
+    r.trim_zeros();
+    return std::pair(q, r);
+  }
+  std::pair<F, F> euclidean_division(F d) const {
+    if (d.size() <= naive_threshold) {
+      return naive_division(d);
+    } else {
+      auto q = *this / d;
+      if (d.size() > 1) {
+        d.pop_back();
+      }
+      auto q0 = F(q.begin(), q.begin() + std::min(q.size(), d.size()));
+      auto r = *this - d * q0;
+      r.resize(d.size());
+      r.trim_zeros();
+      return std::pair(q, r);
+    }
   }
 
   T operator()(T x) const {
@@ -132,7 +159,7 @@ struct FormalPowerSeries : public std::vector<T> {
 template <typename T>
 FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
   using F = FormalPowerSeries<T>;
-  assert(P[0] != 0);
+  assert(!P.empty() && P[0] != 0);
   F Q = {1 / P[0]};
   int N = P.size(), K = 1;
   while (K < N) {
@@ -153,14 +180,10 @@ FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
 
 template <typename T>
 FormalPowerSeries<T> D(FormalPowerSeries<T> P) {
-  if (P.size() == 1) {
-    P[0] = 0;
-  } else {
-    for (int i = 0; i + 1 < P.size(); ++i) {
-      P[i] = (i + 1) * P[i + 1];
-    }
-    P.pop_back();
+  for (int i = 0; i + 1 < P.size(); ++i) {
+    P[i] = (i + 1) * P[i + 1];
   }
+  P.pop_back();
   return P;
 }
 
@@ -177,7 +200,7 @@ FormalPowerSeries<T> I(FormalPowerSeries<T> P) {
 
 template <typename T>
 FormalPowerSeries<T> log(const FormalPowerSeries<T>& P) {
-  assert(P[0] == 1);
+  assert(!P.empty() && P[0] == 1);
   int N = P.size();
   auto r = D(P) * inv(P);
   r.resize(N - 1);
@@ -186,7 +209,7 @@ FormalPowerSeries<T> log(const FormalPowerSeries<T>& P) {
 
 template <typename T>
 FormalPowerSeries<T> exp(const FormalPowerSeries<T>& P) {
-  assert(P[0] == 0);
+  assert(P.empty() || P[0] == 0);
   FormalPowerSeries<T> Q = {1};
   int N = P.size(), K = 1;
   while (K < N) {
@@ -223,7 +246,7 @@ FormalPowerSeries<T> pow(FormalPowerSeries<T> P, int64_t k) {
 }
 
 namespace flags {
-bool fps_sqrt_failed;
+  bool fps_sqrt_failed;
 };
 
 template <typename T>
@@ -316,7 +339,7 @@ struct Interpolator {
     } else {
       Iterator middle = first + len / 2;
       return node->right->P * interpolate(node->left, first, middle) +
-          node->left->P * interpolate(node->right, middle, last);
+        node->left->P * interpolate(node->right, middle, last);
     }
   }
 };
