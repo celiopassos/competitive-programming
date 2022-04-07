@@ -52,7 +52,7 @@ struct FormalPowerSeries : public std::vector<T> {
     return F(static_cast<std::vector<T>>(*this) * rhs);
   }
   F& operator*=(const F& rhs) {
-    return *this = F(static_cast<std::vector<T>>(std::move(*this)) * rhs);
+    return *this = F(static_cast<std::vector<T>>(*this) * rhs);
   }
 
   void trim_zeros() {
@@ -120,7 +120,7 @@ struct FormalPowerSeries : public std::vector<T> {
 
   T operator()(T x) const {
     T pow = 1, y = 0;
-    for (auto& c : *this) {
+    for (auto c : *this) {
       y += c * pow;
       pow *= x;
     }
@@ -155,6 +155,18 @@ struct FormalPowerSeries : public std::vector<T> {
     return res;
   }
 };
+
+template <typename T>
+FormalPowerSeries<T> product(FormalPowerSeries<T>* p, int N) {
+  if (N == 0) {
+    return {1};
+  } else if (N == 1) {
+    return *p;
+  } else {
+    int h = N / 2;
+    return product(p, h) * product(p + h, N - h);
+  }
+}
 
 template <typename T>
 FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
@@ -225,6 +237,17 @@ FormalPowerSeries<T> exp(const FormalPowerSeries<T>& P) {
   }
   Q.resize(N);
   return Q;
+}
+
+template <typename T>
+FormalPowerSeries<T> exp(T alpha, int N) {
+  FormalPowerSeries<T> exp(N);
+  T pow = 1;
+  for (int k = 0; k < N; ++k) {
+    exp[k] = pow * combinatorics<T>.rfact[k];
+    pow *= alpha;
+  }
+  return exp;
 }
 
 template <typename T>
@@ -344,27 +367,22 @@ struct Interpolator {
   }
 };
 
-// computes P(D)A
+// computes f(D)P
 template <typename T>
 FormalPowerSeries<T> apply_polynomial_of_derivative(
-    FormalPowerSeries<T> P, FormalPowerSeries<T> A) {
-  int N = A.size();
-  if (P.size() > N) {
-    P.resize(N);
-  }
-  std::vector<T> f(N);
-  f[0] = 1;
-  for (int k = 0; k + 1 < N; ++k) {
-    f[k + 1] = (k + 1) * f[k];
+    FormalPowerSeries<T> f, FormalPowerSeries<T> P) {
+  int N = P.size();
+  if (f.size() > N) {
+    f.resize(N);
   }
   for (int k = 0; k < N; ++k) {
-    A[k] *= f[k];
+    P[k] *= combinatorics<T>.fact[k];
   }
-  std::reverse(P.begin(), P.end());
-  auto res = P * A;
-  res.erase(res.begin(), res.begin() + P.size() - 1);
+  std::reverse(f.begin(), f.end());
+  auto res = f * P;
+  res.erase(res.begin(), res.begin() + f.size() - 1);
   for (int k = 0; k < N; ++k) {
-    res[k] /= f[k];
+    res[k] *= combinatorics<T>.rfact[k];
   }
   return res;
 }
@@ -372,15 +390,7 @@ FormalPowerSeries<T> apply_polynomial_of_derivative(
 // finds coefficients of polynomial x -> P(x + c)
 template <typename T>
 FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
-  int N = P.size();
-  FormalPowerSeries<T> expc(N);
-  T f = 1, pow = 1;
-  for (int k = 0; k < N; ++k) {
-    expc[k] = pow / f;
-    f *= k + 1;
-    pow *= c;
-  }
-  return apply_polynomial_of_derivative(expc, P);
+  return apply_polynomial_of_derivative(exp(c, P.size()), P);
 }
 
 // returns coefficients in the basis of falling factorials of the unique
@@ -388,14 +398,10 @@ FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
 template <typename T>
 FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
   int N = y.size();
-  FormalPowerSeries<T> exp(N);
-  T f = 1;
   for (int k = 0; k < N; ++k) {
-    exp[k] = (k % 2 ? -1 : +1) / f;
-    y[k] /= f;
-    f *= k + 1;
+    y[k] *= combinatorics<T>.rfact[k];
   }
-  auto res = exp * y;
+  auto res = exp(T(-1), N) * y;
   res.resize(N);
   return res;
 }
