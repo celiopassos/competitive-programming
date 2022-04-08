@@ -251,7 +251,7 @@ FormalPowerSeries<T> exp(T alpha, int N) {
 }
 
 template <typename T>
-FormalPowerSeries<T> pow(FormalPowerSeries<T> P, int64_t k) {
+FormalPowerSeries<T> pow(FormalPowerSeries<T> P, long long k) {
   int N = P.size();
   int t = 0;
   while (t < N && P[t] == 0) ++t;

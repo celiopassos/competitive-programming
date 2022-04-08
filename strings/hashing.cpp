@@ -2,32 +2,32 @@ std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 template <int K, int32_t P>
 struct Hash {
   inline static const auto x = []() {
-    std::array<int64_t, K> x;
-    std::uniform_int_distribution<int64_t> unif(1, P - 1);
+    std::array<long long, K> x;
+    std::uniform_int_distribution<long long> unif(1, P - 1);
     for (int i = 0; i < K; ++i) {
       x[i] = unif(rng);
     }
     return x;
   }();
   inline static const auto xinv = []() {
-    std::array<int64_t, K> xinv;
+    std::array<long long, K> xinv;
     for (int i = 0; i < K; ++i) {
       x[i] = unif(rng);
       xinv[i] = 1;
-      for (int64_t p = P - 2, a = x[i]; p; p >>= 1) {
+      for (long long p = P - 2, a = x[i]; p; p >>= 1) {
         if (p & 1) xinv[i] = xinv[i] * a % P;
         a = a * a % P;
       }
     }
     return xinv;
   }();
-  std::array<int64_t, K> xp, xpinv, hash;
+  std::array<long long, K> xp, xpinv, hash;
   Hash() {
     std::fill(xp.begin(), xp.end(), 1);
     std::fill(xpinv.begin(), xpinv.end(), 1);
     std::fill(hash.begin(), hash.end(), 0);
   }
-  Hash(int64_t c) : xp(x), xpinv(xinv) {
+  Hash(long long c) : xp(x), xpinv(xinv) {
     std::fill(hash.begin(), hash.end(), (c % P + P) % P);
   }
   Hash& operator+=(const Hash& rhs) {
@@ -58,7 +58,7 @@ struct Hash {
     }
     return res;
   }
-  Hash power(int64_t p) const {
+  Hash power(long long p) const {
     Hash h = *this;
     if (p < 0) p *= -1, h = -h;
     Hash res;

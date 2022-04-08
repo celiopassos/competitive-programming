@@ -1,5 +1,5 @@
 template <typename T>
-T one_coeff(std::vector<T> p, std::vector<T> q, int64_t n) {
+T one_coeff(std::vector<T> p, std::vector<T> q, long long n) {
   int d = p.size();
   for (; n > 0; n >>= 1) {
     auto qsgn = q;
@@ -20,7 +20,7 @@ T one_coeff(std::vector<T> p, std::vector<T> q, int64_t n) {
 // and the initial values u[0], ..., u[d-1], finds u[n]
 // O(convolution(d) * log(n))
 template <typename T>
-T solve_linear_recurrence(std::vector<T> c, std::vector<T> u, int64_t n) {
+T solve_linear_recurrence(std::vector<T> c, std::vector<T> u, long long n) {
   int d = c.size();
   std::vector<T> q(d + 1, 0);
   q[0] = 1;

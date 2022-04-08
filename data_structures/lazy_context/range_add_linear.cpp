@@ -1,4 +1,4 @@
-int64_t sum_idx(int64_t n) {
+long long sum_idx(long long n) {
   return n * (n + 1) / 2;
 }
 template <typename T>

@@ -1,9 +1,9 @@
-template <uint32_t P>
+template <unsigned int P>
 struct Z {
-  uint32_t x;
+  unsigned int x;
   constexpr Z() : x(0) {}
   template <typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
-  constexpr Z(T a) : x(((int64_t(a) % P) + P) % P) {}
+  constexpr Z(T a) : x((((long long)a % P) + P) % P) {}
   Z& operator+=(Z rhs) {
     x += rhs.x;
     if (x >= P) x -= P;
@@ -15,7 +15,7 @@ struct Z {
     return *this;
   }
   Z& operator*=(Z rhs) {
-    x = uint64_t(x) * rhs.x % P;
+    x = (unsigned long long)x * rhs.x % P;
     return *this;
   }
   Z& operator/=(Z rhs) {
@@ -46,15 +46,15 @@ struct Z {
     return out << a.x;
   }
   friend std::istream& operator>>(std::istream& in, Z& a) {
-    int64_t x;
+    long long x;
     in >> x;
     a = Z(x);
     return in;
   }
 };
 
-template <uint32_t P>
-Z<P> pow(Z<P> x, int64_t p) {
+template <unsigned int P>
+Z<P> pow(Z<P> x, long long p) {
   p %= P - 1;
   if (p < 0) p += P - 1;
   Z<P> res = 1;
