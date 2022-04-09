@@ -2,6 +2,7 @@ struct SuffixTreeNode {
   int link, len, idx;
   SuffixTreeNode(int len, int idx) : link(-1), len(len), idx(idx) {}
 };
+
 std::vector<SuffixTreeNode> build_suffix_tree(
     const std::vector<int>& p, const std::vector<int>& lcp) {
   std::vector<SuffixTreeNode> st;
@@ -19,10 +20,14 @@ std::vector<SuffixTreeNode> build_suffix_tree(
         int v = stk.top();
         stk.pop();
         l = st[v].idx;
-        if (len > st[stk.top()].len) create(len, l);
+        if (len > st[stk.top()].len) {
+          create(len, l);
+        }
         st[v].link = stk.top();
       }
-      if (len > st[stk.top()].len) create(len, l);
+      if (len > st[stk.top()].len) {
+        create(len, l);
+      }
     }
   }
   int M = st.size();

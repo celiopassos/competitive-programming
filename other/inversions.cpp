@@ -15,6 +15,7 @@ long long merge_sort(T *v, T *aux, int l, int r) {
   }
   return res;
 }
+
 template <typename T>
 long long count_inversions(std::vector<T> v) {
   std::vector<T> aux(v.size());

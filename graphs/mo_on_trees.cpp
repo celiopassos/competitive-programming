@@ -1,7 +1,7 @@
-struct TreeDecomposition {
-  const std::vector<std::vector<int>>& E;
+struct mo_on_tree {
   int N, K;
   std::vector<int> block, p, L, R;
+
   int num_blocks = 0;
   void mark(std::vector<int>& S) {
     for (auto u : S) {
@@ -10,14 +10,15 @@ struct TreeDecomposition {
     ++num_blocks;
     S.clear();
   }
+
   int timer = 0;
-  std::vector<int> decompose(int u) {
+  std::vector<int> decompose(int u, const std::vector<std::vector<int>>& E) {
     L[u] = timer++;
     std::vector<int> S;
     for (auto v : E[u]) {
       if (v == p[u]) continue;
       p[v] = u;
-      auto R = decompose(v);
+      auto R = decompose(v, E);
       S.insert(S.end(), R.begin(), R.end());
       if (S.size() > K) mark(S);
     }
@@ -25,12 +26,14 @@ struct TreeDecomposition {
     S.push_back(u);
     return S;
   }
-  // O(N * K)
-  TreeDecomposition(const std::vector<std::vector<int>>& E, int K)
+
+  // Time complexity: O(N * K).
+  mo_on_tree(const std::vector<std::vector<int>>& E, int K)
       : E(E), N(E.size()), K(K), block(N), p(N, -1), L(N), R(N) {
-    auto S = decompose(0);
+    auto S = decompose(0, E);
     if (!S.empty()) mark(S);
   }
+
   bool is_ancestor(int u, int v) const {
     return L[u] <= L[v] && R[v] <= R[u];
   }
@@ -43,7 +46,8 @@ struct TreeDecomposition {
       }
     }
   }
-  // O(N^2 / K + Q.size() * K)
+
+  // Time complexity: O(N^2 / K + Q.size() * K).
   template <typename Evaluate, typename Update>
   void run(const std::vector<std::array<int, 2>>& Q, Evaluate&& evaluate, Update&& update) const {
     std::vector<int> Z(Q.size());

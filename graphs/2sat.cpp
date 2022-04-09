@@ -1,8 +1,8 @@
 // 2-SAT
-struct SAT {
+struct TwoSat {
   int N;
   std::vector<std::vector<int>> E;
-  SAT(int N) : N(N), E(2 * N) {}
+  TwoSat(int N) : N(N), E(2 * N) {}
   int neg(int u) const {
     return (u + N) % (2 * N);
   }
@@ -10,8 +10,8 @@ struct SAT {
     E[neg(u)].push_back(v);
     E[neg(v)].push_back(u);
   }
-  // assumes tarjan sorts SCCs in reverse topological order (u -> v implies
-  // scc[v] <= scc[u])
+
+  // Assumes tarjan sorts SCCs in reverse topological order (u -> v implies scc[v] <= scc[u]).
   std::pair<bool, std::vector<bool>> solve() const {
     std::vector<bool> res(N);
     auto scc = tarjan(E);

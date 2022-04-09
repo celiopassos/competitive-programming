@@ -1,15 +1,17 @@
 template <typename T>
-using minpq = std::priority_queue<T, std::vector<T>, std::greater<T>>;
-template <typename T>
 struct SlopeTrick {
   static constexpr T inf = std::numeric_limits<T>::max() / 2;
+
   T cost = 0, left_offset = 0, right_offset = 0;
-  std::priority_queue<std::pair<T, T>> left;
-  minpq<std::pair<T, T>> right;
+  using Pair = std::pair<T, T>;
+  std::priority_queue<Pair> left;
+  std::priority_queue<Pair, std::vector<Pair>, std::greater<Pair>> right;
+
   SlopeTrick() {
     left.emplace(-inf, 0);
     right.emplace(+inf, 0);
   }
+
   void rebalance() {
     while (true) {
       auto [xl, sl] = left.top();
@@ -33,21 +35,23 @@ struct SlopeTrick {
       }
     }
   }
-  // adds f(x) = s * max(a - x, 0)
+
+  // Adds f(x) = s * max(a - x, 0).
   void add_left(T a, T s) {
     left.emplace(a + left_offset, s);
-    rebalance();
+    Rebalance();
   }
-  // adds f(x) = s * max(x - a, 0)
+  // Adds f(x) = s * max(x - a, 0).
   void add_right(T a, T s) {
     right.emplace(a - right_offset, s);
-    rebalance();
+    Rebalance();
   }
-  // adds f(x) = s * abs(x - a)
+  // Adds f(x) = s * abs(x - a).
   void add_abs(T a, T s) {
     add_left(a, s);
     add_right(a, s);
   }
+
   void relax_left(T offset) {
     assert(offset >= 0);
     left_offset += offset;

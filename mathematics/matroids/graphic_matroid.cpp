@@ -3,8 +3,10 @@ struct GraphicMatroid {
   std::vector<std::array<int, 2>> edges;
   std::vector<std::vector<int>> E;
   std::vector<int> component, L, R;
+
   GraphicMatroid(int N, const std::vector<std::array<int, 2>>& edges_)
       : N(N), M(edges_.size()), edges(edges_), E(N), component(N), L(N), R(N) {}
+
   int timer = 0;
   void dfs(int u) {
     L[u] = timer++;
@@ -35,6 +37,7 @@ struct GraphicMatroid {
   bool is_ancestor(int u, int v) const {
     return L[u] <= L[v] && L[v] < R[u];
   }
+
   bool oracle(int e) const {
     return component[edges[e][0]] != component[edges[e][1]];
   }

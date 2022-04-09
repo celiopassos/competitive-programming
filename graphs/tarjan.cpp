@@ -1,6 +1,5 @@
-// scc ids are sorted in reverse order
-// i.e., an edge uv implies scc[v] <= scc[u]
-// it is guaranteed that 0 <= scc[u] < N for all u
+// SCC ids are sorted in reverse order (i.e., an edge uv implies scc[v] <= scc[u]).
+// It is guaranteed that 0 <= scc[u] < N for all u.
 std::vector<int> tarjan(const std::vector<std::vector<int>>& E) {
   int N = E.size(), timer = 0, ct = 0;
   enum State { unvisited, active, visited };
@@ -28,7 +27,8 @@ std::vector<int> tarjan(const std::vector<std::vector<int>>& E) {
       ++ct;
     }
   };
-  for (int u = 0; u < N; ++u)
+  for (int u = 0; u < N; ++u) {
     if (num[u] == -1) dfs(dfs, u);
+  }
   return scc;
 }

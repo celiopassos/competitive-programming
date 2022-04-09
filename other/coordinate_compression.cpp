@@ -1,21 +1,11 @@
 template <typename T>
-struct CoordinateCompression {
-  std::vector<T> a;
-  template <typename Iterator>
-  CoordinateCompression(Iterator first, Iterator last) : a(first, last) {
-    std::sort(a.begin(), a.end());
-    a.erase(std::unique(a.begin(), a.end()), a.end());
+struct CoordinateCompression : public std::vector<T> {
+  template <typename... Args>
+  CoordinateCompression(Args&&... args) : std::vector<T>(std::forward<Args>(args)...) {
+    std::sort(this->begin(), this->end());
+    this->erase(std::unique(this->begin(), this->end()), this->end());
   }
-  T operator[](int j) const {
-    return a[j];
-  }
-  T& operator[](int j) {
-    return a[j];
-  }
-  int id(T x) const {
-    return std::lower_bound(a.begin(), a.end(), x) - a.begin();
-  }
-  int size() const {
-    return a.size();
+  int id(const T& value) const {
+    return std::lower_bound(this->begin(), this->end(), value) - this->begin();
   }
 };

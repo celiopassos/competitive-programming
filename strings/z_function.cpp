@@ -9,7 +9,9 @@ std::vector<int> z_function(const std::vector<int>& p) {
   }
   z[0] = N;
   for (int i = 1, last = 1; i < N; ++i) {
-    if (i + z[i] > last + z[last]) last = i;
+    if (i + z[i] > last + z[last]) {
+      last = i;
+    }
     z[i] = std::min(z[i - last], last + z[last] - i);
   }
   return z;

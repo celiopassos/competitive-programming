@@ -2,7 +2,8 @@ template <typename X, typename Y>
 std::pair<X, Y> neg(std::pair<X, Y> p) {
   return {-p.first, -p.second};
 }
-// assumes w >= 0 (modify to SPFA otherwise)
+
+// Assumes w >= 0 (modify to SPFA otherwise).
 template <typename T, typename Matroid1, typename Matroid2>
 std::vector<int> weighted_matroid_intersection(
     int N, std::vector<T> w, Matroid1& M1, Matroid2& M2) {

@@ -4,7 +4,8 @@ struct GaussianElimination {
   matrix<T> A, E;
   std::vector<int> pivot;
   int rank, nullity;
-  // O(std::min(N, M)NM)
+
+  // Time complexity: O(std::min(N, M)NM).
   GaussianElimination(const matrix<T>& A_) : A(A_) {
     N = A.size(), M = A[0].size();
     E = matrix<T>(N, std::vector<T>(N));
@@ -40,7 +41,8 @@ struct GaussianElimination {
       ++rank, --nullity;
     }
   }
-  // O(N^2 + M)
+
+  // Time complexity: O(N^2 + M).
   std::pair<bool, std::vector<T>> solve(std::vector<T> b, bool reduced = false) const {
     assert(N == b.size());
     if (!reduced) {
@@ -57,7 +59,8 @@ struct GaussianElimination {
     }
     return std::pair(true, x);
   }
-  // O(nullity * NM)
+
+  // Time complexity: O(nullity * NM).
   std::vector<std::vector<T>> kernel_basis() const {
     std::vector<std::vector<T>> basis;
     std::vector<T> e(M);
@@ -70,7 +73,8 @@ struct GaussianElimination {
     }
     return basis;
   }
-  // O(N^3)
+
+  // Time complexity: O(N^3).
   matrix<T> inverse() const {
     assert(N == M);
     assert(rank == N);

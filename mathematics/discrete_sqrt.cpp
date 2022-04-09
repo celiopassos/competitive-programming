@@ -1,8 +1,6 @@
-namespace flags {
-bool zp_sqrt_failed;
-};
+namespace flags { bool zp_sqrt_failed; };
 
-template <unsigned int P>
+template <unsigned P>
 Z<P> sqrt(Z<P> alpha) {
   if (pow(alpha, (P - 1) / 2) != 1) {
     flags::zp_sqrt_failed = true;
@@ -19,7 +17,7 @@ Z<P> sqrt(Z<P> alpha) {
     }
   };
   std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-  std::uniform_int_distribution<unsigned int> unif(0, P - 1);
+  std::uniform_int_distribution<unsigned> unif(0, P - 1);
   while (true) {
     Z<P> y = unif(rng);
     if (y * y == alpha) {

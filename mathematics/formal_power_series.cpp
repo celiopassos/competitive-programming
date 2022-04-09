@@ -1,6 +1,7 @@
 template <typename T>
 struct FormalPowerSeries : public std::vector<T> {
   using F = FormalPowerSeries;
+
   using std::vector<T>::vector;
   template <typename... Args>
   explicit FormalPowerSeries(Args&&... args) : std::vector<T>(std::forward<Args>(args)...) {}
@@ -17,6 +18,7 @@ struct FormalPowerSeries : public std::vector<T> {
     }
     return *this;
   }
+
   F operator-(const F& rhs) const {
     return F(*this) -= rhs;
   }
@@ -29,30 +31,36 @@ struct FormalPowerSeries : public std::vector<T> {
     }
     return *this;
   }
+
+  F operator*(T alpha) const {
+    return F(*this) *= alpha;
+  }
   F& operator*=(T alpha) {
     for (auto& x : *this) {
       x *= alpha;
     }
     return *this;
   }
-  F operator*(T alpha) const {
-    return F(*this) *= alpha;
-  }
-  F operator/(T alpha) const {
-    return F(*this) *= 1 / alpha;
-  }
   friend F operator*(T alpha, F rhs) {
     return rhs *= alpha;
   }
+
+  F operator/(T alpha) const {
+    return F(*this) *= 1 / alpha;
+  }
+  F& operator/=(T alpha) const {
+    return *this *= 1 / alpha;
+  }
+
   F operator-() const {
     return F() -= *this;
   }
 
   F operator*(const F& rhs) {
-    return F(static_cast<std::vector<T>>(*this) * rhs);
+    return F(::operator*<T>(*this, rhs));
   }
   F& operator*=(const F& rhs) {
-    return *this = F(static_cast<std::vector<T>>(*this) * rhs);
+    return *this = *this * rhs;
   }
 
   void trim_zeros() {
@@ -81,12 +89,14 @@ struct FormalPowerSeries : public std::vector<T> {
   F& operator/=(const F& rhs) {
     return *this = *this / rhs;
   }
+
   F operator%(const F& rhs) const {
     return divided_by(rhs).second;
   }
   F operator%=(const F& rhs) {
     return *this = divided_by(rhs)->second;
   }
+
   std::pair<F, F> naive_division(const F& d) const {
     F q, r = *this;
     while (r.size() >= d.size()) {
@@ -102,7 +112,7 @@ struct FormalPowerSeries : public std::vector<T> {
     r.trim_zeros();
     return std::pair(q, r);
   }
-  std::pair<F, F> euclidean_division(F d) const {
+  std::pair<F, F> euclidean_division(const F& d) const {
     if (d.size() <= naive_threshold) {
       return naive_division(d);
     } else {
@@ -126,8 +136,9 @@ struct FormalPowerSeries : public std::vector<T> {
     }
     return y;
   }
-  // returns composition modulo x^M
-  // O(sqrt(N) * M * log(M))
+
+  // Returns composition modulo x^M.
+  // Time complexity: O(sqrt(N) * M * log(M)).
   F operator()(const F& g) const {
     int N = this->size(), M = g.size();
     int block_size = 1;
@@ -176,13 +187,12 @@ FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
   int N = P.size(), K = 1;
   while (K < N) {
     K *= 2;
-    fft_t<T> fft(2 * K);
-    auto Qhat = fft(Q, false);
-    auto Phat = fft(F(P.begin(), P.begin() + std::min(K, N)), false);
+    auto Qhat = fft<T>(2 * K, std::move(Q), false);
+    auto Phat = fft<T>(2 * K, F(P.begin(), P.begin() + std::min(K, N)), false);
     for (int i = 0; i < 2 * K; ++i) {
       Qhat[i] *= 2 - Phat[i] * Qhat[i];
     }
-    auto nQ = fft(Qhat, true);
+    auto nQ = fft<T>(2 * K, Qhat, true);
     Q.swap(nQ);
     Q.resize(K);
   }
@@ -192,6 +202,9 @@ FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
 
 template <typename T>
 FormalPowerSeries<T> D(FormalPowerSeries<T> P) {
+  if (P.empty()) {
+    return P;
+  }
   for (int i = 0; i + 1 < P.size(); ++i) {
     P[i] = (i + 1) * P[i + 1];
   }
@@ -274,6 +287,7 @@ namespace flags {
 
 template <typename T>
 FormalPowerSeries<T> sqrt(FormalPowerSeries<T> P) {
+  flags::fps_sqrt_failed = false;
   int N = P.size();
   int t = 0;
   while (t < N && P[t] == 0) ++t;
@@ -290,7 +304,6 @@ FormalPowerSeries<T> sqrt(FormalPowerSeries<T> P) {
   P *= 1 / P[0];
   P = x * exp(log(P) / 2);
   P.insert(P.begin(), t / 2, 0);
-  flags::fps_sqrt_failed = false;
   return P;
 }
 
@@ -304,6 +317,7 @@ struct Interpolator {
     Node* right = nullptr;
   };
   std::deque<Node> deq;
+
   template <typename Iterator>
   Interpolator(Iterator first, Iterator last) {
     Node* root = &deq.emplace_back();
@@ -323,6 +337,7 @@ struct Interpolator {
       node->P = node->left->P * node->right->P;
     }
   }
+
   std::vector<T> res;
   std::vector<T> evaluate(const F& Q) {
     res.clear();
@@ -339,6 +354,7 @@ struct Interpolator {
       res.push_back(Q[0]);
     }
   }
+
   bool flag = false;
   template <typename Iterator>
   F interpolate(Iterator first, Iterator last) {
@@ -367,34 +383,34 @@ struct Interpolator {
   }
 };
 
-// computes f(D)P
+// Returns p(D)f.
 template <typename T>
 FormalPowerSeries<T> apply_polynomial_of_derivative(
-    FormalPowerSeries<T> f, FormalPowerSeries<T> P) {
-  int N = P.size();
-  if (f.size() > N) {
-    f.resize(N);
+    FormalPowerSeries<T> p, FormalPowerSeries<T> f) {
+  int N = f.size();
+  if (p.size() > N) {
+    p.resize(N);
   }
   for (int k = 0; k < N; ++k) {
-    P[k] *= combinatorics<T>.fact[k];
+    f[k] *= combinatorics<T>.fact[k];
   }
-  std::reverse(f.begin(), f.end());
-  auto res = f * P;
-  res.erase(res.begin(), res.begin() + f.size() - 1);
+  std::reverse(p.begin(), p.end());
+  auto res = p * f;
+  res.erase(res.begin(), res.begin() + p.size() - 1);
   for (int k = 0; k < N; ++k) {
     res[k] *= combinatorics<T>.rfact[k];
   }
   return res;
 }
 
-// finds coefficients of polynomial x -> P(x + c)
+// Returns the polynomial that sends x -> P(x + c).
 template <typename T>
 FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
   return apply_polynomial_of_derivative(exp(c, P.size()), P);
 }
 
-// returns coefficients in the basis of falling factorials of the unique
-// polynomial P (of degree < N) with P(i) = y[i] (the coefficient of y)
+// Returns coefficients in the basis of falling factorials of the unique polynomial P of degree < N
+// with P(i) = y[i] (the ith coefficient of y).
 template <typename T>
 FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
   int N = y.size();

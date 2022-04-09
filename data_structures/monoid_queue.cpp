@@ -20,6 +20,7 @@ struct MonoidStack {
     return st.size();
   }
 };
+
 template <typename T>
 struct MonoidQueue {
   MonoidStack<T, false> in;

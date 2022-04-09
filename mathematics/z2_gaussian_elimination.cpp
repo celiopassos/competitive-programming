@@ -3,6 +3,7 @@ struct Z2GaussianElimination {
   using V = std::bitset<N>;
   V basis[N], alpha[N];
   int dim = 0, first[N];
+
   std::pair<int, V> reduce(V& x) const {
     V coef;
     for (int i = 0; i < N; ++i) {
@@ -12,6 +13,7 @@ struct Z2GaussianElimination {
     }
     return std::pair(-1, coef);
   }
+
   bool insert(V x) {
     auto [i, coef] = reduce(x);
     if (i == -1) return false;
@@ -22,10 +24,12 @@ struct Z2GaussianElimination {
     ++dim;
     return true;
   }
+
   std::pair<bool, V> solve(V x) const {
     auto [i, coef] = reduce(x);
     return std::pair(i == -1, coef);
   }
+
   void exchange(int r, V x) {
     auto [k, coef] = reduce(x);
     assert(k == -1);

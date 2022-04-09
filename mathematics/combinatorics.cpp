@@ -1,7 +1,10 @@
 template <typename T>
 struct Combinatorics {};
 
-template <unsigned int P>
+template <typename T>
+const Combinatorics<T> combinatorics(1 << 20);
+
+template <unsigned P>
 struct Combinatorics<Z<P>> {
   std::vector<Z<P>> fact, rfact, r;
   Combinatorics(int N) : fact(N), rfact(N), r(N) {

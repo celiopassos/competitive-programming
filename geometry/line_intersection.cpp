@@ -1,5 +1,5 @@
-// finds point x with dot(L.first, x) = L.second and dot(K.first, x) = K.second
-// assumes that L and K are not parallel (division by 0 otherwise)
+// Finds point x with dot(L.first, x) = L.second and dot(K.first, x) = K.second.
+// Assumes that L and K are not parallel (division by 0 otherwise)
 template <typename T, typename F = double>
 std::complex<F> intersection(Line<T> L, Line<T> K) {
   auto [a, t] = L;

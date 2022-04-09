@@ -1,5 +1,5 @@
-// builds virtual tree on F given the vertex set V and returns its root
-// V is modified to contain the new vertices and is sorted by lca.L[u]
+// Builds virtual tree on F given the vertex set V and returns its root.
+// V is modified to contain the new vertices and is sorted by lca.L[u].
 template <typename LCA>
 int build_virtual_tree(std::vector<int>& V, std::vector<std::vector<int>>& F, const LCA& lca) {
   auto cmp = [&](int u, int v) { return lca.L[u] > lca.L[v]; };

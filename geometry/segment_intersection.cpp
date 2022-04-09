@@ -2,12 +2,14 @@ template <typename T>
 int sgn(T x) {
   return x >= 0 ? x > 0 ? +1 : 0 : -1;
 }
+
 template <typename T>
 bool intersects(T a, T b, T c, T d) {
   if (a > b) std::swap(a, b);
   if (c > d) std::swap(c, d);
   return std::max(a, c) <= std::min(b, d);
 }
+
 template <typename T>
 bool intersects(Segment<T> U, Segment<T> V) {
   auto [a, b] = U;

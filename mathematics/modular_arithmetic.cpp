@@ -1,21 +1,21 @@
-template <unsigned int P>
+template <unsigned P>
 struct Z {
-  unsigned int x;
-  constexpr Z() : x(0) {}
+  unsigned value;
+  constexpr Z() : value(0) {}
   template <typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
-  constexpr Z(T a) : x((((long long)a % P) + P) % P) {}
+  constexpr Z(T a) : value((((long long)a % P) + P) % P) {}
   Z& operator+=(Z rhs) {
-    x += rhs.x;
-    if (x >= P) x -= P;
+    value += rhs.value;
+    if (value >= P) value -= P;
     return *this;
   }
   Z& operator-=(Z rhs) {
-    x += P - rhs.x;
-    if (x >= P) x -= P;
+    value += P - rhs.value;
+    if (value >= P) value -= P;
     return *this;
   }
   Z& operator*=(Z rhs) {
-    x = (unsigned long long)x * rhs.x % P;
+    value = (unsigned long long)value * rhs.value % P;
     return *this;
   }
   Z& operator/=(Z rhs) {
@@ -25,10 +25,10 @@ struct Z {
     return Z() - *this;
   }
   bool operator==(Z rhs) const {
-    return x == rhs.x;
+    return value == rhs.value;
   }
   bool operator!=(Z rhs) const {
-    return x != rhs.x;
+    return value != rhs.value;
   }
   friend Z operator+(Z lhs, Z rhs) {
     return lhs += rhs;
@@ -43,17 +43,17 @@ struct Z {
     return lhs /= rhs;
   }
   friend std::ostream& operator<<(std::ostream& out, Z a) {
-    return out << a.x;
+    return out << a.value;
   }
   friend std::istream& operator>>(std::istream& in, Z& a) {
-    long long x;
-    in >> x;
-    a = Z(x);
+    long long value;
+    in >> value;
+    a = Z(value);
     return in;
   }
 };
 
-template <unsigned int P>
+template <unsigned P>
 Z<P> pow(Z<P> x, long long p) {
   p %= P - 1;
   if (p < 0) p += P - 1;

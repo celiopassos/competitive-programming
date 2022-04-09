@@ -1,6 +1,7 @@
 template <typename T>
 struct Dinic {
   inline static const T inf = std::numeric_limits<T>::max();
+
   struct Edge {
     int from, to;
     T cap, flow = 0;
@@ -9,11 +10,14 @@ struct Dinic {
     }
     Edge(int u, int v, T cap) : from(u), to(v), cap(cap) {}
   };
-  std::vector<Edge> edges;
+
   int N, M = 0;
+  std::vector<Edge> edges;
   std::vector<std::vector<int>> E;
   std::vector<int> level, ptr;
+
   Dinic(int N) : N(N), E(N), level(N), ptr(N) {}
+
   int add_edge(int u, int v, T cap) {
     assert(cap >= 0);
     edges.emplace_back(u, v, cap);
@@ -22,6 +26,7 @@ struct Dinic {
     E[v].push_back(M++);
     return M - 2;
   }
+
   bool bfs(int s, int t) {
     std::fill(level.begin(), level.end(), -1);
     level[s] = 0;
@@ -39,6 +44,7 @@ struct Dinic {
     }
     return level[t] != -1;
   }
+
   T push(int u, int t, T pushed) {
     if (u == t) return pushed;
     for (int& i = ptr[u]; i < E[u].size(); ++i) {
@@ -54,6 +60,7 @@ struct Dinic {
     }
     return 0;
   }
+
   T flow(int s, int t) {
     for (auto& edge : edges) edge.flow = 0;
     T f = 0;
@@ -63,7 +70,8 @@ struct Dinic {
     }
     return f;
   }
-  // make sure to check all edges (or just the even numbered ones)
+
+  // Make sure to check all edges (or just the even numbered ones).
   bool cut(int j) const {
     return level[edges[j].from] != -1 && level[edges[j].to] == -1;
   }

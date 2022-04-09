@@ -1,19 +1,23 @@
 namespace fwht {
+
 template <typename T>
-using matrix = std::array<std::array<T, 2>, 2>;
+using Matrix = std::array<std::array<T, 2>, 2>;
+
 template <typename T>
-matrix<T> adjugate(matrix<T> M) {
+Matrix<T> adjugate(Matrix<T> M) {
   std::swap(M[0][0], M[1][1]);
   M[0][1] *= -1;
   M[1][0] *= -1;
   return M;
 }
+
 template <typename T>
-T determinant(matrix<T> M) {
+T determinant(Matrix<T> M) {
   return M[0][0] * M[1][1] - M[0][1] * M[1][0];
 }
+
 template <typename T>
-matrix<T> inverse(matrix<T> M) {
+Matrix<T> inverse(Matrix<T> M) {
   T det = determinant(M);
   M = adjugate(M);
   for (int s : {0, 1}) {
@@ -23,8 +27,9 @@ matrix<T> inverse(matrix<T> M) {
   }
   return M;
 }
+
 template <typename T>
-std::vector<T> fwht(std::vector<T> v, matrix<T> M) {
+std::vector<T> fwht(std::vector<T> v, Matrix<T> M) {
   int N = v.size();
   for (int len = 1; len < N; len *= 2) {
     for (int pos = 0; pos < N; pos += 2 * len) {
@@ -37,8 +42,9 @@ std::vector<T> fwht(std::vector<T> v, matrix<T> M) {
   }
   return v;
 }
+
 template <typename T>
-std::vector<T> convolution(const std::vector<T>& a, const std::vector<T>& b, matrix<T> M) {
+std::vector<T> convolution(const std::vector<T>& a, const std::vector<T>& b, Matrix<T> M) {
   auto ahat = fwht(a, M), bhat = fwht(b, M);
   int N = a.size();
   for (int i = 0; i < N; ++i) {
@@ -54,16 +60,14 @@ std::vector<T> convolution(const std::vector<T>& a, const std::vector<T>& b, mat
   }
   return c;
 }
+
 template <typename T>
-matrix<T> or_matrix() {
-  return {{{1, 0}, {1, 1}}};
-}
+constexpr Matrix<T> or_matrix = {{{1, 0}, {1, 1}}};
+
 template <typename T>
-matrix<T> and_matrix() {
-  return {{{1, 1}, {0, 1}}};
-}
+constexpr Matrix<T> and_matrix = {{{1, 1}, {0, 1}}};
+
 template <typename T>
-matrix<T> xor_matrix() {
-  return {{{+1, +1}, {+1, -1}}};
-}
+constexpr Matrix<T> xor_matrix = {{{+1, +1}, {+1, -1}}};
+
 }  // namespace fwht

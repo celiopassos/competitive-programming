@@ -1,4 +1,4 @@
-// 'heavy' matroid should be M2
+// 'Heavy' matroid should be M2.
 template <typename Matroid1, typename Matroid2>
 std::vector<int> matroid_intersection(int N, Matroid1& M1, Matroid2& M2) {
   std::vector<bool> b(N);

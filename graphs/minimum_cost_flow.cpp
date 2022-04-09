@@ -3,6 +3,7 @@ template <typename Cap, typename Cost>
 struct mcf_graph {
   inline static const Cap infcap = std::numeric_limits<Cap>::max();
   inline static const Cost infcost = std::numeric_limits<Cost>::max();
+
   struct Edge {
     int from, to;
     Cap cap, flow;
@@ -15,17 +16,21 @@ struct mcf_graph {
     Cap flow;
     Cost cost, slope;
   };
-  // returns the minimum cost of 'flow' units of flow
+
+  // Returns the minimum cost to pass 'flow' units of flow.
   static Cost compute_cost(const std::vector<Slope>& slopes, Cap flow) {
     auto iter = std::lower_bound(
         slopes.begin(), slopes.end(), flow, [](Slope sl, Cap f) { return sl.flow < f; });
     if (iter == slopes.end()) return infcost;
     return iter->cost - (iter->flow - flow) * iter->slope;
   };
+
   int N, M = 0;
   std::vector<Edge> edges;
   std::vector<std::vector<int>> E;
+
   mcf_graph(int N) : N(N), E(N) {}
+
   bool negative_cost = false;
   int add_edge(int u, int v, Cap cap, Cost cost) {
     if (cost < 0) negative_cost = true;
@@ -35,6 +40,7 @@ struct mcf_graph {
     E[v].push_back(M++);
     return M - 2;
   }
+
   std::vector<Cost> dual_feasible(int s) const {
     if (!negative_cost) return std::vector<Cost>(N);
     std::vector<Cost> d(N, infcost);
@@ -62,18 +68,24 @@ struct mcf_graph {
     }
     return d;
   }
-  // returns slope changing points and dual optimum
+
+  // Returns slope changing points and dual optimum.
   std::pair<std::vector<Slope>, std::vector<Cost>> slope(
       int s, int t, std::vector<Cost> dual = {}) {
-    if (dual.empty()) dual = dual_feasible(s);
+    if (dual.empty()) {
+      dual = dual_feasible(s);
+    }
+
     for (int j = 0; j < M; ++j) {
       edges[j].flow = 0;
     }
+
     std::vector<Cost> dist(N);
     std::vector<bool> vis(N);
     std::vector<int> p(N);
     std::vector<std::pair<Cost, int>> heap;
     heap.reserve(M);
+
     auto dijkstra = [&]() {
       std::fill(dist.begin(), dist.end(), infcost);
       std::fill(vis.begin(), vis.end(), false);
@@ -105,9 +117,11 @@ struct mcf_graph {
       }
       return true;
     };
+
     std::vector<Slope> result = {{0, 0, -infcost}};
     Cap flow = 0;
     Cost cost = 0;
+
     while (dijkstra()) {
       Cap f = infcap;
       for (int u = t; u != s; u = edges[p[u]].from) {
@@ -127,7 +141,8 @@ struct mcf_graph {
     }
     return {result, dual};
   }
-  // returns maximum flow, cost and dual optimum
+
+  // Returns maximum flow, cost and dual optimum.
   std::tuple<Cap, Cost, std::vector<Cost>> mincostflow(
       int s, int t, std::vector<Cost> dual_init = {}) {
     auto [slopes, dual] = slope(s, t, dual_init);

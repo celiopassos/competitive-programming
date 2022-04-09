@@ -15,8 +15,12 @@ std::vector<int> sort_cyclic_shifts(Iterator first, Iterator last) {
       cnt[inv[p[i]]] += 1;
     }
     std::partial_sum(cnt.begin(), cnt.end(), cnt.begin());
-    for (auto i : tmp) p[--cnt[inv[i]]] = i;
-    auto key = [&](int i) { return std::pair(inv[i], inv[(i + shift) % N]); };
+    for (auto i : tmp) {
+      p[--cnt[inv[i]]] = i;
+    }
+    auto key = [&](int i) {
+      return std::pair(inv[i], inv[(i + shift) % N]); 
+    };
     tmp[p[0]] = 0;
     for (int i = 1; i < N; ++i) {
       tmp[p[i]] = tmp[p[i - 1]] + (key(p[i - 1]) != key(p[i]) ? 1 : 0);
@@ -25,9 +29,11 @@ std::vector<int> sort_cyclic_shifts(Iterator first, Iterator last) {
   }
   return p;
 }
+
 struct SuffixArray {
   int N;
   std::vector<int> p, pos, lcp;
+
   SuffixArray(std::string S) {
     S.push_back(0);
     N = S.size();
@@ -47,12 +53,13 @@ struct SuffixArray {
       lcp[pos[i]] = k;
     }
   }
+
   template <typename RMQ>
   int lcp_query(int i, int j, const RMQ& rmq) const {
     if (i == j) return N - i - 1;
     if (pos[i] > pos[j]) {
       std::swap(i, j);
     }
-    return rmq.query(pos[i], pos[j]);  // range query should be [l, r)
+    return rmq.Query(pos[i], pos[j]);  // Range query should be [l, r).
   }
 };

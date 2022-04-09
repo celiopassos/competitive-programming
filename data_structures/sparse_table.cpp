@@ -4,6 +4,7 @@ struct SparseTable {
   Op op;
   std::vector<int> log;
   std::vector<std::vector<T>> st;
+
   template <typename Iterator>
   SparseTable(Iterator first, Iterator last, Op op = Op()) : N(last - first), op(op), log(N + 1) {
     for (int x = 2; x <= N; ++x) {
@@ -18,17 +19,20 @@ struct SparseTable {
       }
     }
   }
+
   T query(int l, int r) const {
     assert(l < r);
     int x = log[r - l];
     return op(st[x][l], st[x][r - (1 << x)]);
   }
 };
+
 template <typename T>
 struct MinFunctor {
   T operator()(T x, T y) const {
     return std::min(x, y);
   }
 };
+
 template <typename T>
 using RMQ = SparseTable<T, MinFunctor<T>>;

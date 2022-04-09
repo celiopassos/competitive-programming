@@ -1,10 +1,13 @@
 template <typename T>
 struct BeatsMonoid {
   static const T inf = Clamp<T>::inf;
+
   T sum, low[2], high[2];
   int cntlow, cnthigh;
+
   BeatsMonoid() : sum(0), low{+inf, +inf}, high{-inf, -inf}, cntlow(0), cnthigh(0) {}
   BeatsMonoid(T x) : sum(x), low{x, +inf}, high{x, -inf}, cntlow(1), cnthigh(1) {}
+
   BeatsMonoid operator+(const BeatsMonoid& rhs) const {
     const auto& lhs = *this;
     BeatsMonoid res;
@@ -20,12 +23,15 @@ struct BeatsMonoid {
     return res;
   }
 };
+
 template <typename T>
 struct BeatsUpdate {
   Clamp<T> cl;
+
   BeatsUpdate() {}
   template <typename... Args>
   BeatsUpdate(Args... args) : cl(args...) {}
+
   template <typename Node>
   bool can_break(const Node& p) const {
     for (auto x : {p.value.low[0], p.value.high[0]}) {
@@ -33,11 +39,13 @@ struct BeatsUpdate {
     }
     return true;
   }
+
   template <typename Node>
   bool can_apply(const Node& p) const {
     const auto &low = p.value.low, high = p.value.high;
     return cl(low[0]) == cl(high[0]) || (cl(low[0]) != cl(low[1]) && cl(high[0]) != cl(high[1]));
   }
+
   template <typename Node>
   void apply(Node& p) const {
     int len = p.r - p.l;
@@ -56,6 +64,7 @@ struct BeatsUpdate {
       sum += cntlow * low[0] + cnthigh * high[0];
     }
   }
+
   void compose(BeatsUpdate op) {
     cl = op.cl * cl;
   }

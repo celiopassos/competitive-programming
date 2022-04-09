@@ -1,4 +1,5 @@
-// returns minimum x such that a^x = b (-1 if there is none)
+// Returns minimum x such that a^x = b (-1 if there is none).
+// Time complexity: O(sqrt(mod)).
 long long discrete_log(long long a, long long b, long long mod) {
   assert(0 <= a < mod);
   assert(0 <= b < mod);

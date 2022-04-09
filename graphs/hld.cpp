@@ -2,12 +2,14 @@ struct HLD {
   int N;
   std::vector<std::vector<int>> E;
   std::vector<int> p, h, head, L, R;
+
   HLD(const std::vector<std::vector<int>>& E, int root)
       : N(E.size()), E(E), p(N, -1), h(N), head(N), L(N), R(N) {
     dfs_sz(root);
     head[root] = root;
     dfs_hld(root);
   }
+
   int dfs_sz(int u) {
     int sz = 1, mx = 0;
     for (auto& v : E[u]) {
@@ -22,6 +24,7 @@ struct HLD {
     }
     return sz;
   }
+
   int timer = 0;
   void dfs_hld(int u) {
     L[u] = timer++;
@@ -32,7 +35,8 @@ struct HLD {
     }
     R[u] = timer;
   }
-  // boolean is true if path should be 'reversed' (for uncommutative operations)
+
+  // Boolean is true if path should be 'reversed' (for uncommutative operations).
   const std::vector<std::tuple<bool, int, int>>& get_path(int u, int v) const {
     static std::vector<std::tuple<bool, int, int>> left, right;
     left.clear(), right.clear();
@@ -53,6 +57,7 @@ struct HLD {
     left.insert(left.end(), right.rbegin(), right.rend());
     return left;
   }
+
   int lca(int u, int v) const {
     while (head[u] != head[v]) {
       if (h[head[u]] < h[head[v]]) std::swap(u, v);
