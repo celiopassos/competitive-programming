@@ -286,6 +286,28 @@ FormalPowerSeries<T> pow(FormalPowerSeries<T> P, T alpha) {
   return exp(alpha * log(P));
 }
 
+// Returns P^alpha mod x^N.
+// Time complexity: O(N * M).
+template <typename T>
+FormalPowerSeries<T> slow_pow(FormalPowerSeries<T> P, T alpha, int N) {
+  assert(!P.empty() && P[0] == 1);
+  int M = P.size();
+  auto dP = D(P);
+  FormalPowerSeries<T> Q(N), dQ(N - 1);
+  Q[0] = 1;
+  for (int i = 0; i + 1 < N; ++i) {
+    for (int j = 0; j < M - 1 && j <= i; ++j) {
+      dQ[i] += dP[j] * Q[i - j];
+    }
+    dQ[i] *= alpha;
+    for (int j = 1; j < M && j <= i; ++j) {
+      dQ[i] -= P[j] * dQ[i - j];
+    }
+    Q[i + 1] = dQ[i] / (i + 1);
+  }
+  return Q;
+}
+
 template <typename T>
 struct Interpolator {
   using F = FormalPowerSeries<T>;
@@ -388,8 +410,18 @@ FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
   return apply_polynomial_of_derivative(exp(c, P.size()), P);
 }
 
+// Same as above, except that P is given in the basis of falling factorials.
+template <typename T>
+FormalPowerSeries<T> taylor_shift_in_falling_factorials(FormalPowerSeries<T> P, T c) {
+  int N = P.size();
+  auto f = slow_pow<T>({1, 1}, c, N);
+  auto res = apply_polynomial_of_derivative(f, P);
+  res.resize(N);
+  return res;
+}
+
 // Returns coefficients in the basis of falling factorials of the unique polynomial P of degree < N
-// with P(i) = y[i] (the ith coefficient of y).
+// with P(i) = y[i].
 template <typename T>
 FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
   int N = y.size();
@@ -399,6 +431,29 @@ FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
   auto res = exp(T(-1), N) * y;
   res.resize(N);
   return res;
+}
+
+// Inverse of the above transformation.
+template <typename T>
+FormalPowerSeries<T> evaluate_from_falling_factorials(FormalPowerSeries<T> f) {
+  int N = f.size();
+  auto y = exp(T(1), N) * f;
+  y.resize(N);
+  for (int k = 0; k < N; ++k) {
+    y[k] *= combinatorics<T>.fact[k];
+  }
+  return y;
+}
+
+// Returns P(c + j) for j = 0, ..., M - 1, where P is the unique polynomial of degree < N with
+// P(i) = y[i].
+template <typename T>
+FormalPowerSeries<T> shift_of_sampling_points(FormalPowerSeries<T> y, T c, int M) {
+  int N = y.size();
+  auto P = interpolate_to_falling_factorials(y);
+  P = taylor_shift_in_falling_factorials(P, c);
+  P.resize(M);
+  return evaluate_from_falling_factorials(P);
 }
 
 #endif  // ALGORITHMS_MATHEMATICS_FORMAL_POWER_SERIES_HPP
