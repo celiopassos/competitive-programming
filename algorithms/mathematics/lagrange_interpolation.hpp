@@ -2,7 +2,6 @@
 #define ALGORITHMS_MATHEMATICS_LAGRANGE_INTERPOLATION_HPP
 
 #include "algorithms/common"
- 
 #include "algorithms/mathematics/combinatorics"
 
 template <typename T>

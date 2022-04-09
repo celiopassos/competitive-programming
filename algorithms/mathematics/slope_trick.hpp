@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_SLOPE_TRICK_HPP
 #define ALGORITHMS_MATHEMATICS_SLOPE_TRICK_HPP
 
-#include "algorithms/common"
-
 #include <queue>
+
+#include "algorithms/common"
 
 template <typename T>
 struct SlopeTrick {

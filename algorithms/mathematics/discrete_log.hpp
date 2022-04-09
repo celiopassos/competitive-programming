@@ -1,10 +1,10 @@
 #ifndef ALGORITHMS_MATHEMATICS_DISCRETE_LOG_HPP
 #define ALGORITHMS_MATHEMATICS_DISCRETE_LOG_HPP
 
-#include "algorithms/common"
-
 #include <cmath>
 #include <unordered_map>
+
+#include "algorithms/common"
 
 // Returns minimum x such that a^x = b (-1 if there is none).
 // Time complexity: O(sqrt(mod)).

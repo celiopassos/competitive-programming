@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_MODULAR_ARITHMETIC_HPP
 #define ALGORITHMS_MATHEMATICS_MODULAR_ARITHMETIC_HPP
 
-#include "algorithms/common"
-
 #include <type_traits>
+
+#include "algorithms/common"
 
 template <unsigned P>
 struct Z {

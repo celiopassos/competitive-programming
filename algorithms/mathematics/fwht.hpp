@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_FWHT_HPP
 #define ALGORITHMS_MATHEMATICS_FWHT_HPP
 
-#include "algorithms/common"
-
 #include <array>
+
+#include "algorithms/common"
 
 namespace fwht {
 

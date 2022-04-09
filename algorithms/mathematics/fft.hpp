@@ -2,7 +2,6 @@
 #define ALGORITHMS_MATHEMATICS_FFT_HPP
 
 #include "algorithms/common"
-
 #include "algorithms/mathematics/modular_arithmetic"
 
 template <typename T>

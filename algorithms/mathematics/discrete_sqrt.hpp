@@ -1,11 +1,10 @@
 #ifndef ALGORITHMS_MATHEMATICS_DISCRETE_SQRT_HPP
 #define ALGORITHMS_MATHEMATICS_DISCRETE_SQRT_HPP
 
-#include "algorithms/common"
-
 #include <chrono>
 #include <random>
 
+#include "algorithms/common"
 #include "algorithms/mathematics/modular_arithmetic"
 
 namespace flags { bool zp_sqrt_failed; };

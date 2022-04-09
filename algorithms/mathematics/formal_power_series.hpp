@@ -2,11 +2,10 @@
 #define ALGORITHMS_MATHEMATICS_FORMAL_POWER_SERIES_HPP
 
 #include "algorithms/common"
-
-#include <deque>
-
 #include "algorithms/mathematics/combinatorics"
 #include "algorithms/mathematics/fft"
+
+#include <deque>
 
 template <typename T>
 struct FormalPowerSeries : public std::vector<T> {
@@ -58,7 +57,7 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator/(T alpha) const {
     return F(*this) *= 1 / alpha;
   }
-  F& operator/=(T alpha) const {
+  F& operator/=(T alpha) {
     return *this *= 1 / alpha;
   }
 
@@ -175,6 +174,14 @@ struct FormalPowerSeries : public std::vector<T> {
     res.resize(M);
     return res;
   }
+
+  int val() const {
+    auto iter = this->begin();
+    while (iter != this->end() && *iter == 0) {
+      ++iter;
+    }
+    return iter - this->begin();
+  }
 };
 
 template <typename T>
@@ -274,47 +281,9 @@ FormalPowerSeries<T> exp(T alpha, int N) {
 }
 
 template <typename T>
-FormalPowerSeries<T> pow(FormalPowerSeries<T> P, long long k) {
-  int N = P.size();
-  int t = 0;
-  while (t < N && P[t] == 0) ++t;
-  if (t == N || (t > 0 && k >= (N + t - 1) / t)) {
-    return FormalPowerSeries<T>(N, 0);
-  }
-  int max = N - k * t;
-  P.erase(P.begin(), P.begin() + t);
-  P.resize(max);
-  T alpha = P[0];
-  P *= 1 / alpha;
-  P = pow(alpha, k) * exp(k * log(P));
-  P.insert(P.begin(), k * t, 0);
-  return P;
-}
-
-namespace flags {
-  bool fps_sqrt_failed;
-};
-
-template <typename T>
-FormalPowerSeries<T> sqrt(FormalPowerSeries<T> P) {
-  flags::fps_sqrt_failed = false;
-  int N = P.size();
-  int t = 0;
-  while (t < N && P[t] == 0) ++t;
-  if (t == N) {
-    return P;
-  }
-  auto x = sqrt(P[t]);
-  if (t % 2 || x * x != P[t]) {
-    flags::fps_sqrt_failed = true;
-    return {};
-  }
-  P.erase(P.begin(), P.begin() + t);
-  P.resize(N - t / 2);
-  P *= 1 / P[0];
-  P = x * exp(log(P) / 2);
-  P.insert(P.begin(), t / 2, 0);
-  return P;
+FormalPowerSeries<T> pow(FormalPowerSeries<T> P, T alpha) {
+  assert(!P.empty() && P[0] == 1);
+  return exp(alpha * log(P));
 }
 
 template <typename T>

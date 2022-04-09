@@ -1,5 +1,5 @@
-#ifndef ALGORITHMS_MATHEMATICS_COMBINATORICS_ZP
-#define ALGORITHMS_MATHEMATICS_COMBINATORICS_ZP
+#ifndef ALGORITHMS_MATHEMATICS_COMBINATORICS_ZP_HPP
+#define ALGORITHMS_MATHEMATICS_COMBINATORICS_ZP_HPP
 
 #include "algorithms/mathematics/combinatorics"
 #include "algorithms/mathematics/modular_arithmetic"
@@ -23,4 +23,4 @@ struct Combinatorics<Z<P>> {
   }
 };
 
-#endif  // ALGORITHMS_MATHEMATICS_COMBINATORICS_ZP
+#endif  // ALGORITHMS_MATHEMATICS_COMBINATORICS_ZP_HPP

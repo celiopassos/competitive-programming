@@ -2,7 +2,6 @@
 #define ALGORITHMS_MATHEMATICS_GAUSSIAN_ELIMINATION_HPP
 
 #include "algorithms/common"
-
 #include "algorithms/mathematics/matrix"
 
 template <typename T>
