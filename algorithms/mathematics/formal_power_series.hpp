@@ -65,33 +65,27 @@ struct FormalPowerSeries : public std::vector<T> {
     return F() -= *this;
   }
 
-  F operator*(const F& rhs) {
+  F operator*(const F& rhs) const {
     return F(::operator*<T>(*this, rhs));
   }
   F& operator*=(const F& rhs) {
     return *this = *this * rhs;
   }
 
-  void trim_zeros() {
-    while (!this->empty() && this->back() == 0) {
-      this->pop_back();
-    }
-  }
-
-  F operator/(F rhs) const {
-    int N = this->size(), M = rhs.size();
+  F operator/(F d) const {
+    assert(!d.empty() && d.back() != 0);
+    int N = this->size(), M = d.size();
     if (N < M) {
       return {};
     } else if (M <= naive_threshold) {
-      return naive_division(rhs).first;
+      return naive_division(d).first;
     } else {
       int K = N - M + 1;
-      std::reverse(rhs.begin(), rhs.end());
-      rhs.resize(K);
-      auto res = F(this->rbegin(), this->rbegin() + K) * inv(rhs);
+      std::reverse(d.begin(), d.end());
+      d.resize(K);
+      auto res = F(this->rbegin(), this->rbegin() + K) * inv(d);
       res.resize(K);
       std::reverse(res.begin(), res.end());
-      res.trim_zeros();
       return res;
     }
   }
@@ -100,13 +94,14 @@ struct FormalPowerSeries : public std::vector<T> {
   }
 
   F operator%(const F& rhs) const {
-    return divided_by(rhs).second;
+    return euclidean_division(rhs).second;
   }
   F operator%=(const F& rhs) {
-    return *this = divided_by(rhs)->second;
+    return *this = euclidean_division(rhs)->second;
   }
 
   std::pair<F, F> naive_division(const F& d) const {
+    assert(!d.empty() && d.back() != 0);
     F q, r = *this;
     while (r.size() >= d.size()) {
       T c = r.back() / d.back();
@@ -117,22 +112,17 @@ struct FormalPowerSeries : public std::vector<T> {
       r.pop_back();
     }
     std::reverse(q.begin(), q.end());
-    q.trim_zeros();
-    r.trim_zeros();
     return std::pair(q, r);
   }
   std::pair<F, F> euclidean_division(const F& d) const {
+    assert(!d.empty() && d.back() != 0);
     if (d.size() <= naive_threshold) {
       return naive_division(d);
     } else {
       auto q = *this / d;
-      if (d.size() > 1) {
-        d.pop_back();
-      }
-      auto q0 = F(q.begin(), q.begin() + std::min(q.size(), d.size()));
+      F q0(q.begin(), q.begin() + std::min(q.size(), d.size()));
       auto r = *this - d * q0;
-      r.resize(d.size());
-      r.trim_zeros();
+      r.resize(d.size() - 1);
       return std::pair(q, r);
     }
   }
@@ -181,6 +171,15 @@ struct FormalPowerSeries : public std::vector<T> {
       ++iter;
     }
     return iter - this->begin();
+  }
+
+  void trim_left() {
+    this->erase(this->begin(), this->begin() + val());
+  }
+  void trim_right() {
+    while (!this->empty() && this->back() == 0) {
+      this->pop_back();
+    }
   }
 };
 
