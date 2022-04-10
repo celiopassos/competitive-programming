@@ -280,7 +280,7 @@ FormalPowerSeries<T> exp(T alpha, int N) {
 }
 
 template <typename T>
-FormalPowerSeries<T> pow(FormalPowerSeries<T> P, T alpha) {
+FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
   assert(!P.empty() && P[0] == 1);
   return exp(alpha * log(P));
 }
@@ -288,7 +288,7 @@ FormalPowerSeries<T> pow(FormalPowerSeries<T> P, T alpha) {
 // Returns P^alpha mod x^N.
 // Time complexity: O(N * M).
 template <typename T>
-FormalPowerSeries<T> slow_pow(FormalPowerSeries<T> P, T alpha, int N) {
+FormalPowerSeries<T> slow_pow(const FormalPowerSeries<T>& P, T alpha, int N) {
   assert(!P.empty() && P[0] == 1);
   int M = P.size();
   auto dP = D(P);
@@ -405,13 +405,13 @@ FormalPowerSeries<T> apply_polynomial_of_derivative(
 
 // Returns the polynomial that sends x -> P(x + c).
 template <typename T>
-FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
+FormalPowerSeries<T> taylor_shift(const FormalPowerSeries<T>& P, T c) {
   return apply_polynomial_of_derivative(exp(c, P.size()), P);
 }
 
 // Same as above, except that P is given in the basis of falling factorials.
 template <typename T>
-FormalPowerSeries<T> taylor_shift_in_falling_factorials(FormalPowerSeries<T> P, T c) {
+FormalPowerSeries<T> taylor_shift_in_falling_factorials(const FormalPowerSeries<T>& P, T c) {
   int N = P.size();
   auto f = slow_pow<T>({1, 1}, c, N);
   auto res = apply_polynomial_of_derivative(f, P);
@@ -427,16 +427,16 @@ FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
   for (int k = 0; k < N; ++k) {
     y[k] *= combinatorics<T>.rfact[k];
   }
-  auto res = exp(T(-1), N) * y;
-  res.resize(N);
-  return res;
+  auto P = exp(T(-1), N) * y;
+  P.resize(N);
+  return P;
 }
 
 // Inverse of the above transformation.
 template <typename T>
-FormalPowerSeries<T> evaluate_from_falling_factorials(FormalPowerSeries<T> f) {
-  int N = f.size();
-  auto y = exp(T(1), N) * f;
+FormalPowerSeries<T> evaluate_from_falling_factorials(const FormalPowerSeries<T>& P) {
+  int N = P.size();
+  auto y = exp(T(1), N) * P;
   y.resize(N);
   for (int k = 0; k < N; ++k) {
     y[k] *= combinatorics<T>.fact[k];
@@ -447,7 +447,7 @@ FormalPowerSeries<T> evaluate_from_falling_factorials(FormalPowerSeries<T> f) {
 // Returns P(c + j) for j = 0, ..., M - 1, where P is the unique polynomial of degree < N with
 // P(i) = y[i].
 template <typename T>
-FormalPowerSeries<T> shift_of_sampling_points(FormalPowerSeries<T> y, T c, int M) {
+FormalPowerSeries<T> shift_of_sampling_points(const FormalPowerSeries<T>& y, T c, int M) {
   int N = y.size();
   auto P = interpolate_to_falling_factorials(y);
   P = taylor_shift_in_falling_factorials(P, c);
