@@ -8,8 +8,8 @@
 // atcoder Orz
 template <typename Cap, typename Cost>
 struct mcf_graph {
-  inline static const Cap infcap = std::numeric_limits<Cap>::max();
-  inline static const Cost infcost = std::numeric_limits<Cost>::max();
+  static constexpr Cap infcap = std::numeric_limits<Cap>::max();
+  static constexpr Cost infcost = std::numeric_limits<Cost>::max();
 
   struct Edge {
     int from, to;

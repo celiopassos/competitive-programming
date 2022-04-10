@@ -6,7 +6,7 @@
 // Maintains maximum matching of minimum weight.
 template <typename T>
 struct Hungarian {
-  inline static const T inf = std::numeric_limits<T>::max();
+  static constexpr T inf = std::numeric_limits<T>::max();
 
   int N, M;
   T cost;

@@ -7,7 +7,7 @@
 
 template <typename T>
 struct Dinic {
-  inline static const T inf = std::numeric_limits<T>::max();
+  static constexpr T inf = std::numeric_limits<T>::max();
 
   struct Edge {
     int from, to;

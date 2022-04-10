@@ -6,7 +6,6 @@
 // Requires 2^K > tree height.
 template <int K>
 struct LCA {
-  const std::vector<std::vector<int>>& E;
   int N;
   std::vector<int> L, R, inv, h;
   std::vector<std::array<int, K>> up;
