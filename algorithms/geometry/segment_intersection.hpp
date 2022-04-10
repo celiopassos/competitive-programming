@@ -1,8 +1,9 @@
 #ifndef ALGORITHMS_GEOMETRY_SEGMENT_INTERSECTION_HPP
 #define ALGORITHMS_GEOMETRY_SEGMENT_INTERSECTION_HPP
 
-#include <complex>
 #include "algorithms/geometry/line"
+
+#include <complex>
 
 template <typename T>
 int sgn(T x) {

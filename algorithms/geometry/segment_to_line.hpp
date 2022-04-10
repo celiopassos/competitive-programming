@@ -1,8 +1,9 @@
 #ifndef ALGORITHMS_GEOMETRY_SEGMENT_TO_LINE_HPP
 #define ALGORITHMS_GEOMETRY_SEGMENT_TO_LINE_HPP
 
-#include <complex>
 #include "algorithms/geometry/line"
+
+#include <complex>
 
 template <typename T>
 Line<T> line(Segment<T> S) {

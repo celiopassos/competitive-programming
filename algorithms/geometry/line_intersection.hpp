@@ -1,8 +1,9 @@
 #ifndef ALGORITHMS_GEOMETRY_LINE_INTERSECTION_HPP
 #define ALGORITHMS_GEOMETRY_LINE_INTERSECTION_HPP
 
-#include <complex>
 #include "algorithms/geometry/line"
+
+#include <complex>
 
 // Finds point x with dot(L.first, x) = L.second and dot(K.first, x) = K.second.
 // Assumes that L and K are not parallel (division by 0 otherwise)

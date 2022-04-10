@@ -19,6 +19,7 @@ std::vector<SuffixTreeNode> build_suffix_tree(
     st.emplace_back(len, idx);
   };
   create(0, -1);
+
   int N = p.size();
   for (int i = 1; i < N; ++i) {
     for (auto len : {N - 1 - p[i], lcp[i]}) {
@@ -37,6 +38,7 @@ std::vector<SuffixTreeNode> build_suffix_tree(
       }
     }
   }
+
   int M = st.size();
   std::vector<int> V(M), label(M);
   std::iota(V.begin(), V.end(), 0);
@@ -49,6 +51,7 @@ std::vector<SuffixTreeNode> build_suffix_tree(
   for (int u = 1; u < M; ++u) {
     relabeled[u].link = label[relabeled[u].link];
   }
+
   return relabeled;
 }
 

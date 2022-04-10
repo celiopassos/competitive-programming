@@ -32,10 +32,10 @@ struct DBF {
         p[k + 1][--cnt[rank[k][i]]] = i;
       }
       std::fill(cnt.begin(), cnt.end(), 0);
-      auto Key = [&](int i) { return std::pair(rank[k][i], rank[k][(i + (1 << k)) % N]); };
+      auto key = [&](int i) { return std::pair(rank[k][i], rank[k][(i + (1 << k)) % N]); };
       for (int i = 1; i < N; ++i) {
         auto& r = rank[k + 1];
-        r[p[k + 1][i]] = r[p[k + 1][i - 1]] + (Key(p[k + 1][i]) != Key(p[k + 1][i - 1]));
+        r[p[k + 1][i]] = r[p[k + 1][i - 1]] + (key(p[k + 1][i]) != key(p[k + 1][i - 1]));
       }
     }
   }

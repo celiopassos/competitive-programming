@@ -1,8 +1,7 @@
-#ifndef ALGORITHMS_GRAPHS_2SAT_HPP
-#define ALGORITHMS_GRAPHS_2SAT_HPP
+#ifndef ALGORITHMS_GRAPHS_TWO_SAT_HPP
+#define ALGORITHMS_GRAPHS_TWO_SAT_HPP
 
 #include "algorithms/common"
-
 #include "algorithms/graphs/tarjan"
 
 struct TwoSat {
@@ -29,4 +28,4 @@ struct TwoSat {
   }
 };
 
-#endif  // ALGORITHMS_GRAPHS_2SAT_HPP
+#endif  // ALGORITHMS_GRAPHS_TWO_SAT_HPP

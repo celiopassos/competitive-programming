@@ -146,6 +146,7 @@ struct mcf_graph {
       cost += f * d;
       result.push_back({flow, cost, d});
     }
+
     return {result, dual};
   }
 

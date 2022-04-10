@@ -7,8 +7,10 @@ struct Sieve {
   struct PrimePower {
     int p = -1, pow, k;  // pow = p^k
   };
+
   std::vector<PrimePower> lp;
   std::vector<int> primes;
+
   Sieve(int N) : lp(N + 1) {
     for (int i = 2; i <= N; ++i) {
       if (lp[i].p == -1) {
@@ -30,6 +32,7 @@ struct Sieve {
       }
     }
   }
+
   const PrimePower& operator[](int i) const {
     return lp[i];
   }
