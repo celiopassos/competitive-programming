@@ -2,7 +2,9 @@
 #define ALGORITHMS_MATHEMATICS_FFT_HPP
 
 #include "algorithms/common"
-#include "algorithms/mathematics/modular_arithmetic"
+
+template <typename T>
+struct RootOfUnity;  // Not implemented for general T.
 
 template <typename T>
 struct FFT {
@@ -21,10 +23,10 @@ struct FFT {
       rev = nrev;
     }
     T* root = roots.data();
-    for (auto sgn : {+1, -1}) {
+    for (int sgn : {+1, -1}) {
       root[0] = 1;
       for (int b = 2; b < N; b <<= 1) {
-        T w = root_of_unity(sgn * 2 * b);
+        T w = RootOfUnity<T>::root_of_unity(sgn * 2 * b);
         T* nroot = root + (b >> 1);
         for (int i = 0; i < b; ++i) {
           nroot[i] = root[i >> 1];
@@ -37,8 +39,6 @@ struct FFT {
       root += N >> 1;
     }
   }
-
-  static T root_of_unity(int N);  // Not implemented for general T.
 
   std::vector<T> operator()(int N, std::vector<T> p, bool inverse) const {
     p.resize(N);

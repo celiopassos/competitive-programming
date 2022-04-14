@@ -65,11 +65,11 @@ struct FormalPowerSeries : public std::vector<T> {
     return F() -= *this;
   }
 
-  F operator*(const F& rhs) const {
-    return F(::operator*<T>(*this, rhs));
+  F operator*(F rhs) const {
+    return F(::operator*<T>(*this, std::move(rhs)));
   }
-  F& operator*=(const F& rhs) {
-    return *this = *this * rhs;
+  F& operator*=(F rhs) {
+    return *this = F(::operator*<T>(std::move(*this), std::move(rhs)));
   }
 
   F operator/(F d) const {
@@ -112,7 +112,7 @@ struct FormalPowerSeries : public std::vector<T> {
       r.pop_back();
     }
     std::reverse(q.begin(), q.end());
-    return std::pair(q, r);
+    return std::pair(std::move(q), std::move(r));
   }
   std::pair<F, F> euclidean_division(const F& d) const {
     assert(!d.empty() && d.back() != 0);
@@ -123,7 +123,7 @@ struct FormalPowerSeries : public std::vector<T> {
       F q0(q.begin(), q.begin() + std::min(q.size(), d.size()));
       auto r = *this - d * q0;
       r.resize(d.size() - 1);
-      return std::pair(q, r);
+      return std::pair(std::move(q), std::move(r));
     }
   }
 
@@ -137,7 +137,7 @@ struct FormalPowerSeries : public std::vector<T> {
   }
 
   // Returns composition modulo x^M.
-  // Time complexity: O(sqrt(N) * M * log(M)).
+  // Time complexity: O(N * M).
   F operator()(const F& g) const {
     int N = this->size(), M = g.size();
     int block_size = 1;
@@ -208,8 +208,7 @@ FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
     for (int i = 0; i < 2 * K; ++i) {
       Qhat[i] *= 2 - Phat[i] * Qhat[i];
     }
-    auto nQ = fft<T>(2 * K, Qhat, true);
-    Q.swap(nQ);
+    Q = fft<T>(2 * K, Qhat, true);
     Q.resize(K);
   }
   Q.resize(N);
@@ -344,7 +343,7 @@ struct Interpolator {
     evaluate(&deq[0], Q % deq[0].P);
     return std::move(res);
   }
-  void evaluate(Node* node, F Q) {
+  void evaluate(Node* node, const F& Q) {
     if (node->left) {
       for (auto next : {node->left, node->right}) {
         evaluate(next, Q % next->P);

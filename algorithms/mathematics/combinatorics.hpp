@@ -5,7 +5,7 @@
 #include "algorithms/mathematics/modular_arithmetic"
 
 template <typename T>
-struct Combinatorics {};
+struct Combinatorics;
 
 template <typename T>
 const Combinatorics<T> combinatorics(1 << 20);
