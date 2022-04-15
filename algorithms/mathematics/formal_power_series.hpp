@@ -136,45 +136,8 @@ struct FormalPowerSeries : public std::vector<T> {
     return y;
   }
 
-  // Returns composition modulo x^M.
-  // Time complexity: O(N * M).
-  F operator()(const F& g) const {
-    int N = this->size(), M = g.size();
-    int block_size = 1;
-    while ((block_size + 1) * (block_size + 1) <= N) ++block_size;
-    std::vector<F> pow(block_size);
-    pow[0] = {1};
-    for (int k = 0; k + 1 < block_size; ++k) {
-      pow[k + 1] = pow[k] * g;
-      pow[k + 1].resize(M);
-    }
-    F h = pow.back() * g;
-    h.resize(M);
-    F offset = {1}, res;
-    for (int i = 0; i < N; i += block_size) {
-      F p;
-      for (int k = 0; k < block_size && i + k < N; ++k) {
-        p += (*this)[i + k] * pow[k];
-      }
-      p.resize(M);
-      res += offset * p;
-      offset *= h;
-      offset.resize(M);
-    }
-    res.resize(M);
-    return res;
-  }
-
-  int val() const {
-    auto iter = this->begin();
-    while (iter != this->end() && *iter == 0) {
-      ++iter;
-    }
-    return iter - this->begin();
-  }
-
   void trim_left() {
-    this->erase(this->begin(), this->begin() + val());
+    this->erase(this->begin(), this->begin() + val(*this));
   }
   void trim_right() {
     while (!this->empty() && this->back() == 0) {
@@ -182,6 +145,18 @@ struct FormalPowerSeries : public std::vector<T> {
     }
   }
 };
+
+template <typename T>
+int deg(const FormalPowerSeries<T>& P) {
+  auto iter = std::find_if(P.rbegin(), P.rend(), [](T c) { return c != 0; });
+  return int(P.size() - (iter - P.rbegin())) - 1;
+}
+
+template <typename T>
+int val(const FormalPowerSeries<T>& P) {
+  auto iter = std::find_if(P.begin(), P.end(), [](T c) { return c != 0; });
+  return iter - P.begin();
+}
 
 template <typename T>
 FormalPowerSeries<T> product(FormalPowerSeries<T>* p, int N) {
@@ -268,17 +243,6 @@ FormalPowerSeries<T> exp(const FormalPowerSeries<T>& P) {
 }
 
 template <typename T>
-FormalPowerSeries<T> exp(T alpha, int N) {
-  FormalPowerSeries<T> exp(N);
-  T pow = 1;
-  for (int k = 0; k < N; ++k) {
-    exp[k] = pow * combinatorics<T>.rfact[k];
-    pow *= alpha;
-  }
-  return exp;
-}
-
-template <typename T>
 FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
   assert(!P.empty() && P[0] == 1);
   return exp(alpha * log(P));
@@ -304,6 +268,37 @@ FormalPowerSeries<T> slow_pow(const FormalPowerSeries<T>& P, T alpha, int N) {
     Q[i + 1] = dQ[i] / (i + 1);
   }
   return Q;
+}
+
+// Returns composition f(g(x)) modulo x^M.
+// Time complexity: O(N * M).
+template <typename T>
+FormalPowerSeries<T> composition(const FormalPowerSeries<T>& f, const FormalPowerSeries<T>& g) {
+  using F = FormalPowerSeries<T>;
+  int N = f.size(), M = g.size();
+  int block_size = 1;
+  while ((block_size + 1) * (block_size + 1) <= N) ++block_size;
+  std::vector<F> pow(block_size);
+  pow[0] = {1};
+  for (int k = 0; k + 1 < block_size; ++k) {
+    pow[k + 1] = pow[k] * g;
+    pow[k + 1].resize(M);
+  }
+  F h = pow.back() * g;
+  h.resize(M);
+  F offset = {1}, res;
+  for (int i = 0; i < N; i += block_size) {
+    F p;
+    for (int k = 0; k < block_size && i + k < N; ++k) {
+      p += f[i + k] * pow[k];
+    }
+    p.resize(M);
+    res += offset * p;
+    offset *= h;
+    offset.resize(M);
+  }
+  res.resize(M);
+  return res;
 }
 
 template <typename T>
@@ -382,6 +377,33 @@ struct Interpolator {
   }
 };
 
+template <typename T>
+FormalPowerSeries<T> exp(T alpha, int N) {
+  FormalPowerSeries<T> f(N);
+  T pow = 1;
+  for (int k = 0; k < N; ++k) {
+    f[k] = pow * combinatorics<T>.rfact[k];
+    pow *= alpha;
+  }
+  return f;
+}
+
+// Maps x^k -> x^k / k!.
+template <typename T>
+FormalPowerSeries<T> borel(FormalPowerSeries<T> P) {
+  std::transform(P.begin(), P.end(), std::begin(combinatorics<T>.rfact), P.begin(),
+      std::multiplies<T>());
+  return P;
+}
+
+// Maps x^k -> k! * x^k.
+template <typename T>
+FormalPowerSeries<T> inv_borel(FormalPowerSeries<T> P) {
+  std::transform(P.begin(), P.end(), std::begin(combinatorics<T>.fact), P.begin(),
+      std::multiplies<T>());
+  return P;
+}
+
 // Returns p(D)f.
 template <typename T>
 FormalPowerSeries<T> apply_polynomial_of_derivative(
@@ -390,32 +412,24 @@ FormalPowerSeries<T> apply_polynomial_of_derivative(
   if (p.size() > N) {
     p.resize(N);
   }
-  for (int k = 0; k < N; ++k) {
-    f[k] *= combinatorics<T>.fact[k];
-  }
   std::reverse(p.begin(), p.end());
-  auto res = p * f;
+  auto res = p * inv_borel(std::move(f));
   res.erase(res.begin(), res.begin() + p.size() - 1);
-  for (int k = 0; k < N; ++k) {
-    res[k] *= combinatorics<T>.rfact[k];
-  }
-  return res;
+  return borel(std::move(res));
 }
 
 // Returns the polynomial that sends x -> P(x + c).
 template <typename T>
-FormalPowerSeries<T> taylor_shift(const FormalPowerSeries<T>& P, T c) {
-  return apply_polynomial_of_derivative(exp(c, P.size()), P);
+FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
+  int N = P.size();
+  return apply_polynomial_of_derivative(exp(c, N), std::move(P));
 }
 
 // Same as above, except that P is given in the basis of falling factorials.
 template <typename T>
-FormalPowerSeries<T> taylor_shift_in_falling_factorials(const FormalPowerSeries<T>& P, T c) {
+FormalPowerSeries<T> taylor_shift_in_falling_factorials(FormalPowerSeries<T> P, T c) {
   int N = P.size();
-  auto f = slow_pow<T>({1, 1}, c, N);
-  auto res = apply_polynomial_of_derivative(f, P);
-  res.resize(N);
-  return res;
+  return apply_polynomial_of_derivative(slow_pow<T>({1, 1}, c, N), std::move(P));
 }
 
 // Returns coefficients in the basis of falling factorials of the unique polynomial P of degree < N
@@ -423,10 +437,7 @@ FormalPowerSeries<T> taylor_shift_in_falling_factorials(const FormalPowerSeries<
 template <typename T>
 FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
   int N = y.size();
-  for (int k = 0; k < N; ++k) {
-    y[k] *= combinatorics<T>.rfact[k];
-  }
-  auto P = exp(T(-1), N) * y;
+  auto P = exp(T(-1), N) * borel(std::move(y));
   P.resize(N);
   return P;
 }
@@ -437,21 +448,18 @@ FormalPowerSeries<T> evaluate_from_falling_factorials(const FormalPowerSeries<T>
   int N = P.size();
   auto y = exp(T(1), N) * P;
   y.resize(N);
-  for (int k = 0; k < N; ++k) {
-    y[k] *= combinatorics<T>.fact[k];
-  }
-  return y;
+  return inv_borel(std::move(y));
 }
 
 // Returns P(c + j) for j = 0, ..., M - 1, where P is the unique polynomial of degree < N with
 // P(i) = y[i].
 template <typename T>
-FormalPowerSeries<T> shift_of_sampling_points(const FormalPowerSeries<T>& y, T c, int M) {
+FormalPowerSeries<T> shift_of_sampling_points(FormalPowerSeries<T> y, T c, int M) {
   int N = y.size();
-  auto P = interpolate_to_falling_factorials(y);
-  P = taylor_shift_in_falling_factorials(P, c);
+  auto P = interpolate_to_falling_factorials(std::move(y));
+  P = taylor_shift_in_falling_factorials(std::move(P), c);
   P.resize(M);
-  return evaluate_from_falling_factorials(P);
+  return evaluate_from_falling_factorials(std::move(P));
 }
 
 #endif  // ALGORITHMS_MATHEMATICS_FORMAL_POWER_SERIES_HPP
