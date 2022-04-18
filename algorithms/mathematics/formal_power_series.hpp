@@ -174,20 +174,23 @@ template <typename T>
 FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
   using F = FormalPowerSeries<T>;
   assert(!P.empty() && P[0] != 0);
-  F Q = {1 / P[0]};
+  std::vector<T> Q = {1 / P[0]};
   int N = P.size(), K = 1;
   while (K < N) {
     K *= 2;
-    auto Qhat = fft<T>(2 * K, std::move(Q), false);
-    auto Phat = fft<T>(2 * K, F(P.begin(), P.begin() + std::min(K, N)), false);
+    Q.resize(2 * K);
+    auto Qhat = FFT<T>::dft(std::move(Q));
+    F P0(2 * K);
+    std::copy_n(P.begin(), std::min(K, N), P0.begin());
+    auto Phat = FFT<T>::dft(std::move(P0));
     for (int i = 0; i < 2 * K; ++i) {
       Qhat[i] *= 2 - Phat[i] * Qhat[i];
     }
-    Q = fft<T>(2 * K, Qhat, true);
+    Q = FFT<T>::idft(std::move(Qhat));
     Q.resize(K);
   }
   Q.resize(N);
-  return Q;
+  return F(Q);
 }
 
 template <typename T>
@@ -335,13 +338,13 @@ struct Interpolator {
   std::vector<T> res;
   std::vector<T> evaluate(const F& Q) {
     res.clear();
-    evaluate(&deq[0], Q % deq[0].P);
+    evaluate_aux(&deq[0], Q % deq[0].P);
     return std::move(res);
   }
-  void evaluate(Node* node, const F& Q) {
+  void evaluate_aux(Node* node, const F& Q) {
     if (node->left) {
       for (auto next : {node->left, node->right}) {
-        evaluate(next, Q % next->P);
+        evaluate_aux(next, Q % next->P);
       }
     } else {
       assert(Q.size() == 1);
@@ -349,11 +352,10 @@ struct Interpolator {
     }
   }
 
-  bool flag = false;
+  bool initiliazed = false;
   template <typename Iterator>
   F interpolate(Iterator first, Iterator last) {
-    if (!flag) {
-      flag = true;
+    if (!initiliazed) {
       auto y = evaluate(D(deq[0].P));
       auto iter = y.begin();
       for (auto& node : deq) {
@@ -361,18 +363,19 @@ struct Interpolator {
         node.y = *iter;
         ++iter;
       }
+      initiliazed = true;
     }
-    return interpolate(&deq[0], first, last);
+    return interpolate_aux(&deq[0], first, last);
   }
   template <typename Iterator>
-  F interpolate(Node* node, Iterator first, Iterator last) {
+  F interpolate_aux(Node* node, Iterator first, Iterator last) {
     int len = last - first;
     if (len == 1) {
       return {first[0] / node->y};
     } else {
       Iterator middle = first + len / 2;
-      return node->right->P * interpolate(node->left, first, middle) +
-        node->left->P * interpolate(node->right, middle, last);
+      return node->right->P * interpolate_aux(node->left, first, middle) +
+        node->left->P * interpolate_aux(node->right, middle, last);
     }
   }
 };
@@ -425,17 +428,18 @@ FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
   return apply_polynomial_of_derivative(exp(c, N), std::move(P));
 }
 
-// Same as above, except that P is given in the basis of falling factorials.
+// FormalPowerSeries here are assumed to be given in the basis of falling factorials.
+namespace falling_factorials {
+
 template <typename T>
-FormalPowerSeries<T> taylor_shift_in_falling_factorials(FormalPowerSeries<T> P, T c) {
+FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
   int N = P.size();
   return apply_polynomial_of_derivative(slow_pow<T>({1, 1}, c, N), std::move(P));
 }
 
-// Returns coefficients in the basis of falling factorials of the unique polynomial P of degree < N
-// with P(i) = y[i].
+// Returns the unique polynomial P of degree < N with P(i) = y[i].
 template <typename T>
-FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
+FormalPowerSeries<T> interpolate(FormalPowerSeries<T> y) {
   int N = y.size();
   auto P = exp(T(-1), N) * borel(std::move(y));
   P.resize(N);
@@ -444,22 +448,24 @@ FormalPowerSeries<T> interpolate_to_falling_factorials(FormalPowerSeries<T> y) {
 
 // Inverse of the above transformation.
 template <typename T>
-FormalPowerSeries<T> evaluate_from_falling_factorials(const FormalPowerSeries<T>& P) {
+FormalPowerSeries<T> evaluate(FormalPowerSeries<T> P) {
   int N = P.size();
-  auto y = exp(T(1), N) * P;
+  auto y = exp(T(1), N) * std::move(P);
   y.resize(N);
   return inv_borel(std::move(y));
 }
+
+}  // namespace falling_factorials
 
 // Returns P(c + j) for j = 0, ..., M - 1, where P is the unique polynomial of degree < N with
 // P(i) = y[i].
 template <typename T>
 FormalPowerSeries<T> shift_of_sampling_points(FormalPowerSeries<T> y, T c, int M) {
   int N = y.size();
-  auto P = interpolate_to_falling_factorials(std::move(y));
-  P = taylor_shift_in_falling_factorials(std::move(P), c);
+  auto P = falling_factorials::interpolate(std::move(y));
+  P = falling_factorials::taylor_shift(std::move(P), c);
   P.resize(M);
-  return evaluate_from_falling_factorials(std::move(P));
+  return falling_factorials::evaluate(std::move(P));
 }
 
 #endif  // ALGORITHMS_MATHEMATICS_FORMAL_POWER_SERIES_HPP

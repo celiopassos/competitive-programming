@@ -7,7 +7,23 @@ template <typename T>
 struct RootOfUnity;  // Not implemented for general T.
 
 template <typename T>
-struct FFT {
+class FFT {
+public:
+  static constexpr int maxN = 1 << 20;
+
+  static std::vector<T> dft(std::vector<T> p) {
+    return get_instance().transform(std::move(p), false);
+  }
+  static std::vector<T> idft(std::vector<T> p) {
+    return get_instance().transform(std::move(p), true);
+  }
+
+private:
+  static const FFT& get_instance() {
+    static FFT fft(maxN);
+    return fft;
+  }
+
   std::vector<int> revs;
   std::vector<T> roots;
 
@@ -40,8 +56,9 @@ struct FFT {
     }
   }
 
-  std::vector<T> operator()(int N, std::vector<T> p, bool inverse) const {
-    p.resize(N);
+  std::vector<T> transform(std::vector<T> p, bool inverse) const {
+    int N = p.size();
+    assert((N & (N - 1)) == 0 && N <= maxN);
     const int* rev = revs.data() + N - 1;
     for (int i = 0; i < N; ++i) {
       if (i < rev[i]) {
@@ -71,9 +88,6 @@ struct FFT {
   }
 };
 
-template <typename T>
-const FFT<T> fft(1 << 20);
-
 constexpr int naive_threshold = 64;
 
 template <typename T>
@@ -92,11 +106,14 @@ std::vector<T> operator*(std::vector<T> p, std::vector<T> q) {
   } else {
     int R = N + M - 1, K = 1;
     while (K < R) K <<= 1;
-    auto phat = fft<T>(K, std::move(p), false), qhat = fft<T>(K, std::move(q), false);
+    p.resize(K);
+    q.resize(K);
+    auto phat = FFT<T>::dft(std::move(p));
+    auto qhat = FFT<T>::dft(std::move(q));
     for (int i = 0; i < K; ++i) {
       phat[i] *= qhat[i];
     }
-    auto res = fft<T>(K, std::move(phat), true);
+    auto res = FFT<T>::idft(std::move(phat));
     res.resize(R);
     return res;
   }
