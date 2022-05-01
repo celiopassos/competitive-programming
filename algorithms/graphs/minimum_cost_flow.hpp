@@ -1,13 +1,14 @@
 #ifndef ALGORITHMS_GRAPHS_MINIMUM_COST_FLOW_HPP
 #define ALGORITHMS_GRAPHS_MINIMUM_COST_FLOW_HPP
 
-#include "algorithms/common"
-
+#include <algorithm>
+#include <numeric>
 #include <queue>
+#include <utility>
 
 // atcoder Orz
 template <typename Cap, typename Cost>
-struct mcf_graph {
+struct MininumCostFlow {
   static constexpr Cap infcap = std::numeric_limits<Cap>::max();
   static constexpr Cost infcost = std::numeric_limits<Cost>::max();
 
@@ -36,7 +37,7 @@ struct mcf_graph {
   std::vector<Edge> edges;
   std::vector<std::vector<int>> E;
 
-  mcf_graph(int N) : N(N), E(N) {}
+  MininumCostFlow(int N) : N(N), E(N) {}
 
   bool negative_cost = false;
   int add_edge(int u, int v, Cap cap, Cost cost) {

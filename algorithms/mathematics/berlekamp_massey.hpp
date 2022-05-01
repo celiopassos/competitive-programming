@@ -1,7 +1,8 @@
 #ifndef ALGORITHMS_MATHEMATICS_BERLEKAMP_MASSEY_HPP
 #define ALGORITHMS_MATHEMATICS_BERLEKAMP_MASSEY_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <vector>
 
 template <typename T>
 std::vector<T> berlekamp_massey(const std::vector<T>& s) {

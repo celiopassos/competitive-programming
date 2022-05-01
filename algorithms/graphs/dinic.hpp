@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_GRAPHS_DINIC_HPP
 #define ALGORITHMS_GRAPHS_DINIC_HPP
 
-#include "algorithms/common"
-
+#include <limits>
 #include <queue>
+#include <vector>
 
 template <typename T>
 struct Dinic {

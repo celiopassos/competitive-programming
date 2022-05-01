@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_GRAPHS_VIRTUAL_TREE_HPP
 #define ALGORITHMS_GRAPHS_VIRTUAL_TREE_HPP
 
-#include "algorithms/common"
-
+#include <algorithm>
 #include <stack>
+#include <vector>
 
 // Builds virtual tree on F given the vertex set V and returns its root.
 // V is modified to contain the new vertices and is sorted by lca.L[u].

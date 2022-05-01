@@ -1,11 +1,13 @@
 #ifndef ALGORITHMS_MATHEMATICS_FORMAL_POWER_SERIES_HPP
 #define ALGORITHMS_MATHEMATICS_FORMAL_POWER_SERIES_HPP
 
-#include "algorithms/common"
 #include "algorithms/mathematics/combinatorics"
 #include "algorithms/mathematics/fft"
 
+#include <algorithm>
 #include <deque>
+#include <utility>
+#include <vector>
 
 template <typename T>
 struct FormalPowerSeries : public std::vector<T> {

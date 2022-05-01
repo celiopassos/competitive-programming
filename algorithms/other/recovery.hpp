@@ -1,6 +1,10 @@
 #ifndef ALGORITHMS_OTHER_RECOVERY_HPP
 #define ALGORITHMS_OTHER_RECOVERY_HPP
 
+#include <algorithm>
+#include <deque>
+#include <vector>
+
 template <typename T>
 struct Recovery {
   struct Node {

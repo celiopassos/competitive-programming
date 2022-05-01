@@ -9,6 +9,7 @@ struct SegmentTree {
   std::vector<T> st;
 
   SegmentTree(int N) : N(N), st(2 * N) {}
+
   template <typename Iterator>
   SegmentTree(Iterator first, Iterator last) : SegmentTree(last - first) {
     std::copy(first, last, st.begin() + N);

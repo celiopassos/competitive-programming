@@ -1,7 +1,7 @@
 #ifndef ALGORITHMS_MATHEMATICS_SIEVE_HPP
 #define ALGORITHMS_MATHEMATICS_SIEVE_HPP
 
-#include "algorithms/common"
+#include <vector>
 
 struct Sieve {
   struct PrimePower {

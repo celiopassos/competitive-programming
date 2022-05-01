@@ -1,7 +1,8 @@
 #ifndef ALGORITHMS_MATHEMATICS_POINTWISE_HPP
 #define ALGORITHMS_MATHEMATICS_POINTWISE_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <array>
 
 template <typename T, int K>
 struct Pointwise : public std::array<T, K> {

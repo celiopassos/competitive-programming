@@ -2,8 +2,7 @@
 #define ALGORITHMS_MATHEMATICS_FWHT_HPP
 
 #include <array>
-
-#include "algorithms/common"
+#include <vector>
 
 namespace fwht {
 

@@ -1,7 +1,8 @@
 #ifndef ALGORITHMS_GRAPHS_LCA_LIFTING_HPP
 #define ALGORITHMS_GRAPHS_LCA_LIFTING_HPP
 
-#include "algorithms/common"
+#include <array>
+#include <vector>
 
 // Requires 2^K > tree height.
 template <int K>
@@ -33,6 +34,7 @@ struct LCA {
   bool is_ancestor(int u, int v) const {
     return L[u] <= L[v] && R[v] <= R[u];
   }
+
   int lca(int u, int v) const {
     if (is_ancestor(u, v)) return u;
     if (is_ancestor(v, u)) return v;

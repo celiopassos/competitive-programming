@@ -1,6 +1,8 @@
 #ifndef ALGORITHMS_OTHER_INVERSIONS_HPP
 #define ALGORITHMS_OTHER_INVERSIONS_HPP
 
+#include <vector>
+
 template <typename T>
 long long merge_sort(T *v, T *aux, int l, int r) {
   if (r <= l + 1) return 0;

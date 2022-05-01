@@ -1,8 +1,11 @@
 #ifndef ALGORITHMS_MATHEMATICS_GAUSSIAN_ELIMINATION_HPP
 #define ALGORITHMS_MATHEMATICS_GAUSSIAN_ELIMINATION_HPP
 
-#include "algorithms/common"
 #include "algorithms/mathematics/matrix"
+
+#include <algorithm>
+#include <utility>
+#include <vector>
 
 template <typename T>
 struct GaussianElimination {

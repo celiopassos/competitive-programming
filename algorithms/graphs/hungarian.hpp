@@ -1,7 +1,9 @@
 #ifndef ALGORITHMS_GRAPHS_HUNGARIAN_HPP
 #define ALGORITHMS_GRAPHS_HUNGARIAN_HPP
 
-#include "algorithms/common"
+#include <cassert>
+#include <limits>
+#include <vector>
 
 // Maintains maximum matching of minimum weight.
 template <typename T>

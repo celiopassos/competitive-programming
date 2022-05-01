@@ -1,21 +1,13 @@
 #ifndef ALGORITHMS_MATHEMATICS_DISCRETE_SQRT_HPP
 #define ALGORITHMS_MATHEMATICS_DISCRETE_SQRT_HPP
 
-#include <chrono>
-#include <random>
-
-#include "algorithms/common"
 #include "algorithms/mathematics/modular_arithmetic"
-
-namespace flags { bool zp_sqrt_failed; };
+#include "algorithms/other/rng"
 
 template <unsigned P>
-Z<P> sqrt(Z<P> alpha) {
+std::pair<bool, Z<P>> sqrt(Z<P> alpha) {
   if (pow(alpha, (P - 1) / 2) != 1) {
-    flags::zp_sqrt_failed = true;
-    return Z<P>();
-  } else {
-    flags::zp_sqrt_failed = false;
+    return {false, 0};  // failed
   }
   static Z<P> alpha_;
   alpha_ = alpha;
@@ -25,12 +17,11 @@ Z<P> sqrt(Z<P> alpha) {
       return R{a * rhs.a + alpha_ * b * rhs.b, a * rhs.b + b * rhs.a};
     }
   };
-  std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
   std::uniform_int_distribution<unsigned> unif(0, P - 1);
   while (true) {
     Z<P> y = unif(rng);
     if (y * y == alpha) {
-      return y;
+      return {true, y};
     }
     auto x = R{y, 1};
     R pow{1, 0};
@@ -41,7 +32,7 @@ Z<P> sqrt(Z<P> alpha) {
       x = x * x;
     }
     if (pow.b != 0) {
-      return 1 / pow.b;
+      return {true, 1 / pow.b};
     }
   }
 }

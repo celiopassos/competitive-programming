@@ -1,8 +1,10 @@
 #ifndef ALGORITHMS_GRAPHS_TWO_SAT_HPP
 #define ALGORITHMS_GRAPHS_TWO_SAT_HPP
 
-#include "algorithms/common"
 #include "algorithms/graphs/tarjan"
+
+#include <utility>
+#include <vector>
 
 struct TwoSat {
   int N;

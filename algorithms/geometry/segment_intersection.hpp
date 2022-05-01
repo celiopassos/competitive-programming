@@ -3,6 +3,7 @@
 
 #include "algorithms/geometry/line"
 
+#include <algorithm>
 #include <complex>
 
 template <typename T>

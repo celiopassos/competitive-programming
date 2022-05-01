@@ -1,7 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_FFT_HPP
 #define ALGORITHMS_MATHEMATICS_FFT_HPP
 
-#include "algorithms/common"
+#include <cassert>
+#include <utility>
+#include <vector>
 
 template <typename T>
 struct RootOfUnity;  // Not implemented for general T.

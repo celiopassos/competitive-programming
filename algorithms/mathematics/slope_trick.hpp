@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_SLOPE_TRICK_HPP
 #define ALGORITHMS_MATHEMATICS_SLOPE_TRICK_HPP
 
+#include <limits>
 #include <queue>
-
-#include "algorithms/common"
+#include <utility>
 
 template <typename T>
 struct SlopeTrick {
@@ -48,11 +48,13 @@ struct SlopeTrick {
     left.emplace(a + left_offset, s);
     rebalance();
   }
+
   // Adds f(x) = s * max(x - a, 0).
   void add_right(T a, T s) {
     right.emplace(a - right_offset, s);
     rebalance();
   }
+
   // Adds f(x) = s * abs(x - a).
   void add_abs(T a, T s) {
     add_left(a, s);
@@ -63,10 +65,12 @@ struct SlopeTrick {
     assert(offset >= 0);
     left_offset += offset;
   }
+
   void relax_right(T offset) {
     assert(offset >= 0);
     right_offset += offset;
   }
+
   void relax(T offset) {
     assert(offset >= 0);
     left_offset += offset;

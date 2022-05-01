@@ -1,8 +1,7 @@
 #ifndef ALGORITHMS_GRAPHS_TARJAN_HPP
 #define ALGORITHMS_GRAPHS_TARJAN_HPP
 
-#include "algorithms/common"
-
+#include <vector>
 #include <stack>
 
 // SCC ids are sorted in reverse order (i.e., an edge uv implies scc[v] <= scc[u]).

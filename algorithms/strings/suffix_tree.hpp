@@ -1,9 +1,10 @@
 #ifndef ALGORITHMS_STRINGS_SUFFIX_TREE_HPP
 #define ALGORITHMS_STRINGS_SUFFIX_TREE_HPP
 
-#include "algorithms/common"
-
+#include <algorithm>
+#include <numeric>
 #include <stack>
+#include <vector>
 
 struct SuffixTreeNode {
   int link, len, idx;

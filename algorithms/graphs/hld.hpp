@@ -1,7 +1,8 @@
 #ifndef ALGORITHMS_GRAPHS_HLD_HPP
 #define ALGORITHMS_GRAPHS_HLD_HPP
 
-#include "algorithms/common"
+#include <utility>
+#include <vector>
 
 struct HLD {
   int N;

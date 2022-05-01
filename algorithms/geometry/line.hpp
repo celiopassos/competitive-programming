@@ -3,6 +3,7 @@
 
 #include <array>
 #include <complex>
+#include <utility>
 
 template <typename T>
 using Line = std::pair<std::complex<T>, T>;  // Represents hyperplane dot(first, x) = second.

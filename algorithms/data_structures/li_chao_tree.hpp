@@ -1,8 +1,6 @@
 #ifndef ALGORITHMS_DATA_STRUCTURES_LI_CHAO_TREE_HPP
 #define ALGORITHMS_DATA_STRUCTURES_LI_CHAO_TREE_HPP
 
-#include "algorithms/common"
-
 #include <deque>
 
 // pass Cmp = std::less<Y> for min queries or greater<Y> for std::max queries

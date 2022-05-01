@@ -1,7 +1,7 @@
 #ifndef ALGORITHMS_DATA_STRUCTURES_FENWICK_TREE_HPP
 #define ALGORITHMS_DATA_STRUCTURES_FENWICK_TREE_HPP
 
-#include "algorithms/common"
+#include <vector>
 
 template <typename T>
 struct FenwickTree {
@@ -13,6 +13,7 @@ struct FenwickTree {
   std::vector<T> ft;
 
   FenwickTree(int N) : N(N), h(std::__lg(N)), ft(N + 1, T()) {}
+
   template <typename Iterator>
   FenwickTree(Iterator first, Iterator last) : FenwickTree(last - first) {
     for (int i = 1; i <= N; ++i) {
@@ -30,6 +31,7 @@ struct FenwickTree {
     }
     return res;
   }
+
   T query(int l, int r) const {
     return query(r) - query(l);
   }
@@ -56,6 +58,7 @@ struct FenwickTree {
     }
     return pos;
   }
+
   int lower_bound(T value) const {
     return find_right([value](T x) { return x < value; });
   }

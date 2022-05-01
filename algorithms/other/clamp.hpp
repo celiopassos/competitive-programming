@@ -1,6 +1,9 @@
 #ifndef ALGORITHMS_OTHER_CLAMP_HPP
 #define ALGORITHMS_OTHER_CLAMP_HPP
 
+#include <limits>
+#include <algorithm>
+
 template <typename T>
 struct Clamp {
   static const T inf = std::numeric_limits<T>::max() / 2;

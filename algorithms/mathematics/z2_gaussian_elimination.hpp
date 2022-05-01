@@ -2,8 +2,7 @@
 #define ALGORITHMS_MATHEMATICS_Z2_GAUSSIAN_ELIMINATION_HPP
 
 #include <bitset>
-
-#include "algorithms/common"
+#include <utility>
 
 template <int N>
 struct Z2GaussianElimination {

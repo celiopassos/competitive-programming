@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_GEOMETRY_CONVEX_HULL_HPP
 #define ALGORITHMS_GEOMETRY_CONVEX_HULL_HPP
 
-#include "algorithms/common"
-
+#include <algorithm>
 #include <complex>
+#include <vector>
 
 // Returns convex hull sorted in counter-clockwise order.
 template <typename T>

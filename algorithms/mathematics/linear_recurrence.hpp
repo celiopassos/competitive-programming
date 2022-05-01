@@ -1,7 +1,7 @@
 #ifndef ALGORITHMS_MATHEMATICS_LINEAR_RECURRENCE_HPP
 #define ALGORITHMS_MATHEMATICS_LINEAR_RECURRENCE_HPP
 
-#include "algorithms/common"
+#include <vector>
 
 template <typename T>
 T one_coeff(std::vector<T> p, std::vector<T> q, long long n) {
@@ -22,9 +22,9 @@ T one_coeff(std::vector<T> p, std::vector<T> q, long long n) {
   return p[0] / q[0];
 }
 
-// Given the linear recurrence u[i+1] = c[0]u[i] + ... + c[d-1]u[i - (d - 1)] and the initial values
-// u[0], ..., u[d-1], finds u[n].
-// Time complexity: O(convolution(d)log(n)).
+// Given the linear recurrence u[i+1] = c[0]u[i] + ... + c[d-1]u[i - (d - 1)] and the initial values u[0], ..., u[d-1],
+// finds u[n].
+// Time complexity: O(convolution(d) * log(n)).
 template <typename T>
 T solve_linear_recurrence(std::vector<T> c, std::vector<T> u, long long n) {
   int d = c.size(); 

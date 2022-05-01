@@ -1,6 +1,9 @@
 #ifndef ALGORITHMS_OTHER_COORDINATE_COMPRESSION_HPP
 #define ALGORITHMS_OTHER_COORDINATE_COMPRESSION_HPP
 
+#include <vector>
+#include <algorithm>
+
 template <typename T>
 struct CoordinateCompression : public std::vector<T> {
   template <typename... Args>

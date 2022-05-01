@@ -1,9 +1,8 @@
 #ifndef ALGORITHMS_GEOMETRY_BASIC_HPP
 #define ALGORITHMS_GEOMETRY_BASIC_HPP
 
-#include "algorithms/common"
-
 #include <complex>
+#include <iostream>
 
 #define x real
 #define y imag

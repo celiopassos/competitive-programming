@@ -6,11 +6,14 @@
 template <typename T>
 struct CRT {
   T a, mod;
+
   CRT() : a(0), mod(1) {}
+
   CRT(T a_, T mod_) : a(a_), mod(mod_) {
     a %= mod;
     if (a < 0) a += mod;
   }
+
   CRT operator+(CRT rhs) const {
     T x, y;
     T g = extended_gcd(mod, rhs.mod, x, y);

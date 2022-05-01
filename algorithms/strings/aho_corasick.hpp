@@ -1,9 +1,8 @@
 #ifndef ALGORITHMS_STRINGS_AHO_CORASICK_HPP
 #define ALGORITHMS_STRINGS_AHO_CORASICK_HPP
 
-#include "algorithms/common"
-
 #include <map>
+#include <vector>
 
 struct AhoCorasick {
   struct Node {

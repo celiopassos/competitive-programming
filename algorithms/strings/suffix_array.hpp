@@ -1,7 +1,11 @@
 #ifndef ALGORITHMS_STRINGS_SUFFIX_ARRAY_HPP
 #define ALGORITHMS_STRINGS_SUFFIX_ARRAY_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <numeric>
+#include <string>
+#include <utility>
+#include <vector>
 
 template <typename Iterator>
 std::vector<int> sort_cyclic_shifts(Iterator first, Iterator last) {

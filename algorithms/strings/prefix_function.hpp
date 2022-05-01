@@ -1,7 +1,7 @@
 #ifndef ALGORITHMS_STRINGS_PREFIX_FUNCTION_HPP
 #define ALGORITHMS_STRINGS_PREFIX_FUNCTION_HPP
 
-#include "algorithms/common"
+#include <vector>
 
 template <typename Iterator>
 std::vector<int> prefix_function(Iterator first, Iterator last) {

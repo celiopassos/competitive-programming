@@ -1,7 +1,8 @@
 #ifndef ALGORITHMS_GRAPHS_KUHN_HPP
 #define ALGORITHMS_GRAPHS_KUHN_HPP
 
-#include "algorithms/common"
+#include <vector>
+#include <algorithm>
 
 struct Kuhn {
   int N, M;
@@ -52,6 +53,7 @@ struct Kuhn {
     }
     return U;
   }
+
   std::vector<int> right_cover() const {
     std::vector<int> V;
     for (int v = 0; v < M; ++v) {

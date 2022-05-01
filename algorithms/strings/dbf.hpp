@@ -1,7 +1,10 @@
 #ifndef ALGORITHMS_STRINGS_DBF_HPP
 #define ALGORITHMS_STRINGS_DBF_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <numeric>
+#include <utility>
+#include <vector>
 
 struct DBF {
   int N, K;
@@ -46,9 +49,9 @@ struct DBF {
     return std::pair(rank[k][i], rank[k][(i + len - (1 << k)) % N]);
   };
 
-  bool cmp(std::array<int, 2> S, std::array<int, 2> T) const {
-    int lenS = S[1] - S[0], lenT = T[1] - T[0], min = std::min(lenS, lenT);
-    auto keyS = key(S[0], min), keyT = key(T[0], min);
+  bool cmp(std::pair<int, int> S, std::pair<int, int> T) const {
+    int lenS = S.second - S.first, lenT = T.second - T.first, min = std::min(lenS, lenT);
+    auto keyS = key(S.first, min), keyT = key(T.first, min);
     return keyS != keyT ? keyS < keyT : lenS < lenT;
   }
 

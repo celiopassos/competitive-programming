@@ -1,8 +1,10 @@
 #ifndef ALGORITHMS_MATHEMATICS_DETERMINANT_HPP
 #define ALGORITHMS_MATHEMATICS_DETERMINANT_HPP
 
-#include "algorithms/common"
 #include "algorithms/mathematics/matrix"
+
+#include <algorithm>
+#include <cassert>
 
 template <typename T>
 T determinant(Matrix<T> A) {

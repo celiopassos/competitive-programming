@@ -1,9 +1,12 @@
 #ifndef ALGORITHMS_GRAPHS_MO_ON_TREES_HPP
 #define ALGORITHMS_GRAPHS_MO_ON_TREES_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <array>
+#include <numeric>
+#include <vector>
 
-struct mo_on_tree {
+struct MoOnTree {
   int N, K;
   std::vector<int> block, p, L, R;
 
@@ -33,7 +36,7 @@ struct mo_on_tree {
   }
 
   // Time complexity: O(N * K).
-  mo_on_tree(const std::vector<std::vector<int>>& E, int K)
+  MoOnTree(const std::vector<std::vector<int>>& E, int K)
       : N(E.size()), K(K), block(N), p(N, -1), L(N), R(N) {
     auto S = decompose(0, E);
     if (!S.empty()) mark(S);
@@ -42,6 +45,7 @@ struct mo_on_tree {
   bool is_ancestor(int u, int v) const {
     return L[u] <= L[v] && R[v] <= R[u];
   }
+
   template <typename Update>
   void traverse(std::array<int, 2> P, Update&& update) const {
     for (int t : {0, 1}) {

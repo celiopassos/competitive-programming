@@ -1,7 +1,8 @@
 #ifndef ALGORITHMS_MATHEMATICS_MATRIX_HPP
 #define ALGORITHMS_MATHEMATICS_MATRIX_HPP
 
-#include "algorithms/common"
+#include <cassert>
+#include <vector>
 
 template <typename T>
 using Matrix = std::vector<std::vector<T>>;

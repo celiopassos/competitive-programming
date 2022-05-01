@@ -1,7 +1,7 @@
 #ifndef ALGORITHMS_STRINGS_Z_FUNCTION_HPP
 #define ALGORITHMS_STRINGS_Z_FUNCTION_HPP
 
-#include "algorithms/common"
+#include <vector>
 
 // z-function from prefix function
 std::vector<int> z_function(const std::vector<int>& p) {
