@@ -1,7 +1,8 @@
 #ifndef ALGORITHMS_MATHEMATICS_MATROIDS_PARTITION_MATROID_HPP
 #define ALGORITHMS_MATHEMATICS_MATROIDS_PARTITION_MATROID_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <vector>
 
 struct PartitionMatroid {
   std::vector<int> cap, color, d;

@@ -26,8 +26,7 @@ struct LCA {
     R[u] = timer;
   }
 
-  LCA(const std::vector<std::vector<int>>& E, int root)
-      : N(E.size()), L(N), R(N), inv(N), h(N), up(N) {
+  LCA(const std::vector<std::vector<int>>& E, int root) : N(E.size()), L(N), R(N), inv(N), h(N), up(N) {
     dfs(root, root, E);
   }
 

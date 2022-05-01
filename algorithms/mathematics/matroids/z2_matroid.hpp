@@ -1,9 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_MATROIDS_Z2_MATROID_HPP
 #define ALGORITHMS_MATHEMATICS_MATROIDS_Z2_MATROID_HPP
 
-#include "algorithms/common"
-
 #include "algorithms/mathematics/z2_gaussian_elimination"
+
+#include <vector>
 
 // Needs Z2GaussianElimination.
 template <int N>
@@ -22,9 +22,11 @@ struct Z2Matroid {
       idx[u] = rk++;
     }
   }
+
   bool oracle(int u) const {
     return !basis.solve(matrix[u]).first;
   }
+
   bool oracle(int u, int v) const {
     auto [good, coef] = basis.solve(matrix[v]);
     return !good || coef[idx[u]];

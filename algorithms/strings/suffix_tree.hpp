@@ -11,8 +11,7 @@ struct SuffixTreeNode {
   SuffixTreeNode(int len, int idx) : link(-1), len(len), idx(idx) {}
 };
 
-std::vector<SuffixTreeNode> build_suffix_tree(
-    const std::vector<int>& p, const std::vector<int>& lcp) {
+std::vector<SuffixTreeNode> build_suffix_tree(const std::vector<int>& p, const std::vector<int>& lcp) {
   std::vector<SuffixTreeNode> st;
   std::stack<int> stk;
   auto create = [&](int len, int idx) {

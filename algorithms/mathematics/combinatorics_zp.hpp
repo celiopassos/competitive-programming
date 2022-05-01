@@ -4,6 +4,8 @@
 #include "algorithms/mathematics/combinatorics"
 #include "algorithms/mathematics/modular_arithmetic"
 
+#include <vector>
+
 template <unsigned P>
 struct Combinatorics<Z<P>> {
   std::vector<Z<P>> fact, rfact, r;

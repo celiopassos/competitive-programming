@@ -1,9 +1,8 @@
 #ifndef ALGORITHMS_MATHEMATICS_MATROIDS_MATROID_INTERSECTION_HPP
 #define ALGORITHMS_MATHEMATICS_MATROIDS_MATROID_INTERSECTION_HPP
 
-#include "algorithms/common"
-
 #include <queue>
+#include <vector>
 
 // 'Heavy' matroid should be M2.
 template <typename Matroid1, typename Matroid2>

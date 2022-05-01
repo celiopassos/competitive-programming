@@ -20,6 +20,7 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator+(const F& rhs) const {
     return F(*this) += rhs;
   }
+
   F& operator+=(const F& rhs) {
     if (this->size() < rhs.size()) {
       this->resize(rhs.size());
@@ -33,6 +34,7 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator-(const F& rhs) const {
     return F(*this) -= rhs;
   }
+
   F& operator-=(const F& rhs) {
     if (this->size() < rhs.size()) {
       this->resize(rhs.size());
@@ -46,12 +48,14 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator*(T alpha) const {
     return F(*this) *= alpha;
   }
+
   F& operator*=(T alpha) {
     for (auto& x : *this) {
       x *= alpha;
     }
     return *this;
   }
+
   friend F operator*(T alpha, F rhs) {
     return rhs *= alpha;
   }
@@ -59,6 +63,7 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator/(T alpha) const {
     return F(*this) *= 1 / alpha;
   }
+
   F& operator/=(T alpha) {
     return *this *= 1 / alpha;
   }
@@ -70,6 +75,7 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator*(F rhs) const {
     return F(::operator*<T>(*this, std::move(rhs)));
   }
+
   F& operator*=(F rhs) {
     return *this = F(::operator*<T>(std::move(*this), std::move(rhs)));
   }
@@ -91,6 +97,7 @@ struct FormalPowerSeries : public std::vector<T> {
       return res;
     }
   }
+
   F& operator/=(const F& rhs) {
     return *this = *this / rhs;
   }
@@ -98,6 +105,7 @@ struct FormalPowerSeries : public std::vector<T> {
   F operator%(const F& rhs) const {
     return euclidean_division(rhs).second;
   }
+
   F operator%=(const F& rhs) {
     return *this = euclidean_division(rhs)->second;
   }
@@ -116,6 +124,7 @@ struct FormalPowerSeries : public std::vector<T> {
     std::reverse(q.begin(), q.end());
     return std::pair(std::move(q), std::move(r));
   }
+
   std::pair<F, F> euclidean_division(const F& d) const {
     assert(!d.empty() && d.back() != 0);
     if (d.size() <= naive_threshold) {
@@ -141,6 +150,7 @@ struct FormalPowerSeries : public std::vector<T> {
   void trim_left() {
     this->erase(this->begin(), this->begin() + val(*this));
   }
+
   void trim_right() {
     while (!this->empty() && this->back() == 0) {
       this->pop_back();

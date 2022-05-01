@@ -1,7 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_MATROIDS_GRAPHIC_MATROID_HPP
 #define ALGORITHMS_MATHEMATICS_MATROIDS_GRAPHIC_MATROID_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <array>
+#include <vector>
 
 struct GraphicMatroid {
   int N, M;
@@ -22,6 +24,7 @@ struct GraphicMatroid {
     }
     R[u] = timer;
   }
+
   void build(const std::vector<int>& I) {
     timer = 0;
     for (int u = 0; u < N; ++u) {
@@ -39,6 +42,7 @@ struct GraphicMatroid {
       dfs(u);
     }
   }
+
   bool is_ancestor(int u, int v) const {
     return L[u] <= L[v] && L[v] < R[u];
   }
@@ -46,6 +50,7 @@ struct GraphicMatroid {
   bool oracle(int e) const {
     return component[edges[e][0]] != component[edges[e][1]];
   }
+
   bool oracle(int e, int f) const {
     if (oracle(f)) return true;
     int u = edges[e][L[edges[e][0]] < L[edges[e][1]]];

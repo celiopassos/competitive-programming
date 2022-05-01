@@ -27,8 +27,7 @@ struct MininumCostFlow {
 
   // Returns the minimum cost to pass 'flow' units of flow.
   static Cost compute_cost(const std::vector<Slope>& slopes, Cap flow) {
-    auto iter = std::lower_bound(
-        slopes.begin(), slopes.end(), flow, [](Slope sl, Cap f) { return sl.flow < f; });
+    auto iter = std::lower_bound(slopes.begin(), slopes.end(), flow, [](Slope sl, Cap f) { return sl.flow < f; });
     if (iter == slopes.end()) return infcost;
     return iter->cost - (iter->flow - flow) * iter->slope;
   };
@@ -78,8 +77,7 @@ struct MininumCostFlow {
   }
 
   // Returns slope changing points and dual optimum.
-  std::pair<std::vector<Slope>, std::vector<Cost>> slope(
-      int s, int t, std::vector<Cost> dual = {}) {
+  std::pair<std::vector<Slope>, std::vector<Cost>> slope(int s, int t, std::vector<Cost> dual = {}) {
     if (dual.empty()) {
       dual = dual_feasible(s);
     }
@@ -152,8 +150,7 @@ struct MininumCostFlow {
   }
 
   // Returns maximum flow, cost and dual optimum.
-  std::tuple<Cap, Cost, std::vector<Cost>> mincostflow(
-      int s, int t, std::vector<Cost> dual_init = {}) {
+  std::tuple<Cap, Cost, std::vector<Cost>> mincostflow(int s, int t, std::vector<Cost> dual_init = {}) {
     auto [slopes, dual] = slope(s, t, dual_init);
     return {slopes.back().flow, slopes.back().cost, dual};
   }

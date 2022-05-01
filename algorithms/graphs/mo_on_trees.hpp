@@ -36,8 +36,7 @@ struct MoOnTree {
   }
 
   // Time complexity: O(N * K).
-  MoOnTree(const std::vector<std::vector<int>>& E, int K)
-      : N(E.size()), K(K), block(N), p(N, -1), L(N), R(N) {
+  MoOnTree(const std::vector<std::vector<int>>& E, int K) : N(E.size()), K(K), block(N), p(N, -1), L(N), R(N) {
     auto S = decompose(0, E);
     if (!S.empty()) mark(S);
   }

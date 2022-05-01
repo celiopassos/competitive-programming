@@ -9,8 +9,7 @@ struct HLD {
   std::vector<std::vector<int>> E;
   std::vector<int> p, h, head, L, R;
 
-  HLD(const std::vector<std::vector<int>>& E, int root)
-      : N(E.size()), E(E), p(N, -1), h(N), head(N), L(N), R(N) {
+  HLD(const std::vector<std::vector<int>>& E, int root) : N(E.size()), E(E), p(N, -1), h(N), head(N), L(N), R(N) {
     dfs_sz(root);
     head[root] = root;
     dfs_hld(root);

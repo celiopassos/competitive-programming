@@ -1,7 +1,9 @@
 #ifndef ALGORITHMS_MATHEMATICS_MATROIDS_WEIGHTED_MATROID_INTERSECTION_HPP
 #define ALGORITHMS_MATHEMATICS_MATROIDS_WEIGHTED_MATROID_INTERSECTION_HPP
 
-#include "algorithms/common"
+#include <algorithm>
+#include <utility>
+#include <vector>
 
 template <typename X, typename Y>
 std::pair<X, Y> neg(std::pair<X, Y> p) {
@@ -10,8 +12,7 @@ std::pair<X, Y> neg(std::pair<X, Y> p) {
 
 // Assumes w >= 0 (modify to SPFA otherwise).
 template <typename T, typename Matroid1, typename Matroid2>
-std::vector<int> weighted_matroid_intersection(
-    int N, std::vector<T> w, Matroid1& M1, Matroid2& M2) {
+std::vector<int> weighted_matroid_intersection(int N, std::vector<T> w, Matroid1& M1, Matroid2& M2) {
   std::vector<bool> b(N), target(N);
   std::vector<int> I[2], from(N);
   std::vector<std::array<T, 2>> p(N);
@@ -26,8 +27,7 @@ std::vector<int> weighted_matroid_intersection(
       I[b[u]].push_back(u);
     }
     M1.build(I[1]), M2.build(I[1]);
-    std::fill(d.begin(), d.end(),
-        std::pair(std::numeric_limits<T>::max(), std::numeric_limits<int>::max()));
+    std::fill(d.begin(), d.end(), std::pair(std::numeric_limits<T>::max(), std::numeric_limits<int>::max()));
     std::fill(target.begin(), target.end(), false);
     std::fill(from.begin(), from.end(), -1);
     for (auto u : I[0]) {
