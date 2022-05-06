@@ -30,41 +30,25 @@ struct Z {
     return *this;
   }
 
-  Z& operator/=(Z rhs) {
-    return *this *= pow(rhs, -1);
-  }
+  Z& operator/=(Z rhs) { return *this *= pow(rhs, -1); }
 
-  Z operator-() const {
-    return Z() - *this;
-  }
+  Z operator+() const { return *this; }
 
-  bool operator==(Z rhs) const {
-    return value == rhs.value;
-  }
+  Z operator-() const { return Z() - *this; }
 
-  bool operator!=(Z rhs) const {
-    return value != rhs.value;
-  }
+  bool operator==(Z rhs) const { return value == rhs.value; }
 
-  friend Z operator+(Z lhs, Z rhs) {
-    return lhs += rhs;
-  }
+  bool operator!=(Z rhs) const { return value != rhs.value; }
 
-  friend Z operator-(Z lhs, Z rhs) {
-    return lhs -= rhs;
-  }
+  friend Z operator+(Z lhs, Z rhs) { return lhs += rhs; }
 
-  friend Z operator*(Z lhs, Z rhs) {
-    return lhs *= rhs;
-  }
+  friend Z operator-(Z lhs, Z rhs) { return lhs -= rhs; }
 
-  friend Z operator/(Z lhs, Z rhs) {
-    return lhs /= rhs;
-  }
+  friend Z operator*(Z lhs, Z rhs) { return lhs *= rhs; }
 
-  friend std::ostream& operator<<(std::ostream& out, Z a) {
-    return out << a.value;
-  }
+  friend Z operator/(Z lhs, Z rhs) { return lhs /= rhs; }
+
+  friend std::ostream& operator<<(std::ostream& out, Z a) { return out << a.value; }
 
   friend std::istream& operator>>(std::istream& in, Z& a) {
     long long value;
@@ -76,6 +60,9 @@ struct Z {
 
 template <unsigned P>
 Z<P> pow(Z<P> x, long long p) {
+  if (x == 0) {
+    return p == 0 ? 1 : 0;
+  }
   p %= P - 1;
   if (p < 0) p += P - 1;
   Z<P> res = 1;

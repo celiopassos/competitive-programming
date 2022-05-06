@@ -80,6 +80,21 @@ struct FormalPowerSeries : public std::vector<T> {
     return *this = F(::operator*<T>(std::move(*this), std::move(rhs)));
   }
 
+  std::pair<F, F> naive_division(const F& d) const {
+    assert(!d.empty() && d.back() != 0);
+    F q, r = *this;
+    while (r.size() >= d.size()) {
+      T c = r.back() / d.back();
+      q.push_back(c);
+      for (int i = 0; i < d.size(); ++i) {
+        r.rbegin()[i] -= c * d.rbegin()[i];
+      }
+      r.pop_back();
+    }
+    std::reverse(q.begin(), q.end());
+    return std::pair(std::move(q), std::move(r));
+  }
+
   F operator/(F d) const {
     assert(!d.empty() && d.back() != 0);
     int N = this->size(), M = d.size();
@@ -108,21 +123,6 @@ struct FormalPowerSeries : public std::vector<T> {
 
   F operator%=(const F& rhs) {
     return *this = euclidean_division(rhs)->second;
-  }
-
-  std::pair<F, F> naive_division(const F& d) const {
-    assert(!d.empty() && d.back() != 0);
-    F q, r = *this;
-    while (r.size() >= d.size()) {
-      T c = r.back() / d.back();
-      q.push_back(c);
-      for (int i = 0; i < d.size(); ++i) {
-        r.rbegin()[i] -= c * d.rbegin()[i];
-      }
-      r.pop_back();
-    }
-    std::reverse(q.begin(), q.end());
-    return std::pair(std::move(q), std::move(r));
   }
 
   std::pair<F, F> euclidean_division(const F& d) const {
@@ -171,7 +171,7 @@ int val(const FormalPowerSeries<T>& P) {
 }
 
 template <typename T>
-FormalPowerSeries<T> product(FormalPowerSeries<T>* p, int N) {
+FormalPowerSeries<T> product(const FormalPowerSeries<T>* p, int N) {
   if (N == 0) {
     return {1};
   } else if (N == 1) {
@@ -184,8 +184,8 @@ FormalPowerSeries<T> product(FormalPowerSeries<T>* p, int N) {
 
 template <typename T>
 FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
-  using F = FormalPowerSeries<T>;
   assert(!P.empty() && P[0] != 0);
+  using F = FormalPowerSeries<T>;
   std::vector<T> Q = {1 / P[0]};
   int N = P.size(), K = 1;
   while (K < N) {
@@ -327,11 +327,13 @@ struct Interpolator {
   };
   std::deque<Node> deq;
 
+  // Range [first, last) should be the domain points.
   template <typename Iterator>
   Interpolator(Iterator first, Iterator last) {
     Node* root = &deq.emplace_back();
     build(root, first, last);
   }
+
   template <typename Iterator>
   void build(Node* node, Iterator first, Iterator last) {
     int len = last - first;
@@ -348,11 +350,14 @@ struct Interpolator {
   }
 
   std::vector<T> res;
+
+  // Evaluates Q in the domain points.
   std::vector<T> evaluate(const F& Q) {
     res.clear();
     evaluate_aux(&deq[0], Q % deq[0].P);
     return std::move(res);
   }
+
   void evaluate_aux(Node* node, const F& Q) {
     if (node->left) {
       for (auto next : {node->left, node->right}) {
@@ -365,6 +370,9 @@ struct Interpolator {
   }
 
   bool initiliazed = false;
+
+  // Range [first, last) should be the image.
+  // Returns the unique polynomial of P with evaluate(P) = [first, last).
   template <typename Iterator>
   F interpolate(Iterator first, Iterator last) {
     if (!initiliazed) {
@@ -379,6 +387,7 @@ struct Interpolator {
     }
     return interpolate_aux(&deq[0], first, last);
   }
+
   template <typename Iterator>
   F interpolate_aux(Node* node, Iterator first, Iterator last) {
     int len = last - first;
@@ -393,7 +402,7 @@ struct Interpolator {
 };
 
 template <typename T>
-FormalPowerSeries<T> exp(T alpha, int N) {
+FormalPowerSeries<T> exp_constant(T alpha, int N) {
   FormalPowerSeries<T> f(N);
   T pow = 1;
   for (int k = 0; k < N; ++k) {
@@ -406,23 +415,20 @@ FormalPowerSeries<T> exp(T alpha, int N) {
 // Maps x^k -> x^k / k!.
 template <typename T>
 FormalPowerSeries<T> borel(FormalPowerSeries<T> P) {
-  std::transform(P.begin(), P.end(), std::begin(combinatorics<T>.rfact), P.begin(),
-      std::multiplies<T>());
+  std::transform(P.begin(), P.end(), std::begin(combinatorics<T>.rfact), P.begin(), std::multiplies<T>());
   return P;
 }
 
 // Maps x^k -> k! * x^k.
 template <typename T>
 FormalPowerSeries<T> inv_borel(FormalPowerSeries<T> P) {
-  std::transform(P.begin(), P.end(), std::begin(combinatorics<T>.fact), P.begin(),
-      std::multiplies<T>());
+  std::transform(P.begin(), P.end(), std::begin(combinatorics<T>.fact), P.begin(), std::multiplies<T>());
   return P;
 }
 
 // Returns p(D)f.
 template <typename T>
-FormalPowerSeries<T> apply_polynomial_of_derivative(
-    FormalPowerSeries<T> p, FormalPowerSeries<T> f) {
+FormalPowerSeries<T> apply_polynomial_of_derivative(FormalPowerSeries<T> p, FormalPowerSeries<T> f) {
   int N = f.size();
   if (p.size() > N) {
     p.resize(N);
@@ -437,7 +443,7 @@ FormalPowerSeries<T> apply_polynomial_of_derivative(
 template <typename T>
 FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
   int N = P.size();
-  return apply_polynomial_of_derivative(exp(c, N), std::move(P));
+  return apply_polynomial_of_derivative(exp_constant(c, N), std::move(P));
 }
 
 // FormalPowerSeries here are assumed to be given in the basis of falling factorials.
@@ -453,7 +459,7 @@ FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
 template <typename T>
 FormalPowerSeries<T> interpolate(FormalPowerSeries<T> y) {
   int N = y.size();
-  auto P = exp(T(-1), N) * borel(std::move(y));
+  auto P = exp_constant(T(-1), N) * borel(std::move(y));
   P.resize(N);
   return P;
 }
@@ -462,15 +468,14 @@ FormalPowerSeries<T> interpolate(FormalPowerSeries<T> y) {
 template <typename T>
 FormalPowerSeries<T> evaluate(FormalPowerSeries<T> P) {
   int N = P.size();
-  auto y = exp(T(1), N) * std::move(P);
+  auto y = exp_constant(T(1), N) * std::move(P);
   y.resize(N);
   return inv_borel(std::move(y));
 }
 
 }  // namespace falling_factorials
 
-// Returns P(c + j) for j = 0, ..., M - 1, where P is the unique polynomial of degree < N with
-// P(i) = y[i].
+// Returns P(c + j) for j = 0, ..., M - 1, where P is the unique polynomial of degree < N with P(i) = y[i].
 template <typename T>
 FormalPowerSeries<T> shift_of_sampling_points(FormalPowerSeries<T> y, T c, int M) {
   int N = y.size();
