@@ -27,6 +27,13 @@ T one_coeff(std::vector<T> p, std::vector<T> q, long long n) {
 // Time complexity: O(convolution(d) * log(n)).
 template <typename T>
 T solve_linear_recurrence(std::vector<T> c, std::vector<T> u, long long n) {
+  assert(c.size() <= u.size());
+  if (n < u.size()) {
+    return u[n];
+  } else if (c.empty()) {
+    return 0;
+  }
+  u.resize(c.size());
   int d = c.size(); 
   std::vector<T> q(d + 1, 0);
   q[0] = 1;
