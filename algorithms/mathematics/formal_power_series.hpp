@@ -222,7 +222,7 @@ FormalPowerSeries<T> I(FormalPowerSeries<T> P) {
   int N = P.size();
   P.push_back(0);
   for (int i = N - 1; i >= 0; --i) {
-    P[i + 1] = P[i] / (i + 1);
+    P[i + 1] = P[i] * combinatorics<T>.r[i + 1];
   }
   P[0] = 0;
   return P;
@@ -263,6 +263,37 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
   return exp(alpha * log(P));
 }
 
+// Returns composition f(g(x)) modulo x^M.
+// Time complexity: O(N * M).
+template <typename T>
+FormalPowerSeries<T> composition(const FormalPowerSeries<T>& f, const FormalPowerSeries<T>& g) {
+  using F = FormalPowerSeries<T>;
+  int N = f.size(), M = g.size();
+  int block_size = 1;
+  while ((block_size + 1) * (block_size + 1) <= N) ++block_size;
+  std::vector<F> pow(block_size);
+  pow[0] = {1};
+  for (int k = 0; k + 1 < block_size; ++k) {
+    pow[k + 1] = pow[k] * g;
+    pow[k + 1].resize(M);
+  }
+  F h = pow.back() * g;
+  h.resize(M);
+  F offset = {1}, res;
+  for (int i = 0; i < N; i += block_size) {
+    F p;
+    for (int k = 0; k < block_size && i + k < N; ++k) {
+      p += f[i + k] * pow[k];
+    }
+    p.resize(M);
+    res += offset * p;
+    offset *= h;
+    offset.resize(M);
+  }
+  res.resize(M);
+  return res;
+}
+
 namespace sparse {
 
 template <typename T>
@@ -298,42 +329,11 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
       if (j > i) break;
       dQ[i] -= P[j] * dQ[i - j];
     }
-    Q[i + 1] = dQ[i] / (i + 1);
+    Q[i + 1] = dQ[i] * combinatorics<T>.r[i + 1];
   }
   return Q;
 }
 
-}
-
-// Returns composition f(g(x)) modulo x^M.
-// Time complexity: O(N * M).
-template <typename T>
-FormalPowerSeries<T> composition(const FormalPowerSeries<T>& f, const FormalPowerSeries<T>& g) {
-  using F = FormalPowerSeries<T>;
-  int N = f.size(), M = g.size();
-  int block_size = 1;
-  while ((block_size + 1) * (block_size + 1) <= N) ++block_size;
-  std::vector<F> pow(block_size);
-  pow[0] = {1};
-  for (int k = 0; k + 1 < block_size; ++k) {
-    pow[k + 1] = pow[k] * g;
-    pow[k + 1].resize(M);
-  }
-  F h = pow.back() * g;
-  h.resize(M);
-  F offset = {1}, res;
-  for (int i = 0; i < N; i += block_size) {
-    F p;
-    for (int k = 0; k < block_size && i + k < N; ++k) {
-      p += f[i + k] * pow[k];
-    }
-    p.resize(M);
-    res += offset * p;
-    offset *= h;
-    offset.resize(M);
-  }
-  res.resize(M);
-  return res;
 }
 
 template <typename T>
@@ -392,7 +392,7 @@ struct Interpolator {
   bool initiliazed = false;
 
   // Range [first, last) should be the image.
-  // Returns the unique polynomial of P with evaluate(P) = [first, last).
+  // Returns the unique polynomial P with evaluate(P) = [first, last).
   template <typename Iterator>
   F interpolate(Iterator first, Iterator last) {
     if (!initiliazed) {
