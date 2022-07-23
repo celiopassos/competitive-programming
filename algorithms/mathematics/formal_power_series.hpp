@@ -421,8 +421,11 @@ struct Interpolator {
   }
 };
 
+namespace scaled {
+
+// Returns exp(alpha * x) mod x^N.
 template <typename T>
-FormalPowerSeries<T> exp_constant(T alpha, int N) {
+FormalPowerSeries<T> exp(T alpha, int N) {
   FormalPowerSeries<T> f(N);
   T pow = 1;
   for (int k = 0; k < N; ++k) {
@@ -431,6 +434,9 @@ FormalPowerSeries<T> exp_constant(T alpha, int N) {
   }
   return f;
 }
+
+
+}  // scaled
 
 // Maps x^k -> x^k / k!.
 template <typename T>
@@ -463,7 +469,7 @@ FormalPowerSeries<T> apply_polynomial_of_derivative(FormalPowerSeries<T> p, Form
 template <typename T>
 FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
   int N = P.size();
-  return apply_polynomial_of_derivative(exp_constant(c, N), std::move(P));
+  return apply_polynomial_of_derivative(scaled::exp(c, N), std::move(P));
 }
 
 // FormalPowerSeries here are assumed to be given in the basis of falling factorials.
@@ -481,7 +487,7 @@ FormalPowerSeries<T> taylor_shift(FormalPowerSeries<T> P, T c) {
 template <typename T>
 FormalPowerSeries<T> interpolate(FormalPowerSeries<T> y) {
   int N = y.size();
-  auto P = exp_constant(T(-1), N) * borel(std::move(y));
+  auto P = scaled::exp(T(-1), N) * borel(std::move(y));
   P.resize(N);
   return P;
 }
@@ -490,7 +496,7 @@ FormalPowerSeries<T> interpolate(FormalPowerSeries<T> y) {
 template <typename T>
 FormalPowerSeries<T> evaluate(FormalPowerSeries<T> P) {
   int N = P.size();
-  auto y = exp_constant(T(1), N) * std::move(P);
+  auto y = scaled::exp(T(1), N) * std::move(P);
   y.resize(N);
   return inv_borel(std::move(y));
 }
