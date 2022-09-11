@@ -307,8 +307,63 @@ std::vector<int> non_zero(const FormalPowerSeries<T>& P) {
   return I;
 }
 
-// Returns P^alpha mod x^N.
-// Time complexity: O(N * non_zero(P).size()).
+// Time complexity of the operations below: O(N * non_zero(P).size()).
+
+template <typename T>
+FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
+  assert(!P.empty() && P[0] != 0);
+  int N = P.size();
+  auto I = non_zero(P);
+  I.erase(I.begin());
+  FormalPowerSeries<T> Q(N);
+  Q[0] = 1 / P[0];
+  for (int j = 1; j < N; ++j) {
+    for (auto i : I) {
+      if (i > j) break;
+      Q[j] -= P[i] * Q[j - i];
+    }
+    Q[j] *= Q[0];
+  }
+  return Q;
+}
+
+
+template <typename T>
+FormalPowerSeries<T> exp(const FormalPowerSeries<T>& P) {
+  assert(!P.empty() && P[0] == 0);
+  int N = P.size();
+  auto dP = D(P);
+  auto I = non_zero(dP);
+  FormalPowerSeries<T> dQ(N - 1), Q(N);
+  Q[0] = 1;
+  for (int i = 0; i + 1 < N; ++i) {
+    for (auto j : I) {
+      if (j > i) break;
+      dQ[i] += Q[i - j] * dP[j];
+    }
+    Q[i + 1] = combinatorics<T>.r[i + 1] * dQ[i];
+  }
+  return Q;
+}
+
+template <typename T>
+FormalPowerSeries<T> log(const FormalPowerSeries<T>& P) {
+  assert(!P.empty() && P[0] == 1);
+  int N = P.size();
+  auto dP = D(P);
+  auto J = non_zero(P);
+  J.erase(J.begin());
+  FormalPowerSeries<T> dQ(N - 1);
+  for (int i = 0; i < N - 1; ++i) {
+    dQ[i] += dP[i];
+    for (auto j : J) {
+      if (j > i) break;
+      dQ[i] -= dQ[i - j] * P[j];
+    }
+  }
+  return I(dQ);
+}
+
 template <typename T>
 FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
   assert(!P.empty() && P[0] == 1);
