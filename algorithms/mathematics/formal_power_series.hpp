@@ -263,6 +263,33 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
   return exp(alpha * log(P));
 }
 
+// Operations for small inputs.
+namespace naive {
+
+// Returns P^alpha mod x^N.
+// Time complexity: O(N * M).
+template <typename T>
+FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha, int N) {
+  assert(!P.empty() && P[0] == 1);
+  int M = P.size();
+  auto dP = D(P);
+  FormalPowerSeries<T> Q(N), dQ(N - 1);
+  Q[0] = 1;
+  for (int i = 0; i + 1 < N; ++i) {
+    for (int j = 0; j < M - 1 && j <= i; ++j) {
+      dQ[i] += dP[j] * Q[i - j];
+    }
+    dQ[i] *= alpha;
+    for (int j = 1; j < M && j <= i; ++j) {
+      dQ[i] -= P[j] * dQ[i - j];
+    }
+    Q[i + 1] = dQ[i] / (i + 1);
+  }
+  return Q;
+}
+
+}
+
 // Returns composition f(g(x)) modulo x^M.
 // Time complexity: O(N * M).
 template <typename T>

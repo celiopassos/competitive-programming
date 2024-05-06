@@ -1,5 +1,5 @@
-#ifndef ALGORITHMS_MATHEMATICS_FFT_ZP_HPP
-#define ALGORITHMS_MATHEMATICS_FFT_ZP_HPP
+#ifndef ALGORITHMS_MATHEMATICS_NTT_HPP
+#define ALGORITHMS_MATHEMATICS_NTT_HPP
 
 #include "algorithms/mathematics/fft"
 #include "algorithms/mathematics/modular_arithmetic"
@@ -13,4 +13,4 @@ struct RootOfUnity<Z<ntt_mod>> {
   }
 };
 
-#endif  // ALGORITHMS_MATHEMATICS_FFT_ZP_HPP
+#endif  // ALGORITHMS_MATHEMATICS_NTT_HPP
