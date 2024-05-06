@@ -1,8 +1,10 @@
 #ifndef ALGORITHMS_MATHEMATICS_DISCRETE_SQRT_HPP
 #define ALGORITHMS_MATHEMATICS_DISCRETE_SQRT_HPP
 
+#include <chrono>
+#include <random>
+
 #include "algorithms/mathematics/modular_arithmetic"
-#include "algorithms/other/rng"
 
 template <unsigned P>
 std::pair<bool, Z<P>> sqrt(Z<P> alpha) {
@@ -19,6 +21,7 @@ std::pair<bool, Z<P>> sqrt(Z<P> alpha) {
   };
   std::uniform_int_distribution<unsigned> unif(0, P - 1);
   while (true) {
+    static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
     Z<P> y = unif(rng);
     if (y * y == alpha) {
       return {true, y};
