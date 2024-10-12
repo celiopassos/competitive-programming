@@ -2,12 +2,14 @@
 #define ALGORITHMS_MATHEMATICS_FORMAL_POWER_SERIES_HPP
 
 #include "algorithms/mathematics/combinatorics"
-#include "algorithms/mathematics/fft"
 
 #include <algorithm>
 #include <deque>
 #include <utility>
 #include <vector>
+
+template <typename T>
+std::vector<T> operator*(std::vector<T> p, std::vector<T> q);
 
 template <typename T>
 struct FormalPowerSeries : public std::vector<T> {
@@ -100,7 +102,7 @@ struct FormalPowerSeries : public std::vector<T> {
     int N = this->size(), M = d.size();
     if (N < M) {
       return {};
-    } else if (M <= naive_threshold) {
+    } else if (M <= 64) {
       return naive_division(d).first;
     } else {
       int K = N - M + 1;
@@ -127,7 +129,7 @@ struct FormalPowerSeries : public std::vector<T> {
 
   std::pair<F, F> euclidean_division(const F& d) const {
     assert(!d.empty() && d.back() != 0);
-    if (d.size() <= naive_threshold) {
+    if (d.size() <= 64) {
       return naive_division(d);
     } else {
       auto q = *this / d;
@@ -182,27 +184,33 @@ FormalPowerSeries<T> product(const FormalPowerSeries<T>* p, int N) {
   }
 }
 
+
+#include <iostream>
+
 template <typename T>
-FormalPowerSeries<T> inv(const FormalPowerSeries<T>& P) {
-  assert(!P.empty() && P[0] != 0);
-  using F = FormalPowerSeries<T>;
-  std::vector<T> Q = {1 / P[0]};
-  int N = P.size(), K = 1;
-  while (K < N) {
-    K *= 2;
-    Q.resize(2 * K);
-    auto Qhat = FFT<T>::dft(std::move(Q));
-    F P0(2 * K);
-    std::copy_n(P.begin(), std::min(K, N), P0.begin());
-    auto Phat = FFT<T>::dft(std::move(P0));
-    for (int i = 0; i < 2 * K; ++i) {
-      Qhat[i] *= 2 - Phat[i] * Qhat[i];
-    }
-    Q = FFT<T>::idft(std::move(Qhat));
-    Q.resize(K);
+FormalPowerSeries<T> inv(const FormalPowerSeries<T>& A) {
+  int N = A.size();
+  if (N == 1) {
+    return {1 / A[0]};
   }
-  Q.resize(N);
-  return F(Q);
+  auto Aneg = A;
+  for (int i = 1; i < N; i += 2) {
+    Aneg[i] = -A[i];
+  }
+  auto B = A * Aneg;
+  int K = (N + 1) / 2;
+  FormalPowerSeries<T> C(K);
+  for (int i = 0; i < K; ++i) {
+    C[i] = B[2 * i];
+  }
+  auto invC = inv(C);
+  FormalPowerSeries<T> invB(N);
+  for (int i = 0; i < K; ++i) {
+    invB[2 * i] = invC[i];
+  }
+  auto res = Aneg * invB;
+  res.resize(N);
+  return res;
 }
 
 template <typename T>
