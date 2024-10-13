@@ -8,6 +8,11 @@
 
 template <unsigned P>
 struct Combinatorics<Z<P>> {
+  static const Combinatorics<Z<P>>& get_instance() {
+    static Combinatorics<Z<P>> C(1 << 20);
+    return C;
+  }
+
   std::vector<Z<P>> fact, rfact, r;
 
   Combinatorics(int N) : fact(N), rfact(N), r(N) {
@@ -19,11 +24,12 @@ struct Combinatorics<Z<P>> {
     }
   }
 
-  Z<P> C(int n, int k) const {
-    return k < 0 || n < k ? 0 : fact[n] * rfact[k] * rfact[n - k];
+  static Z<P> C(int n, int k) {
+    const auto& comb = get_instance();
+    return k < 0 || n < k ? 0 : k == 0 || k == n ? 1 : comb.fact[n] * comb.rfact[k] * comb.rfact[n - k];
   }
 
-  Z<P> S(int n, int k) const {
+  static Z<P> S(int n, int k) {
     return k == 0 ? n == 0 : C(n + k - 1, k - 1);
   }
 };

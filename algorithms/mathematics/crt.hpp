@@ -2,6 +2,7 @@
 #define ALGORITHMS_MATHEMATICS_CRT_HPP
 
 #include "algorithms/common"
+#include "algorithms/mathematics/extended_gcd"
 
 template <typename T>
 struct CRT {

@@ -90,35 +90,5 @@ private:
   }
 };
 
-constexpr int naive_threshold = 64;
-
-template <typename T>
-std::vector<T> operator*(std::vector<T> p, std::vector<T> q) {
-  int N = p.size(), M = q.size();
-  if (N == 0 || M == 0) {
-    return {};
-  } else if (std::min(N, M) <= naive_threshold) {
-    std::vector<T> res(N + M - 1);
-    for (int i = 0; i < N; ++i) {
-      for (int j = 0; j < M; ++j) {
-        res[i + j] += p[i] * q[j];
-      }
-    }
-    return res;
-  } else {
-    int R = N + M - 1, K = 1;
-    while (K < R) K <<= 1;
-    p.resize(K);
-    q.resize(K);
-    auto phat = FFT<T>::dft(std::move(p));
-    auto qhat = FFT<T>::dft(std::move(q));
-    for (int i = 0; i < K; ++i) {
-      phat[i] *= qhat[i];
-    }
-    auto res = FFT<T>::idft(std::move(phat));
-    res.resize(R);
-    return res;
-  }
-}
 
 #endif  // ALGORITHMS_MATHEMATICS_FFT_HPP
