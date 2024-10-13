@@ -91,6 +91,12 @@ struct FormalPowerSeries : public std::vector<T> {
       }
       r.pop_back();
     }
+    if (q.empty()) {
+      q.push_back(0);
+    }
+    if (r.empty()) {
+      r.push_back(0);
+    }
     std::reverse(q.begin(), q.end());
     return std::pair<F, F>(std::move(q), std::move(r));
   }
@@ -447,7 +453,7 @@ struct Interpolator {
   void build(Node* node, Iterator first, Iterator last) {
     int len = last - first;
     if (len == 1) {
-      node->P = {-first[0], 1};
+      node->P = {-first[0], T(1)};
     } else {
       deq.emplace_back();
       node->left = &deq.back();
@@ -508,6 +514,26 @@ struct Interpolator {
       Iterator middle = first + len / 2;
       return node->right->P * interpolate_aux(node->left, first, middle) +
         node->left->P * interpolate_aux(node->right, middle, last);
+    }
+  }
+
+  // Assumes the size of P is the same as the number of points.
+  F to_newton_basis(F P) {
+    return to_newton_basis_aux(&deq[0], P);
+  }
+
+  F to_newton_basis_aux(Node* node, const F& P) {
+    if (node->left) {
+      auto [Q, R] = P.euclidean_division(node->left->P);
+      F A = to_newton_basis_aux(node->left, R);
+      F B = to_newton_basis_aux(node->right, Q);
+      B.insert(B.begin(), A.size(), 0);
+      return A + B;
+      return {};
+    } else {
+      assert(P.size() == 1);
+      return {P[0]};
+      return {};
     }
   }
 };
