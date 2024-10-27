@@ -538,6 +538,48 @@ struct Interpolator {
   }
 };
 
+// Returns a vector y of size M with y[i] = p(a r^i).
+template <typename T>
+std::vector<T> chirp_z_transform(FormalPowerSeries<T> p, T a, T r, int M) {
+  if (r == 0) {
+    std::vector<T> y(M);
+    y[0] = p(a);
+    if (1 < M) {
+      y[1] = p[0];
+      for (int j = 2; j < M; ++j) {
+        y[j] = y[1];
+      }
+    }
+    return y;
+  }
+
+  int N = p.size();
+
+  FormalPowerSeries<T> A(N);
+  for (int i = 0; i < N; ++i) {
+    int idx = N - 1 - i;
+    long long e = 1LL * i * (i - 1) / 2;
+    A[idx] = p[i] * pow(a, i) / pow(r, e);
+  }
+
+  FormalPowerSeries<T> B(N + M);
+  for (int i = 0; i < N + M; ++i) {
+    long long e = 1LL * i * (i - 1) / 2;
+    B[i] = pow(r, e);
+  }
+
+  auto C = A * B;
+
+  std::vector<T> y(M);
+  for (int i = 0; i < M; ++i) {
+    long long e = 1LL * i * (i - 1) / 2;
+    y[i] = C[i + N - 1] / pow(r, e);
+  }
+
+  return y;
+}
+
+
 namespace scaled {
 
 // Returns exp(alpha * x) mod x^N.

@@ -11,7 +11,7 @@ struct RootOfUnity;  // Not implemented for general T.
 template <typename T>
 class FFT {
 public:
-  static constexpr int maxN = 1 << 20;
+  static constexpr int maxN = 1 << 22;
 
   static std::vector<T> dft(std::vector<T> p) {
     return get_instance().transform(std::move(p), false);
