@@ -32,3 +32,15 @@ FormalPowerSeries<T> stirling_numbers_of_the_second_kind(int N) {
   return falling_factorials::interpolate(y);
 }
 
+// Returns the partition function, p[i] = number of ways of summing i.
+template <typename T>
+std::vector<T> partition_function(int N) {
+  FormalPowerSeries<T> f(N + 1);
+  for (int k = 1; k <= N; ++k) {
+    for (int l = 1; l * k <= N; ++l) {
+      f[l * k] += Combinatorics<T>::get_instance().r[l];
+    }
+  }
+  return exp(f);
+}
+
