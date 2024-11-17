@@ -13,13 +13,13 @@ struct Combinatorics<Z<P>> {
     return C;
   }
 
-  std::vector<Z<P>> fact, rfact, r;
+  std::vector<Z<P>> fact, rfact, rec;
 
-  Combinatorics(int N) : fact(N), rfact(N), r(N) {
-    fact[0] = fact[1] = rfact[0] = rfact[1] = r[1] = 1;
+  Combinatorics(int N) : fact(N), rfact(N), rec(N) {
+    fact[0] = fact[1] = rfact[0] = rfact[1] = rec[1] = 1;
     for (int i = 2; i < N; ++i) {
-      r[i] = -(P / i * r[P % i]);
-      rfact[i] = r[i] * rfact[i - 1];
+      rec[i] = -(P / i * rec[P % i]);
+      rfact[i] = rec[i] * rfact[i - 1];
       fact[i] = i * fact[i - 1];
     }
   }
@@ -31,6 +31,18 @@ struct Combinatorics<Z<P>> {
 
   static Z<P> S(int n, int k) {
     return k == 0 ? n == 0 : C(n + k - 1, k - 1);
+  }
+
+  static Z<P> f(int n) {
+    return get_instance().fact[n];
+  }
+
+  static Z<P> rf(int n) {
+    return get_instance().rfact[n];
+  }
+
+  static Z<P> r(int n) {
+    return get_instance().rec[n];
   }
 };
 

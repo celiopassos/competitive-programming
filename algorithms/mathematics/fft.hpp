@@ -4,6 +4,7 @@
 #include <cassert>
 #include <utility>
 #include <vector>
+#include <type_traits>
 
 template <typename T>
 struct RootOfUnity;  // Not implemented for general T.

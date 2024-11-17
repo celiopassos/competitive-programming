@@ -234,7 +234,7 @@ FormalPowerSeries<T> I(FormalPowerSeries<T> P) {
   int N = P.size();
   P.push_back(0);
   for (int i = N - 1; i >= 0; --i) {
-    P[i + 1] = P[i] * Combinatorics<T>::get_instance().r[i + 1];
+    P[i + 1] = P[i] * Combinatorics<T>::r(i + 1);
   }
   P[0] = 0;
   return P;
@@ -273,33 +273,6 @@ template <typename T>
 FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
   assert(!P.empty() && P[0] == 1);
   return exp(alpha * log(P));
-}
-
-// Operations for small inputs.
-namespace naive {
-
-// Returns P^alpha mod x^N.
-// Time complexity: O(N * M).
-template <typename T>
-FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha, int N) {
-  assert(!P.empty() && P[0] == 1);
-  int M = P.size();
-  auto dP = D(P);
-  FormalPowerSeries<T> Q(N), dQ(N - 1);
-  Q[0] = 1;
-  for (int i = 0; i + 1 < N; ++i) {
-    for (int j = 0; j < M - 1 && j <= i; ++j) {
-      dQ[i] += dP[j] * Q[i - j];
-    }
-    dQ[i] *= alpha;
-    for (int j = 1; j < M && j <= i; ++j) {
-      dQ[i] -= P[j] * dQ[i - j];
-    }
-    Q[i + 1] = dQ[i] / (i + 1);
-  }
-  return Q;
-}
-
 }
 
 // Returns composition f(g(x)) modulo x^M.
@@ -380,7 +353,7 @@ FormalPowerSeries<T> exp(const FormalPowerSeries<T>& P) {
       if (j > i) break;
       dQ[i] += Q[i - j] * dP[j];
     }
-    Q[i + 1] = Combinatorics<T>::get_instance().r[i + 1] * dQ[i];
+    Q[i + 1] = Combinatorics<T>::r(i + 1) * dQ[i];
   }
   return Q;
 }
@@ -423,7 +396,7 @@ FormalPowerSeries<T> pow(const FormalPowerSeries<T>& P, T alpha) {
       if (j > i) break;
       dQ[i] -= P[j] * dQ[i - j];
     }
-    Q[i + 1] = dQ[i] * Combinatorics<T>::get_instance().r[i + 1];
+    Q[i + 1] = dQ[i] * Combinatorics<T>::r(i + 1);
   }
   return Q;
 }
@@ -588,7 +561,7 @@ FormalPowerSeries<T> exp(T alpha, int N) {
   FormalPowerSeries<T> f(N);
   T pow = 1;
   for (int k = 0; k < N; ++k) {
-    f[k] = pow * Combinatorics<T>::get_instance().rfact[k];
+    f[k] = pow * Combinatorics<T>::rf(k);
     pow *= alpha;
   }
   return f;
@@ -607,7 +580,7 @@ FormalPowerSeries<T> borel(FormalPowerSeries<T> P) {
 
 // Maps x^k -> k! * x^k.
 template <typename T>
-FormalPowerSeries<T> inv_borel(FormalPowerSeries<T> P) {
+FormalPowerSeries<T> laplace(FormalPowerSeries<T> P) {
   const auto& combi = Combinatorics<T>::get_instance();
   std::transform(P.begin(), P.end(), std::begin(combi.fact), P.begin(), std::multiplies<T>());
   return P;
@@ -621,7 +594,7 @@ FormalPowerSeries<T> apply_power_series_of_derivative(FormalPowerSeries<T> f, Fo
     f.resize(N);
   }
   std::reverse(f.begin(), f.end());
-  auto res = f * inv_borel(std::move(p));
+  auto res = f * laplace(std::move(p));
   res.erase(res.begin(), res.begin() + f.size() - 1);
   return borel(std::move(res));
 }
@@ -659,7 +632,7 @@ FormalPowerSeries<T> evaluate(FormalPowerSeries<T> P) {
   int N = P.size();
   auto y = scaled::exp(T(1), N) * std::move(P);
   y.resize(N);
-  return inv_borel(std::move(y));
+  return laplace(std::move(y));
 }
 
 // Evaluates at a single point x.

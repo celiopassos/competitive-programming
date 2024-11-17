@@ -54,4 +54,17 @@ std::vector<T> operator*(const Matrix<T>& A, const std::vector<T>& b) {
   return y;
 }
 
+template <typename T>
+Matrix<T> pow(Matrix<T> A, long long n) {
+  Matrix<T> res = identity<T>(A.size());
+  while (n) {
+    if (n & 1) {
+      res = A * res;
+    }
+    A = A * A;
+    n >>= 1;
+  }
+  return res;
+}
+
 #endif  // ALGORITHMS_MATHEMATICS_MATRIX_HPP

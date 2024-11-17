@@ -5,8 +5,6 @@
 #include "algorithms/mathematics/fft"
 #include "algorithms/mathematics/modular_arithmetic"
 
-#include <complex>
-
 constexpr int ntt_mod = 998244353;
 template <>
 struct RootOfUnity<Z<ntt_mod>> {
